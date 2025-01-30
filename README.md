@@ -18,9 +18,12 @@ Features:
 > Used to merge front-end and back-end before main
 
 - <b>front-end</b>
-> Carries history for front-end development and prepares features to integrate
+> Carries code for front-end development and prepares features to integrate. Also handles authentication
 
 - <b>back-end</b>
-> Carries history for back-end development and prepares features to integrate
+> Carries code for back-end development and prepares features to integrate
 
-Feature branches will link to back-end and front-end branches
+- <b>db</b>
+> Carries code for database initialisation
+
+Feature branches will link to **back-end**, **front-end** and **db** branches
