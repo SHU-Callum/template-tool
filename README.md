@@ -1,4 +1,4 @@
-# template-tool
+# Template Tool
 EPA Project
 
 ## Description
@@ -8,6 +8,12 @@ Features:
 - Create text-based templates with custom free-text fields
 - Store and search templates with a search bar
 - Use a template, inputting necessary fields, and generating text to copy to clipboard
+
+## Guides
+- [Front-end setup guide](./front-end/README.md)
+  - [Authentication setup guide](./front-end/authentication/README.md)
+- [Back-end setup guide](./back-end/README.md)
+- [Database setup guide](./db/README.md)
 
 
 ## Branch Management
