@@ -1,12 +1,12 @@
 import { useState } from "react";
-import Notification from "../components/Notification";
+import { useNotification } from "../context/notification/useNotification";
 
 function Search() {
+  const { addNotification } = useNotification();
   const [searchText, setSearchText] = useState('');
-  const [showNotification, setShowNotification] = useState(false);
 
   const searchClicked = () => {
-    setShowNotification(true);
+    addNotification(`Searching for: ${searchText}`);
   };
 
   return (
@@ -38,7 +38,6 @@ function Search() {
         <button className="bg-blue-500 text-white p-2 rounded" onClick={searchClicked}>Search</button>
       </div>
       <hr />
-      {showNotification && <Notification message="Search Clicked!" onClose={() => setShowNotification(false)} />}
     </div>
   );
 }
