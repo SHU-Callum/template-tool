@@ -20,6 +20,10 @@
 *When about to be replaced with a new image build*
 - `docker rm template-tool-db-container`
 
+### Troubleshooting
+*If encountering issues with running container, run:*
+- `docker logs -f template-tool-db-container`
+
 ## Connecting with DBeaver
 - Server Host: localhost
 - Port: 3306
