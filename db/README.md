@@ -6,11 +6,11 @@
 
 ### Building the docker image
 *Required for first time setup or after DB code change*
-- `docker build -t template-tool-db-img .`
+- `export $(cat .env.dev | xargs) && docker build --build-arg MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD --build-arg MYSQL_DATABASE=$MYSQL_DATABASE --build-arg MYSQL_USER=$MYSQL_USER --build-arg MYSQL_PASSWORD=$MYSQL_PASSWORD --build-arg MYSQL_PORT --build-arg MYSQL_HOST -t template-tool-db-img .`
 
 ### Running the docker container
 *Starting the database*
-- `docker run -d -p 3306:3306 --name template-tool-db-container template-tool-db-img`
+- `docker run --env-file .env.dev -d -p ${MYSQL_PORT}:${MYSQL_PORT} --name template-tool-db-container template-tool-db-img`
 
 ### Stopping the container
 *Closing the database*
@@ -25,10 +25,12 @@
 - `docker logs -f template-tool-db-container`
 
 ## Connecting with DBeaver
+(default settings for .env.dev)
 - Server Host: localhost
+- Database: devdb
 - Port: 3306
-- Username: myuser
-- password: mypassword
+- Username: devuser
+- password: devpassword
 
 in driver properties, set `allowPublicKeyRetrieval` to `TRUE`
 <br>
