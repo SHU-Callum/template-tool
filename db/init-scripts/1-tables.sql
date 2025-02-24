@@ -1,4 +1,4 @@
-CREATE TABLE users (
+CREATE TABLE employee (
   id INT PRIMARY KEY,
   email VARCHAR(255) NOT NULL,
   display_name VARCHAR(255) NOT NULL
@@ -19,7 +19,7 @@ CREATE TABLE team_member (
   team_id INT,
   permission_role INT,
   FOREIGN KEY (permission_role) REFERENCES member_role(id),
-  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (user_id) REFERENCES employee(id),
   FOREIGN KEY (team_id) REFERENCES team(id)
 );
 
@@ -32,6 +32,6 @@ CREATE TABLE template (
   team_id INT,
   editable BOOLEAN,
   last_amend_date DATETIME,
-  FOREIGN KEY (owner_id) REFERENCES users(id),
+  FOREIGN KEY (owner_id) REFERENCES employee(id),
   FOREIGN KEY (team_id) REFERENCES team(id)
 );

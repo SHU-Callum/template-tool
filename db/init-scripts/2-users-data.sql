@@ -1,4 +1,4 @@
-INSERT INTO users (id, email, display_name) VALUES
+INSERT INTO employee (id, email, display_name) VALUES
 (1, 'john.doe@example.com', 'John Doe'),
 (2, 'jane.smith@example.com', 'Jane Smith'),
 (3, 'alice.jones@example.com', 'Alice Jones'),
