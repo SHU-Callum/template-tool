@@ -1,0 +1,14 @@
+services:
+  template-tool-db:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: template-tool-db-img
+    container_name: template-tool-db-container
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "${MYSQL_PORT}:${MYSQL_PORT}"

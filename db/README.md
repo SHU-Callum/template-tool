@@ -1,7 +1,7 @@
 # Database Setup
 - [Home guide](../README.md)
 
-## Database Commands
+## Database Commands (using Docker)
 `cd db`
 
 ### Building the docker image
@@ -12,13 +12,31 @@
 *Starting the database*
 - `docker run --env-file .env.dev -d -p ${MYSQL_PORT}:${MYSQL_PORT} --name template-tool-db-container template-tool-db-img`
 
-### Stopping the container
+### Stopping the docker container
 *Closing the database*
 - `docker stop template-tool-db-container`
 
-### Removing the container
+### Removing the docker container
 *When about to be replaced with a new image build*
 - `docker rm template-tool-db-container`
+
+## Database Commands (using docker-compose)
+`cd db`
+
+### Build and Run
+*Using environment configuration from **.env.dev***
+- `docker-compose --env-file .env.dev up -d`
+
+### Run existing containers
+- `docker-compose --env-file .env.dev start`
+
+### Stop existing containers
+*this will keep the data as is*
+- `docker-compose --env-file .env.dev stop`
+
+### Stop and remove containers & volumes
+*When you want fresh data next time*
+- `docker-compose --env-file .env.dev down -v`
 
 ### Troubleshooting
 *If encountering issues with running container, run:*
