@@ -61,7 +61,7 @@ function Search() {
       </div>
       <hr />
       <div className="pt-4">
-      <TemplateSearchResults results={searchResults}/>
+        <TemplateSearchResults results={searchResults}/>
       </div>
     </div>
   );
