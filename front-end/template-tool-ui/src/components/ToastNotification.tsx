@@ -13,7 +13,7 @@ function ToastNotification({ message, duration = 5000, onClose, order: index }: 
 
   return (
     <div
-      className="fixed right-4 bg-blue-500 text-white p-4 rounded shadow-lg flex items-center z-50 transition-transform"
+      className="fixed right-4 bg-blue-500 text-white p-4 rounded shadow-lg flex items-center -z-50 transition-transform"
       style={{ bottom: `${4 + index * 60}px` }} // Adjust the offset based on the index
     >
       <span className="flex-grow">{message}</span>

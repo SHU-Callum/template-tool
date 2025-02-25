@@ -1,5 +1,5 @@
 import { ReactNode, useCallback, useState } from 'react';
-import { NotificationContext } from './NotificationContext';
+import { NotificationContext } from './notificationContext';
 import ToastNotification, { ToastNotificationProps } from '../../components/ToastNotification';
 
 interface NotificationProviderProps {
@@ -25,7 +25,7 @@ export const NotificationProvider = ({ children }: NotificationProviderProps) =>
   return (
     <NotificationContext.Provider value={{ notifications, addNotification, removeNotification }}>
       {children /* renders app.tsx etc. */ }
-      <div className="fixed bottom-4 right-4 space-y-2">
+      <div className="fixed bottom-4 right-4 space-y-2 z-50">
         {notifications.map((notification) => (
           <ToastNotification
             key={notification.id}
