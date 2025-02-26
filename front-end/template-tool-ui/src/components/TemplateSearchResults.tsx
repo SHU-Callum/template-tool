@@ -5,7 +5,7 @@ interface TemplateSearchResultsProps {
 function TemplateSearchResults({ results }: TemplateSearchResultsProps) {
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-4">Search Results ({results.length})</h3>
+      <h3 className="mb-4">Search Results ({results.length})</h3>
       <div className="max-h-96 overflow-y-auto">
         <table className="min-w-full bg-white border border-gray-200">
           <thead>
