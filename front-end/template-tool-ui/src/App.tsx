@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import './App.css';
 import FooterBar from './components/FooterBar';
 import HeaderBar from './components/HeaderBar';
 import { useNotification } from './context/notification/useNotification';
