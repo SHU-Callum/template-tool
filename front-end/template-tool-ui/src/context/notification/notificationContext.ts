@@ -1,9 +1,10 @@
 import { createContext } from 'react';
 import { ToastNotificationProps } from '../../components/ToastNotification';
+import { NotificationType } from '../../types/notificationTypes';
 
 export interface NotificationContextType {
   notifications: ToastNotificationProps[];
-  addNotification: (message: string) => void;
+  addNotification: (message: string, type: NotificationType) => void;
   removeNotification: (id: number) => void;
 }
 

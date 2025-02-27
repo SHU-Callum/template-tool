@@ -38,3 +38,4 @@
 - **ESLint**: ^8.57.0
   - **eslint-plugin-react-hooks**: ^4.6.0
   - **eslint-plugin-react-refresh**: ^0.4.5
+- **Axios**: ^1.8.1

@@ -1,6 +1,7 @@
 import { ReactNode, useCallback, useState } from 'react';
 import { NotificationContext } from './notificationContext';
 import ToastNotification, { ToastNotificationProps } from '../../components/ToastNotification';
+import { NotificationType } from '../../types/notificationTypes';
 
 interface NotificationProviderProps {
   children: ReactNode;
@@ -9,10 +10,13 @@ interface NotificationProviderProps {
 export const NotificationProvider = ({ children }: NotificationProviderProps) => {
   const [notifications, setNotifications] = useState<ToastNotificationProps[]>([]);
 
-  const addNotification = (message: string) => {
+  const addNotification = (message: string, type: NotificationType) => {
     const newId = Date.now();
-    const newNotification: ToastNotificationProps = { id: newId, message, order: notifications.length, onClose: () => removeNotification(newId) };
-    setNotifications((prevNotifications) => [...prevNotifications, newNotification]);
+    const newNotification: ToastNotificationProps = { id: newId, type, message, order: notifications.length, onClose: () => removeNotification(newId) };
+    setNotifications((prevNotifications) => {
+      const updatedNotifications = [...prevNotifications, newNotification];
+      return updatedNotifications.map((notification, index) => ({ ...notification, order: index }));
+    });
   };
 
   const removeNotification = useCallback((id: number) => {
@@ -30,6 +34,7 @@ export const NotificationProvider = ({ children }: NotificationProviderProps) =>
           <ToastNotification
             key={notification.id}
             id={notification.id}
+            type={notification.type}
             message={notification.message}
             onClose={() => removeNotification(notification.id)}
             order={notification.order}
