@@ -4,7 +4,7 @@ const apiUrl = import.meta.env.VITE_API_URL;
 const API_BASE_URL = `${apiUrl}/api`;
 
 export const API_ROUTES = {
-  GET_TEMPLATE_URL: (templateId: string) => `${API_BASE_URL}/template/${templateId}`,
+  GET_TEMPLATE_URL: (templateId: number) => `${API_BASE_URL}/template/${templateId}`,
   GET_TEMPLATES_BY_USER_URL: (userId: string) => `${API_BASE_URL}/templates/${userId}`,
   GET_TEMPLATES_BY_SEARCH: `${API_BASE_URL}/templates/search`,
   DELETE_TEMPLATE_URL: (templateId: string) => `${API_BASE_URL}/template/${templateId}/delete`,

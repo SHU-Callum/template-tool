@@ -38,7 +38,8 @@
   - **autoprefixer**: ^10.4.20
 - **Electron**: ^30.0.1
   - **electron-builder**: ^24.13.3
-- **ESLint**: ^8.57.0
+- **ESLint**: ^8.57.0 - Linting utility (checks for syntax issues)
   - **eslint-plugin-react-hooks**: ^4.6.0
   - **eslint-plugin-react-refresh**: ^0.4.5
-- **Axios**: ^1.8.1
+- **Axios**: ^1.8.1 - HTTP request library
+- **MSW**: ^2.7.3 - Mocking API calls when turned on (auto generated `mockServiceWorker.js`)
