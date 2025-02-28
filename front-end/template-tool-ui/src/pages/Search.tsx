@@ -4,6 +4,7 @@ import SelectInput from "../components/SelectInput";
 import TemplateSearchResults from "../components/TemplateSearchResults";
 import axios from "axios";
 import { NotificationType } from "../types/notificationTypes";
+import { API_ROUTES } from "../constants/apis";
 
 function Search() {
   const initialResults = [
@@ -35,8 +36,9 @@ function Search() {
   };
 
   const fetchData = async () => {
+    const userId = 1;
     try {
-      const response = await axios.get('http://localhost:3001/templates', {
+      const response = await axios.get(API_ROUTES.GET_TEMPLATES_BY_USER_URL(userId.toString()), {
         timeout: 3000 // 3 seconds timeout
       });
       console.log(response.data);

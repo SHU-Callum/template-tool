@@ -12,6 +12,8 @@ dist
 dist-ssr
 *.local
 .vite/*temp*
+.env.development
+
 
 # Editor directories and files
 .vscode/*
