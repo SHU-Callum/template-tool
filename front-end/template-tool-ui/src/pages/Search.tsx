@@ -38,11 +38,17 @@ function Search() {
   const fetchData = async () => {
     const userId = 1;
     try {
-      const response = await axios.get(API_ROUTES.GET_TEMPLATES_BY_USER_URL(userId.toString()), {
+      const response = await axios.get(API_ROUTES.GET_TEMPLATE_URL(userId), {
         timeout: 3000 // 3 seconds timeout
       });
       console.log(response.data);
-      setSearchResults(response.data);
+      const data = response.data;
+      const results: [{name: string, description: string}] = [{
+        name: data.title,
+        description: data.detail
+      }];
+      console.log(results);
+      setSearchResults(results);
     } catch(error) {
       if (axios.isCancel(error)) {
         console.log('Request canceled', error.message);
