@@ -1,9 +1,12 @@
 # Front-End Setup
 - [Home guide](../README.md)
-
+- [Authentication guide](./authentication/README.md)
 ## Setup
 - `cd template-tool-ui`
 - `yarn`
+
+### To Run localhost
+- Create `.env.development` file and follow `.env.example` configurations using localhost
 - `yarn dev`
 
 ## Stack
