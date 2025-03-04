@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNotification } from "../context/notification/useNotification";
 import SelectInput from "../components/SelectInput";
-import TemplateSearchResults from "../components/TemplateSearchResults";
-import axios from "axios";
 import { NotificationType } from "../types/notificationTypes";
-import { API_ROUTES } from "../constants/apis";
+import useData from "../context/data/useData";
+import { Template } from "../models/template";
+import TemplateSearchResults from "../components/TemplateSearchResults";
 
 function Search() {
   const initialResults = [
@@ -14,16 +14,17 @@ function Search() {
   ];
 
   const { addNotification } = useNotification();
+  const {state, getTemplatesByText} = useData();
   const [searchText, setSearchText] = useState('');
   const [searchTeamFilter, setSearchTeamFilter] = useState('All Teams');
   const [searchIncludeViewOnly, setSearchIncludeViewOnly] = useState(false);
   const [searchResults, setSearchResults] = useState(initialResults);
   const [loading, setLoading] = useState(false);
+  const errorNotifiedRef = useRef(false);
 
   const searchClicked = () => {
     addNotification(`Searching for: ${searchText}, Team: ${searchTeamFilter}, Include View Only: ${searchIncludeViewOnly}`, NotificationType.INFO);
-    //TODO: Implement search logic
-    fetchData();
+    getTemplatesByText(searchText);
     setLoading(true);
   };
 
@@ -35,36 +36,27 @@ function Search() {
     setSearchIncludeViewOnly(!searchIncludeViewOnly);
   };
 
-  const fetchData = async () => {
-    const userId = 1;
-    try {
-      const response = await axios.get(API_ROUTES.GET_TEMPLATE_URL(userId), {
-        timeout: 3000 // 3 seconds timeout
-      });
-      console.log(response.data);
-      const data = response.data;
-      const results: [{name: string, description: string}] = [{
-        name: data.title,
-        description: data.detail
-      }];
-      console.log(results);
-      setSearchResults(results);
-    } catch(error) {
-      if (axios.isCancel(error)) {
-        console.log('Request canceled', error.message);
-        addNotification('Timeout Error', NotificationType.ERROR);
-      } else if (axios.isAxiosError(error)) {
-        console.error(error);
-        addNotification(`Something went wrong: ${error.message}`, NotificationType.ERROR);
-      } else {
-        console.error(error);
-        addNotification('Something went wrong', NotificationType.ERROR);
-      }
-    } finally {
-      console.log('Request completed');
-      setLoading(false);
+  useEffect(() => {
+    if(state.TemplatesByText) {
+      const templates = state.TemplatesByText;
+      const formattedTemplates = templates.map((template: Template) => ({
+        name: template.title,
+        description: template.detail
+      }));
+      setSearchResults(formattedTemplates);
     }
-  };
+    if(state.error && !errorNotifiedRef.current) {
+      addNotification(state.error, NotificationType.ERROR);
+      errorNotifiedRef.current = true;
+    }
+    setLoading(state.loading);
+  }, [addNotification, state.TemplatesByText, state.error, state.loading]);
+
+  useEffect(() => {
+    if (state.loading) {
+      errorNotifiedRef.current = false;
+    }
+  }, [state.loading]);
 
   return (
     <div className="p-4 w-3/4 mx-auto">

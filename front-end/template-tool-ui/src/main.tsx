@@ -4,6 +4,7 @@ import App from './App.tsx'
 import './index.css'
 import { NotificationProvider } from './context/notification/NotificationProvider'
 import { worker } from './mocks/node.ts'
+import { DataProvider } from './context/data/dataProvider.tsx'
 
 async function configureMocking() {
   const mockAPIs: boolean = import.meta.env.VITE_MOCK_API  === 'true'
@@ -19,9 +20,11 @@ else {
 configureMocking().then(() => {
   ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-      <NotificationProvider>
-        <App />
-      </NotificationProvider>
+      <DataProvider>
+        <NotificationProvider>
+          <App />
+        </NotificationProvider>
+      </DataProvider>
     </React.StrictMode>
   )
 })
