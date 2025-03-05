@@ -25,22 +25,49 @@ export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist')
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 'public') : RENDERER_DIST
 
 let win: BrowserWindow | null
+let splash: BrowserWindow | null
+
+function createSplashScreen() {
+  const splash = new BrowserWindow({
+    width: 400,
+    height: 400,
+    show: false,
+    frame: false,
+  });
+  splash.loadFile('./splash.html');
+  return splash;
+}
 
 function createWindow() {
-  // also uses index.html as a template
+  splash = createSplashScreen();
+
+  splash.webContents.on('did-finish-load', () => {
+    splash?.show()
+  })
+
+  //also uses index.html as a template
   win = new BrowserWindow({
     icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
+    show: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.mjs'),
     },
   })
+
   //TODO: Hide the default menu
   // remove default menu
   //win.removeMenu()
 
+  // To Open the Inspector upon start
+  //win.webContents.openDevTools();
+
   // Test active push message to Renderer-process.
   win.webContents.on('did-finish-load', () => {
+    if (splash) {
+      splash.destroy();
+    }
     win?.webContents.send('main-process-message', (new Date).toLocaleString())
+    win?.show()
   })
 
   if (VITE_DEV_SERVER_URL) {
@@ -58,7 +85,12 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
     win = null
+    splash = null
   }
+})
+
+app.on('browser-window-focus', () => {
+  console.log('Browser window focused')
 })
 
 app.on('activate', () => {
