@@ -1,3 +1,5 @@
+// Mock data for testing purposes with Mock Service Worker
+
 export const GET_TEMPLATE_DATA = {
   id: 1,
   title: 'Welcome Email',

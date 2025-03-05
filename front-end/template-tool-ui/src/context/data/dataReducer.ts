@@ -1,3 +1,6 @@
+// Reducer for the data context
+// Used to update the state based on the API calls
+
 import { actionTypes } from "./actionTypes";
 import { Template } from "../../models/template";
 

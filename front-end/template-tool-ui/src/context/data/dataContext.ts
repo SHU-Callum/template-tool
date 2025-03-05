@@ -1,3 +1,5 @@
+// used for creating the data context
+
 import { createContext } from "react";
 import { Template } from "../../models/template";
 

@@ -1,3 +1,6 @@
+// API Calls via Axios
+// dispatch goes to the reducer to update the state
+
 import axios, {AxiosResponse} from 'axios';
 import {Dispatch} from 'react';
 import { actionTypes } from './actionTypes';

@@ -1,3 +1,5 @@
+// used for providing the data context to the app
+
 import { useReducer, ReactNode } from "react";
 import dataReducer, {initialState} from "./dataReducer";
 import { getTemplateById, getTemplatesByText } from "./dataActions";

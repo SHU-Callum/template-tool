@@ -1,3 +1,5 @@
+// Definition of the action types used in the data context
+
 export const actionTypes = {
   LOADING: 'LOADING',
   SUCCESS: 'SUCCESS',
