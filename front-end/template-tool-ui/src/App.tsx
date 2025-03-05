@@ -4,6 +4,7 @@ import HeaderBar from './components/HeaderBar';
 import { useNotification } from './context/notification/useNotification';
 import Search from './pages/Search';
 import SideOut from './components/SideOut';
+import { NotificationType } from './types/notificationTypes';
 
 
 function App() {
@@ -30,7 +31,7 @@ function App() {
   };
 
   const infoClicked = () => {
-    addNotification('Info Clicked');
+    addNotification('Info Clicked', NotificationType.INFO);
   };
 
   return (

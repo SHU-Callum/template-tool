@@ -1,3 +1,5 @@
+// used for providing the app access to the data context
+
 import { useContext } from 'react';
 import { NotificationContext } from './notificationContext';
 
