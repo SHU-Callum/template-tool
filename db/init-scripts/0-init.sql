@@ -1,0 +1,3 @@
+CREATE USER IF NOT EXISTS 'myuser'@'%' IDENTIFIED BY 'mypassword';
+GRANT ALL PRIVILEGES ON *.* TO 'myuser'@'%';
+FLUSH PRIVILEGES;
