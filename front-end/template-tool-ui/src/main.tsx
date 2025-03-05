@@ -1,20 +1,22 @@
-import React from 'react'
+import React, { lazy, Suspense } from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
 import './index.css'
 import { NotificationProvider } from './context/notification/NotificationProvider'
 import { worker } from './mocks/node.ts'
 import { DataProvider } from './context/data/dataProvider.tsx'
+import Loading from './components/Loading.tsx'
+
+  const App = lazy(() => import('./App.tsx'))
 
 async function configureMocking() {
   const mockAPIs: boolean = import.meta.env.VITE_MOCK_API  === 'true'
-if (mockAPIs) {
-  console.log('Starting the mock service worker')
-  worker.start()
-}
-else {
-  console.log('Mock API is disabled')
-}
+  if (mockAPIs) {
+    console.log('Starting the mock service worker')
+    worker.start()
+  }
+  else {
+    console.log('Mock API is disabled')
+  }
 }
 
 configureMocking().then(() => {
@@ -22,7 +24,9 @@ configureMocking().then(() => {
     <React.StrictMode>
       <DataProvider>
         <NotificationProvider>
-          <App />
+          <Suspense fallback={<Loading/>}>
+            <App />
+          </Suspense>
         </NotificationProvider>
       </DataProvider>
     </React.StrictMode>
