@@ -1,5 +1,5 @@
 // Application URLs
-const apiUrl = import.meta.env.VITE_API_URL;
+const apiUrl = import.meta.env.VITE_API_URL; // url from .env file
 
 export const API_BASE_URL = `${apiUrl}/api`;
 

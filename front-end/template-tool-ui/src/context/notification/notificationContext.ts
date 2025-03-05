@@ -1,3 +1,5 @@
+// // used for creating the notification context
+
 import { createContext } from 'react';
 import { ToastNotificationProps } from '../../components/ToastNotification';
 import { NotificationType } from '../../types/notificationTypes';

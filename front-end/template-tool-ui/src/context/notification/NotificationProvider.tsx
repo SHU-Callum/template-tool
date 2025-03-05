@@ -1,3 +1,5 @@
+// used for providing the data context to the app
+
 import { ReactNode, useCallback, useState } from 'react';
 import { NotificationContext } from './notificationContext';
 import ToastNotification, { ToastNotificationProps } from '../../components/ToastNotification';
