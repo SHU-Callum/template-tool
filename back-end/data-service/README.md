@@ -14,14 +14,19 @@
 
  Built with Springboot - 3.4.3  
 
- ## Additinal Requisites
+ ## Additional Requisites
  - MySQL Database Running
 
 
 
 
-## Running the Data Service
-1. Build the project
+## Running the Data Service in IntelliJ
+1. Edit Run Configuration
+    - **Use Java 21 SDK**
+    - Use Main Method from **TemplateToolApplication**
+    - Set Environment Variables to `template-tool/back-end/db/.env.dev`
+
+2. Build the project
     ```shell
     mvn clean package
     ```
