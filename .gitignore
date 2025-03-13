@@ -1,3 +1,7 @@
 /front-end/template-tool-ui/node_modules
 /front-end/template-tool-ui/.env.development
 /front-end/template-tool-ui/dist-electron
+
+/back-end/.idea
+/back-end/data-service/.idea
+/back-end/db/.env.dev

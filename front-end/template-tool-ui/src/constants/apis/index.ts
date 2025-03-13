@@ -1,5 +1,7 @@
 // Application URLs
-const apiUrl = import.meta.env.VITE_API_URL; // url from .env file
+const apiHost = import.meta.env.VITE_API_HOST; // host from .env file
+const apiPort = import.meta.env.VITE_API_PORT; // port from .env file
+const apiUrl = `http://${apiHost}:${apiPort}`; // format the URL
 
 export const API_BASE_URL = `${apiUrl}/api`;
 
