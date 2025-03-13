@@ -12,6 +12,8 @@ dist
 dist-ssr
 *.local
 .vite/*temp*
+.vite/deps/_metadata.json
+.vite/deps/package.json
 .env.development
 dist-electron/*
 
