@@ -1,1 +1,4 @@
-db/.env.*
+/back-end/db/.env.dev
+/back-end/data-service/.idea
+/back-end/data-service/.target
+/back-end/data-service/.HELP.md
