@@ -13,7 +13,8 @@ Features:
 - [Front-end setup guide](./front-end/README.md)
   - [Authentication setup guide](./front-end/authentication/README.md)
 - [Back-end setup guide](./back-end/README.md)
-- [Database setup guide](./db/README.md)
+  - [Data Service guide](./back-end/data-service/README.md)
+  - [Database setup guide](./back-end/db/README.md)
 
 
 ## Branch Management

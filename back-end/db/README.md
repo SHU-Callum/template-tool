@@ -1,5 +1,7 @@
 # Database Setup
-- [Home guide](../README.md)
+- [Home guide](../../README.md)
+- [Backend guide](../README.md)
+  - [Data Service guide](../data-service/README.md)
 
 ## Database Commands (using Docker)
 `cd db`
