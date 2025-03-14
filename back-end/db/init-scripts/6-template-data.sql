@@ -1,0 +1,11 @@
+INSERT INTO template (id, title, detail, content, owner_id, team_id, editable, last_amend_date) VALUES
+(1, 'Welcome Email', 'Template for welcoming new users', '{"body": "Dear {{name}},\n\nWelcome to our service! We are glad to have you.\n\nBest regards,\nThe Team"}', 1, 1, TRUE, '2025-02-16 10:00:00'),
+(2, 'Password Reset', 'Template for password reset instructions', '{"body": "Dear {{name}},\n\nYou requested a password reset. Click the link below to reset your password:\n{{reset_link}}\n\nBest regards,\nThe Team"}', 2, 1, TRUE, '2025-02-16 11:00:00'),
+(3, 'Account Activation', 'Template for account activation', '{"body": "Dear {{name}},\n\nPlease activate your account by clicking the link below:\n{{activation_link}}\n\nBest regards,\nThe Team"}', 3, 2, FALSE, '2025-02-16 12:00:00'),
+(4, 'Newsletter', 'Template for monthly newsletter', '{"body": "Dear {{name}},\n\nHere is our monthly newsletter.\n\nBest regards,\nThe Team"}', 4, 3, TRUE, '2025-02-16 13:00:00'),
+(5, 'Promotion', 'Template for promotional emails', '{"body": "Dear {{name}},\n\nWe have a special promotion for you. Check it out!\n\nBest regards,\nThe Team"}', 5, 4, FALSE, '2025-02-16 14:00:00'),
+(6, 'Feedback Request', 'Template for requesting feedback', '{"body": "Dear {{name}},\n\nWe would love to hear your feedback. Please fill out the survey below:\n{{survey_link}}\n\nBest regards,\nThe Team"}', 1, 5, TRUE, '2025-02-16 15:00:00'),
+(7, 'Event Invitation', 'Template for event invitations', '{"body": "Dear {{name}},\n\nYou are invited to our upcoming event. Please RSVP below:\n{{rsvp_link}}\n\nBest regards,\nThe Team"}', 2, 2, FALSE, '2025-02-16 16:00:00'),
+(8, 'Service Update', 'Template for service updates', '{"body": "Dear {{name}},\n\nWe have an important update regarding our service.\n\nBest regards,\nThe Team"}', 3, 3, TRUE, '2025-02-16 17:00:00'),
+(9, 'Account Deactivation', 'Template for account deactivation', '{"body": "Dear {{name}},\n\nYour account will be deactivated soon. If this is a mistake, please contact us.\n\nBest regards,\nThe Team"}', 4, 4, FALSE, '2025-02-16 18:00:00'),
+(10, 'Thank You', 'Template for thank you emails', '{"body": "Dear {{name}},\n\nThank you for being a valued customer.\n\nBest regards,\nThe Team"}', 5, 5, TRUE, '2025-02-16 19:00:00');
