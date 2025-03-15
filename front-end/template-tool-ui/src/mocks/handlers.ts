@@ -3,7 +3,7 @@
 
 import { http, HttpResponse } from 'msw'
 import { API_BASE_URL } from '../constants/apis'
-import { GET_TEMPLATE_DATA, GET_TEMPLATES_BY_SEARCH_DATA } from './data'
+import { GET_TEAMS_BY_USER_DATA, GET_TEMPLATE_DATA, GET_TEMPLATES_BY_SEARCH_DATA } from './data'
  
 export const handlers = [
   http.get('/', () => {
@@ -24,4 +24,14 @@ export const handlers = [
     }
     return HttpResponse.json(GET_TEMPLATES_BY_SEARCH_DATA)
   }),
+
+  // Intercept "GET localhost/api/teams/*" requests...
+  http.get(`${API_BASE_URL}/teams/:userId`, ({request}) => {
+    const url = new URL(request.url);
+    const userId = url.pathname.split('/').pop();
+    if (!userId) {
+      return HttpResponse.json({ error: 'User ID cannot be empty' }, { status: 400 })
+    }
+    return HttpResponse.json(GET_TEAMS_BY_USER_DATA)
+  })
 ]

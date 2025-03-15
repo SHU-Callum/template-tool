@@ -1,29 +1,68 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNotification } from "../context/notification/useNotification";
-import { Team } from "../models/team";
+import { TeamAffiliations } from "../models/team";
 import TeamsList from "./TeamsList";
 import { NotificationType } from "../types/notificationTypes";
+import { useStateContext, useDispatchContext } from "../context/data/useData";
+import { getTeamsByUserId } from "../context/data/actions/teamActions";
 
 interface SideOutProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const teams: Team[] = [
-  { name: 'Team 1', isOwner: true },
-  { name: 'Team 2', isOwner: false },
-  { name: 'Team 3', isOwner: false },
-]
-
 function SideOut({ isOpen, onClose }: SideOutProps) {
   const { addNotification, } = useNotification();
-  const [searchText, setSearchText] = useState('');
+  const state = useStateContext();
+  const dispatch = useDispatchContext();
   
+
+  const [teams, setTeams] = useState<TeamAffiliations[]>([]);
+  const [searchText, setSearchText] = useState('');
+  const [loading, setLoading] = useState(false);
+  const errorNotifiedRef = useRef(false); // used to prevent error notification loop
+
+  // API dispatches
+    const handleGetTeamsByUser = (userId: number) => {
+      getTeamsByUserId(userId, dispatch);
+    };/* - is handled by useRef */
+
+    const fetchListRef = useRef(handleGetTeamsByUser);
+
   const searchClicked = () => {
     addNotification(`Searching for: ${searchText}`, NotificationType.INFO);
     //TODO: Implement search logic
     setSearchText('');
   };
+
+  useEffect(() => {
+    if(isOpen) {
+      fetchListRef.current(1);
+    }   
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (state.teamState.teamsByUser) {
+      const formattedTeams = state.teamState.teamsByUser.map((team) => ({
+        ...team,
+        // TODO: provide context for current user id
+        isOwner: team.ownerId === 1,
+      }));
+      setTeams(formattedTeams);
+      console.log(formattedTeams)
+    }
+    if (state.teamState.error && !errorNotifiedRef.current) {
+      addNotification(state.teamState.error, NotificationType.ERROR);
+      errorNotifiedRef.current = true;
+    }
+    setLoading(state.teamState.loading);
+  }, [addNotification, state.teamState.teamsByUser, state.teamState.error, state.teamState.loading]);
+
+  useEffect(() => {
+    if (state.teamState.loading) {
+      errorNotifiedRef.current = false;
+    }
+  }, [state.teamState.loading]);
 
   return (
     <div className={`border-l-2 border-gray-200 p-4 w-1/2 h-full bg-white fixed top-0 right-0 z-40 transition-transform duration-300 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
@@ -53,7 +92,7 @@ function SideOut({ isOpen, onClose }: SideOutProps) {
           <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded" onClick={searchClicked}>Search</button>
         </div>
       </div>
-      <TeamsList teams={teams}></TeamsList>
+      <TeamsList loading={loading} teams={teams}></TeamsList>
     </div>
   );
 }

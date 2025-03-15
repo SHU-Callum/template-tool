@@ -1,5 +1,6 @@
 // Definition of the action types used in the data context
 
+import { Team } from "../../models/team";
 import { Template } from "../../models/template";
 
 export const actionTypes = {
@@ -8,6 +9,7 @@ export const actionTypes = {
   ERROR: 'ERROR',
   GET_TEMPLATES_BY_ID: 'GET_TEMPLATES_BY_ID',
   GET_TEMPLATES_BY_TEXT: 'GET_TEMPLATES_BY_TEXT',
+  GET_TEAMS_BY_USER: 'GET_TEAMS_BY_USER',
 };
 
 export interface ActionPayload {
@@ -19,4 +21,5 @@ export interface ActionPayload {
 export type PayloadType =
     Template
   | Template[]
+  | Team[]
   | string;

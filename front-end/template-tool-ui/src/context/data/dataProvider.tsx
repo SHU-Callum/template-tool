@@ -2,27 +2,35 @@
 
 import { useReducer, ReactNode, useCallback, useMemo } from "react";
 import { DataDispatchContext, DataStateContext } from "./dataContext";
-import { INITIAL_TEMPLATE_STATE } from "./initialState";
+import { INITIAL_TEAM_STATE, INITIAL_TEMPLATE_STATE } from "./initialState";
 import templateReducer from "./reducers/templateReducer";
 import { ActionPayload } from "./actionTypes";
+import teamReducer from "./reducers/teamReducer";
 
 
 const DataProvider = ({children}: { children: ReactNode }) => {
   const [templateState, templateDispatch] = useReducer(templateReducer, INITIAL_TEMPLATE_STATE);
+  const [teamState, teamDispatch] = useReducer(teamReducer, INITIAL_TEAM_STATE);
 
   const combinedState = useMemo(
     () => ({
       templateState,
+      teamState
     }),
-    [templateState]
+    [ // Dependencies
+      templateState,
+      teamState
+    ]
   );
 
   const combinedDispatch = useCallback((action: ActionPayload) =>
   [
     templateDispatch,
+    teamDispatch
   ].forEach((dispatch) => dispatch(action)),
-    [
+    [ // Dependencies
       templateDispatch,
+      teamDispatch
     ]
   );
 
