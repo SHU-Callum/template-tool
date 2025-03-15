@@ -1,24 +1,17 @@
-// Reducer for the data context
+// Template Reducer for the data context
 // Used to update the state based on the API calls
 
-import { actionTypes } from "./actionTypes";
-import { Template } from "../../models/template";
+import { ActionPayload, actionTypes } from "../actionTypes";
+import { Template } from "../../../models/template";
 
-interface State {
+export interface TemplateState {
   templateById: Template | null;
-  TemplatesByText: Template[] | null
+  templatesByText: Template[] | null
   loading: boolean;
   error: string | null;
 }
 
-export const initialState: State = {
-  templateById: null as Template | null,
-  TemplatesByText: [] as Template[] | null,
-  loading: false,
-  error: null,
-};
-
-const templateReducer = (state: State, action: { type: string; apiName?: string; payload?: Template | Template[] | string}): State => {
+const templateReducer = (state: TemplateState, action: ActionPayload): TemplateState => {
   switch (action.type) {
     case actionTypes.LOADING:
       return {
@@ -40,7 +33,7 @@ const templateReducer = (state: State, action: { type: string; apiName?: string;
             ...state,
             loading: false,
             error: null,
-            TemplatesByText: action.payload as Template[],
+            templatesByText: action.payload as Template[],
           };
         default:
           return state;

@@ -1,27 +1,38 @@
 // used for providing the data context to the app
 
-import { useReducer, ReactNode } from "react";
-import dataReducer, {initialState} from "./dataReducer";
-import { getTemplateById, getTemplatesByText } from "./dataActions";
-import { DataContext } from "./dataContext";
+import { useReducer, ReactNode, useCallback, useMemo } from "react";
+import { DataDispatchContext, DataStateContext } from "./dataContext";
+import { INITIAL_TEMPLATE_STATE } from "./initialState";
+import templateReducer from "./reducers/templateReducer";
+import { ActionPayload } from "./actionTypes";
 
 
 const DataProvider = ({children}: { children: ReactNode }) => {
-  const [state, dispatch] = useReducer(dataReducer, initialState);
+  const [templateState, templateDispatch] = useReducer(templateReducer, INITIAL_TEMPLATE_STATE);
 
-  const handleGetTemplateById = (templateId: number) => {
-    getTemplateById(templateId, dispatch);
-  };
+  const combinedState = useMemo(
+    () => ({
+      templateState,
+    }),
+    [templateState]
+  );
 
-  const handleGetTemplatesByText = (text: string) => {
-    getTemplatesByText(text, dispatch);
-  };
+  const combinedDispatch = useCallback((action: ActionPayload) =>
+  [
+    templateDispatch,
+  ].forEach((dispatch) => dispatch(action)),
+    [
+      templateDispatch,
+    ]
+  );
 
   return (
-    <DataContext.Provider value={{state, getTemplateById: handleGetTemplateById, getTemplatesByText: handleGetTemplatesByText}}>
-      {children}
-    </DataContext.Provider>
+    <DataDispatchContext.Provider value={combinedDispatch}>
+      <DataStateContext.Provider value={combinedState}>
+        {children}
+      </DataStateContext.Provider>
+    </DataDispatchContext.Provider>
   );
 };
 
-export { DataProvider, DataContext };
+export { DataProvider, DataDispatchContext, DataStateContext };

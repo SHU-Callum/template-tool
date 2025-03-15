@@ -1,13 +1,12 @@
-// API Calls via Axios
+// Template API Calls via Axios
 // dispatch goes to the reducer to update the state
 
 import axios, {AxiosResponse} from 'axios';
 import {Dispatch} from 'react';
-import { actionTypes } from './actionTypes';
-import { API_ROUTES } from '../../constants/apis';
-import { Template } from '../../models/template';
+import { ActionPayload, actionTypes } from '../actionTypes';
+import { API_ROUTES } from '../../../constants/apis';
 
-export const getTemplateById = async (templateId: number, dispatch: Dispatch<{ type: string; apiName?: string; payload?: Template | string }>) => {
+export const getTemplateById = async (templateId: number, dispatch: Dispatch<ActionPayload>) => {
   dispatch({ type: actionTypes.LOADING });
   try {
     const response: AxiosResponse = await axios.get(API_ROUTES.GET_TEMPLATE_URL(templateId), {
@@ -32,7 +31,7 @@ export const getTemplateById = async (templateId: number, dispatch: Dispatch<{ t
   }
 }
 
-export const getTemplatesByText = async (text: string, dispatch: Dispatch<{ type: string; apiName?: string; payload?: Template | string }>) => {
+export const getTemplatesByText = async (text: string, dispatch: Dispatch<ActionPayload>) => {
   dispatch({ type: actionTypes.LOADING });
   try {
     const response: AxiosResponse = await axios.get(API_ROUTES.GET_TEMPLATES_BY_SEARCH(text));

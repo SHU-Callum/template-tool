@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNotification } from "../context/notification/useNotification";
 import { Team } from "../models/team";
 import TeamsList from "./TeamsList";
+import { NotificationType } from "../types/notificationTypes";
 
 interface SideOutProps {
   isOpen: boolean;
@@ -19,7 +20,7 @@ function SideOut({ isOpen, onClose }: SideOutProps) {
   const [searchText, setSearchText] = useState('');
   
   const searchClicked = () => {
-    addNotification(`Searching for: ${searchText}`);
+    addNotification(`Searching for: ${searchText}`, NotificationType.INFO);
     //TODO: Implement search logic
     setSearchText('');
   };
