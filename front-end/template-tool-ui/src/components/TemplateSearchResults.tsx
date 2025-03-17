@@ -1,8 +1,14 @@
+import { Template } from "../models/template";
+
 interface TemplateSearchResultsProps {
-  results: { name: string; description: string }[];
+  results: Template[];
 }
 
 function TemplateSearchResults({ results }: TemplateSearchResultsProps) {
+  const formattedTemplates = results.map((template: Template) => ({
+    name: template.title,
+    description: template.detail
+  }));
   return (
     <div>
       <h3 className="mb-4">Search Results ({results.length})</h3>
@@ -16,10 +22,10 @@ function TemplateSearchResults({ results }: TemplateSearchResultsProps) {
             </tr>
           </thead>
           <tbody>
-            {results.map((result, index) => (
+            {formattedTemplates.map((template, index) => (
               <tr key={index} className="hover:bg-gray-100">
-                <td className="py-2 px-4 border w-1/4">{result.name}</td>
-                <td className="py-2 px-4 border w-1/2">{result.description}</td>
+                <td className="py-2 px-4 border w-1/4">{template.name}</td>
+                <td className="py-2 px-4 border w-1/2">{template.description}</td>
                 <td className="py-2 px-4 border w-1/4">
                   <button className="text-blue-500 hover:text-blue-700 mr-2">
                     <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">

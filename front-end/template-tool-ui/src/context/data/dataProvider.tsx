@@ -4,7 +4,7 @@ import { useReducer, ReactNode, useCallback, useMemo } from "react";
 import { DataDispatchContext, DataStateContext } from "./dataContext";
 import { INITIAL_TEAM_STATE, INITIAL_TEMPLATE_STATE } from "./initialState";
 import templateReducer from "./reducers/templateReducer";
-import { ActionPayload } from "./actionTypes";
+import { ActionPayload, DispatchType } from "./actionTypes";
 import teamReducer from "./reducers/teamReducer";
 
 
@@ -23,16 +23,16 @@ const DataProvider = ({children}: { children: ReactNode }) => {
     ]
   );
 
-  const combinedDispatch = useCallback((action: ActionPayload) =>
-  [
-    templateDispatch,
-    teamDispatch
-  ].forEach((dispatch) => dispatch(action)),
-    [ // Dependencies
-      templateDispatch,
-      teamDispatch
-    ]
-  );
+  const combinedDispatch = useCallback((action: ActionPayload) => {
+    switch (action.dispatchType) {
+      case DispatchType.TEMPLATE:
+        templateDispatch(action);
+        break;
+      case DispatchType.TEAM:
+        teamDispatch(action);
+        break;
+    }
+  }, [templateDispatch, teamDispatch]);
 
   return (
     <DataDispatchContext.Provider value={combinedDispatch}>

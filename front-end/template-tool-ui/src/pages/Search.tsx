@@ -8,11 +8,7 @@ import { useDispatchContext, useStateContext } from "../context/data/useData";
 import { getTemplatesByText } from "../context/data/actions/templateActions";
 
 function Search() {
-  const initialResults = [
-    { name: "nam", description: "desc" },
-    { name: "nam1", description: "desc1" },
-    { name: "nam2", description: "desc2" }
-  ];
+  const initialResults: Template[] = [];
 
   // from context providers
   const { addNotification } = useNotification();
@@ -51,11 +47,7 @@ function Search() {
     // Update search results when the API call returns
     if(state.templateState.templatesByText) {
       const templates = state.templateState.templatesByText;
-      const formattedTemplates = templates.map((template: Template) => ({
-        name: template.title,
-        description: template.detail
-      }));
-      setSearchResults(formattedTemplates);
+      setSearchResults(templates);
     }
     // Show error notification if there is an error
     if(state.templateState.error && !errorNotifiedRef.current) {

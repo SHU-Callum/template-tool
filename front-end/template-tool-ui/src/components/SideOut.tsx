@@ -16,9 +16,9 @@ function SideOut({ isOpen, onClose }: SideOutProps) {
   const state = useStateContext();
   const dispatch = useDispatchContext();
   
-
   const [teams, setTeams] = useState<TeamAffiliations[]>([]);
-  const [searchText, setSearchText] = useState('');
+  const [filteredTeams, setFilteredTeams] = useState<TeamAffiliations[]>([]);
+  const [createTeamText, setCreateTeamText] = useState('');
   const [loading, setLoading] = useState(false);
   const errorNotifiedRef = useRef(false); // used to prevent error notification loop
 
@@ -29,10 +29,9 @@ function SideOut({ isOpen, onClose }: SideOutProps) {
 
     const fetchListRef = useRef(handleGetTeamsByUser);
 
-  const searchClicked = () => {
-    addNotification(`Searching for: ${searchText}`, NotificationType.INFO);
-    //TODO: Implement search logic
-    setSearchText('');
+  const createTeamClicked = () => {
+    addNotification(`Creating Team: ${createTeamText}`, NotificationType.INFO);
+    //TODO: Implement create logic
   };
 
   useEffect(() => {
@@ -49,7 +48,6 @@ function SideOut({ isOpen, onClose }: SideOutProps) {
         isOwner: team.ownerId === 1,
       }));
       setTeams(formattedTeams);
-      console.log(formattedTeams)
     }
     if (state.teamState.error && !errorNotifiedRef.current) {
       addNotification(state.teamState.error, NotificationType.ERROR);
@@ -63,6 +61,15 @@ function SideOut({ isOpen, onClose }: SideOutProps) {
       errorNotifiedRef.current = false;
     }
   }, [state.teamState.loading]);
+
+  // Filter teams by search text
+  useEffect(() => {
+    if (createTeamText === '') {
+      setFilteredTeams(teams);
+    } else {
+      setFilteredTeams(teams.filter((team) => team.name.toLowerCase().includes(createTeamText.toLowerCase())));
+    }
+  }, [createTeamText, teams]);
 
   return (
     <div className={`border-l-2 border-gray-200 p-4 w-1/2 h-full bg-white fixed top-0 right-0 z-40 transition-transform duration-300 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
@@ -86,13 +93,17 @@ function SideOut({ isOpen, onClose }: SideOutProps) {
             type="text"
             placeholder="Search..."
             className="border rounded p-2 flex-grow mr-2"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
+            value={createTeamText}
+            onChange={(e) => setCreateTeamText(e.target.value)}
           />
-          <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded" onClick={searchClicked}>Search</button>
+          <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded" 
+            onClick={createTeamClicked}
+            disabled={!createTeamText}>
+            Create
+          </button>
         </div>
       </div>
-      <TeamsList loading={loading} teams={teams}></TeamsList>
+      <TeamsList loading={loading} teams={filteredTeams}></TeamsList>
     </div>
   );
 }

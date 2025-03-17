@@ -14,8 +14,15 @@ export const actionTypes = {
 
 export interface ActionPayload {
   type: string,
+  dispatchType: DispatchType,
   apiName?: string,
   payload?: PayloadType
+}
+
+export enum DispatchType
+{
+  TEMPLATE,
+  TEAM
 }
 
 export type PayloadType =
