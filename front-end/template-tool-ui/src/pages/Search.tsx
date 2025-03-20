@@ -1,11 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNotification } from "../context/notification/useNotification";
 import SelectInput from "../components/SelectInput";
 import { NotificationType } from "../types/notificationTypes";
 import { Template } from "../models/template";
 import TemplateSearchResults from "../components/TemplateSearchResults";
 import { useDispatchContext, useStateContext } from "../context/data/useData";
-import { getTemplatesByText } from "../context/data/actions/templateActions";
+import { getTemplatesByTeams, getTemplatesByText } from "../context/data/actions/templateActions";
+import { getTeamsByUserId } from "../context/data/actions/teamActions";
+import { Team } from "../models/team";
 
 function Search() {
   const initialResults: Template[] = [];
@@ -17,36 +19,82 @@ function Search() {
 
   // local state
   const [searchText, setSearchText] = useState('');
-  const [searchTeamFilter, setSearchTeamFilter] = useState('All Teams');
+  const [dropdownTeams, setDropdownTeams] = useState<string[]>([]);
+  const [searchTeamFilter, setSearchTeamFilter] = useState<Team[]>([]);
   const [searchIncludeViewOnly, setSearchIncludeViewOnly] = useState(false);
   const [searchResults, setSearchResults] = useState(initialResults);
   const [loading, setLoading] = useState(false);
   const errorNotifiedRef = useRef(false); // used to prevent error notification loop
 
   // API dispatches
+  const handleGetTeamsByUser = (userId: number) => {
+    getTeamsByUserId(userId, dispatch);
+  };/* - is handled by useRef */
+  const fetchAllTeamsRef = useRef(handleGetTeamsByUser);
+
+  const handleGetTemplatesByTeams = (teams: number[]) => {
+    getTemplatesByTeams(teams, dispatch);
+  }; /* - is handled by useRef */
+  const fetchAllTemplatesRef = useRef(handleGetTemplatesByTeams);
+
   const handleGetTemplatesByText = (text: string) => {
     getTemplatesByText(text, dispatch);
   };
 
   const searchClicked = () => {
-    addNotification(`Searching for: ${searchText}, Team: ${searchTeamFilter}, Include View Only: ${searchIncludeViewOnly}`, NotificationType.INFO);
+    const searchTeamsText = searchTeamFilter.length == 1 ? searchTeamFilter[0].name : 'All Teams';
+    addNotification(`Searching for: ${searchText}, Team: ${searchTeamsText}, Include View Only: ${searchIncludeViewOnly}`, NotificationType.INFO);
+    // TODO: Update by text to by params
     handleGetTemplatesByText(searchText);
     setLoading(true);
   };
 
-  const selectTeamFilterChanged = (selectedTeam: string) => {
-    setSearchTeamFilter(selectedTeam);
-  }
+  const selectTeamFilterChanged = useCallback((selectedTeam: string) => {
+    const availableTeams = state.teamState.teamsByUser;
+    if (selectedTeam === 'All Teams') {
+      setSearchTeamFilter(availableTeams ? availableTeams : []);
+    } else if (availableTeams) {
+      const filteredTeams = availableTeams.filter(team => team.name === selectedTeam);
+      setSearchTeamFilter(filteredTeams);
+    } else {
+      setSearchTeamFilter([]);
+    }
+  }, [state.teamState.teamsByUser]);
 
   const checkboxViewOnlyClicked = () => {
     setSearchIncludeViewOnly(!searchIncludeViewOnly);
   };
+
+  // When the component mounts
+  useEffect(() => {
+    // Fetch the list of teams
+    fetchAllTeamsRef.current(1);
+  }, []);
+
+  // When the API call returns
+  useEffect(() => {
+    // When the user's teams are fetched
+    if(state.teamState.teamsByUser) {
+      // Set the available teams for dropdown
+      const availableTeams = ['All Teams', ...state.teamState.teamsByUser.map(team => team.name)];
+      setSearchTeamFilter(state.teamState.teamsByUser);
+      setDropdownTeams(availableTeams);
+      // Map over state.teamState.teamsByUser to extract teamId values
+      const teamIds = state.teamState.teamsByUser.map(team => team.id);
+      // Fetch the list of templates
+      fetchAllTemplatesRef.current(teamIds);
+    }
+  }, [state.teamState.teamsByUser]);
 
   // When the API call returns
   useEffect(() => {
     // Update search results when the API call returns
     if(state.templateState.templatesByText) {
       const templates = state.templateState.templatesByText;
+      setSearchResults(templates);
+    }
+    if (state.templateState.templatesByTeams) {
+      const templates = state.templateState.templatesByTeams;
       setSearchResults(templates);
     }
     // Show error notification if there is an error
@@ -56,7 +104,7 @@ function Search() {
     }
     // Update loading state
     setLoading(state.templateState.loading);
-  }, [addNotification, state.templateState.templatesByText, state.templateState.error, state.templateState.loading]);
+  }, [addNotification, state.templateState.templatesByText, state.templateState.templatesByTeams, state.templateState.error, state.templateState.loading]);
 
   // reset error notification flag when an API call is loading
   useEffect(() => {
@@ -69,9 +117,9 @@ function Search() {
     <div className="p-4 w-3/4 mx-auto">
       <div className="flex justify-between mb-4 items-center space-x-8">
         <SelectInput 
-          value={searchTeamFilter}
+          value={searchTeamFilter.length == 1 ? searchTeamFilter[0].name : 'All Teams'}
           onChange={selectTeamFilterChanged}
-          options={['All Teams', 'Team 1', 'Team 2', 'Team 3']}
+          options={dropdownTeams}
           label="Filter by Team:"
         />      
         <div className="flex items-center">

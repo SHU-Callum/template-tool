@@ -3,8 +3,7 @@ import { useNotification } from "../context/notification/useNotification";
 import { TeamAffiliations } from "../models/team";
 import TeamsList from "./TeamsList";
 import { NotificationType } from "../types/notificationTypes";
-import { useStateContext, useDispatchContext } from "../context/data/useData";
-import { getTeamsByUserId } from "../context/data/actions/teamActions";
+import { useStateContext } from "../context/data/useData";
 
 interface SideOutProps {
   isOpen: boolean;
@@ -14,7 +13,6 @@ interface SideOutProps {
 function SideOut({ isOpen, onClose }: SideOutProps) {
   const { addNotification, } = useNotification();
   const state = useStateContext();
-  const dispatch = useDispatchContext();
   
   const [teams, setTeams] = useState<TeamAffiliations[]>([]);
   const [filteredTeams, setFilteredTeams] = useState<TeamAffiliations[]>([]);
@@ -22,23 +20,10 @@ function SideOut({ isOpen, onClose }: SideOutProps) {
   const [loading, setLoading] = useState(false);
   const errorNotifiedRef = useRef(false); // used to prevent error notification loop
 
-  // API dispatches
-    const handleGetTeamsByUser = (userId: number) => {
-      getTeamsByUserId(userId, dispatch);
-    };/* - is handled by useRef */
-
-    const fetchListRef = useRef(handleGetTeamsByUser);
-
   const createTeamClicked = () => {
     addNotification(`Creating Team: ${createTeamText}`, NotificationType.INFO);
     //TODO: Implement create logic
   };
-
-  useEffect(() => {
-    if(isOpen) {
-      fetchListRef.current(1);
-    }   
-  }, [isOpen]);
 
   useEffect(() => {
     if (state.teamState.teamsByUser) {

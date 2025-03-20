@@ -3,19 +3,20 @@
 import { Team } from "../../models/team";
 import { Template } from "../../models/template";
 
-export const actionTypes = {
-  LOADING: 'LOADING',
-  SUCCESS: 'SUCCESS',
-  ERROR: 'ERROR',
-  GET_TEMPLATES_BY_ID: 'GET_TEMPLATES_BY_ID',
-  GET_TEMPLATES_BY_TEXT: 'GET_TEMPLATES_BY_TEXT',
-  GET_TEAMS_BY_USER: 'GET_TEAMS_BY_USER',
-};
+export enum ActionType {
+  LOADING,
+  SUCCESS,
+  ERROR,
+  GET_TEMPLATES_BY_ID,
+  GET_TEMPLATES_BY_TEXT,
+  GET_TEMPLATES_BY_TEAMS,
+  GET_TEAMS_BY_USER,
+}
 
 export interface ActionPayload {
-  type: string,
+  type: ActionType,
   dispatchType: DispatchType,
-  apiName?: string,
+  apiName?: ActionType,
   payload?: PayloadType
 }
 

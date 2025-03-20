@@ -1,7 +1,7 @@
 // Team Reducer for the data context
 // Used to update the state based on the API calls
 
-import { ActionPayload, actionTypes } from "../actionTypes";
+import { ActionPayload, ActionType } from "../actionTypes";
 import { Team } from "../../../models/team";
 
 export interface TeamState {
@@ -12,15 +12,15 @@ export interface TeamState {
 
 const teamReducer = (state: TeamState, action: ActionPayload): TeamState => {
   switch (action.type) {
-    case actionTypes.LOADING:
+    case ActionType.LOADING:
       return {
         ...state,
         loading: true,
         error: null,
       };
-    case actionTypes.SUCCESS:
+    case ActionType.SUCCESS:
       switch (action.apiName) {
-        case actionTypes.GET_TEAMS_BY_USER:
+        case ActionType.GET_TEAMS_BY_USER:
           return {
             ...state,
             loading: false,
@@ -30,7 +30,7 @@ const teamReducer = (state: TeamState, action: ActionPayload): TeamState => {
         default:
           return state;
         }
-    case actionTypes.ERROR:
+    case ActionType.ERROR:
       return {
         ...state,
         loading: false,
