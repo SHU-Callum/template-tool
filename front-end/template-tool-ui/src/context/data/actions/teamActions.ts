@@ -5,7 +5,7 @@ import axios, { AxiosResponse } from 'axios';
 import { Dispatch } from 'react';
 import { ActionPayload, ActionType, DispatchType } from '../actionTypes';
 import { API_ROUTES } from '../../../constants/apis';
-import { encrypt } from '../../../utils/encryption';
+import { encryptParameter } from '../../../utils/encryption';
 
 const dispatchTeamAction = (dispatch: Dispatch<ActionPayload>, action: Omit<ActionPayload, 'dispatchType'>) => {
   dispatch({ ...action, dispatchType: DispatchType.TEAM });
@@ -14,7 +14,11 @@ const dispatchTeamAction = (dispatch: Dispatch<ActionPayload>, action: Omit<Acti
 export const getTeamsByUserId = async (userId: number, dispatch: Dispatch<ActionPayload>) => {
   dispatchTeamAction(dispatch, { type: ActionType.LOADING });
   try {
-    const response: AxiosResponse = await axios.get(API_ROUTES.GET_TEAMS_BY_USER(encrypt(userId.toString())), {
+    const { encryptedParameter, iv } = encryptParameter(userId.toString());
+    const response: AxiosResponse = await axios.get(API_ROUTES.GET_TEAMS_BY_USER(encodeURIComponent(encryptedParameter)), {
+      headers: {
+        'encryption-IV': iv
+      },
       timeout: 3000
     });
     if (response.status === 200) {
