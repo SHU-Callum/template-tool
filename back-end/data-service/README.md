@@ -30,3 +30,7 @@
     ```shell
     mvn clean package
     ```
+
+## Running Swagger-ui
+1. Run the project
+2. Go to `http://localhost:8080/api/swagger-ui/index.html`
