@@ -35,10 +35,11 @@ export const handlers = [
     return HttpResponse.json(GET_TEMPLATES_BY_TEAMS_DATA)
   }),
 
-  // Intercept "GET localhost/api/teams/all/*" requests...
-  http.get(`${API_BASE_URL}/teams/all/:userId`, async ({ request }) => {
-    const userId = request.url.split('/').pop();
-    if (!userId || userId.length < 1) {
+  // Intercept "GET localhost/api/teams/all?user=*" requests...
+  http.get(`${API_BASE_URL}/teams/all`, async ({ request }) => {
+    const url = new URL(request.url);
+    const userParam = url.searchParams.get('user')
+    if (!userParam || userParam.length < 1) {
       return HttpResponse.json({ error: 'User ID cannot be empty' }, { status: 400 });
     }
     return HttpResponse.json(GET_TEAMS_BY_USER_DATA);

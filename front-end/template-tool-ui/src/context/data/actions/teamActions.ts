@@ -17,7 +17,7 @@ export const getTeamsByUserId = async (userId: number, dispatch: Dispatch<Action
     const { encryptedParameter, iv } = encryptParameter(userId.toString());
     const response: AxiosResponse = await axios.get(API_ROUTES.GET_TEAMS_BY_USER(encodeURIComponent(encryptedParameter)), {
       headers: {
-        'encryption-IV': iv
+        'encryption-iv': iv
       },
       timeout: 3000
     });

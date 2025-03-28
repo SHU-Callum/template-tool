@@ -5,7 +5,7 @@ import axios, { AxiosResponse } from 'axios';
 import { Dispatch } from 'react';
 import { ActionPayload, ActionType, DispatchType } from '../actionTypes';
 import { API_ROUTES } from '../../../constants/apis';
-import { encrypt } from '../../../utils/encryption';
+import { encryptParameter } from '../../../utils/encryption';
 
 const dispatchTemplateAction = (dispatch: Dispatch<ActionPayload>, action: Omit<ActionPayload, 'dispatchType'>) => {
   dispatch({ ...action, dispatchType: DispatchType.TEMPLATE });
@@ -60,7 +60,13 @@ export const getTemplatesByText = async (text: string, dispatch: Dispatch<Action
 export const getTemplatesByTeams = async (teamIds: number[], dispatch: Dispatch<ActionPayload>) => {
   dispatchTemplateAction(dispatch, { type: ActionType.LOADING });
   try {
-    const response: AxiosResponse = await axios.get(API_ROUTES.GET_TEMPLATES_BY_TEAMS(encrypt(JSON.stringify(teamIds))));
+    const { encryptedParameter, iv } = encryptParameter(JSON.stringify(teamIds));
+    const response: AxiosResponse = await axios.get(API_ROUTES.GET_TEMPLATES_BY_TEAMS(encodeURIComponent(encryptedParameter)), {
+      headers: {
+        'encryption-iv': iv
+      },
+      timeout: 3000
+    });
     if (response.status === 200) {
       dispatchTemplateAction(dispatch, { type: ActionType.SUCCESS, apiName: ActionType.GET_TEMPLATES_BY_TEAMS, payload: response.data });
     } else if (response.status === 400) {

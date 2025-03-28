@@ -11,14 +11,6 @@ function padKey(key: string): string {
     return key.padEnd(32, '0').substring(0, 32); // Pad or truncate to 32 bytes
   }
 }
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function encrypt(data: any): string {
-  const paddedKey = padKey(secretKey);
-  const dataString = JSON.stringify(data);
-  const encrypted = CryptoJS.AES.encrypt(dataString, paddedKey).toString();
-  // Encrypted and Encoded (Suitable for URI)
-  return encodeURIComponent(encrypted);
-}
 
 export const encryptParameter = (parameter: string) => {
   const paddedKey = padKey(secretKey); // Pad key to compatible length  (16, 24, or 32 bytes)
@@ -30,8 +22,9 @@ export const encryptParameter = (parameter: string) => {
     padding: CryptoJS.pad.Pkcs7,
   }).toString();
   const encodedIV = CryptoJS.enc.Base64.stringify(iv); // Encode IV in Base64
+  const encodedEncryptedParameter = encodeURIComponent(encryptedParameter); // Encode the encrypted parameter for URI
   return {
-      encryptedParameter,
+      encryptedParameter: encodedEncryptedParameter,
       iv: encodedIV
   };
 };
