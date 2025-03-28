@@ -22,9 +22,10 @@ public class TeamController {
 
     @Autowired
     private Encryption encryption;
-    @GetMapping("/all/{eUserId}")
+
+    @GetMapping("/all")
     @Operation(summary = "Find teams by user id", description = "Return list of teams for a user id")
-    public ResponseEntity<?> getUserTeams(@PathVariable String eUserId, @RequestHeader("encryption-iv") String iv) {
+    public ResponseEntity<?> getUserTeams(@RequestParam(value = "user") String eUserId, @RequestHeader("encryption-iv") String iv) {
         if (eUserId != null) {
             try {
                 String decodedUserId = URLDecoder.decode(eUserId, StandardCharsets.UTF_8);
