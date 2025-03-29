@@ -1,31 +1,65 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNotification } from "../context/notification/useNotification";
-import { Team } from "../models/team";
+import { TeamAffiliations } from "../models/team";
 import TeamsList from "./TeamsList";
+import { NotificationType } from "../types/notificationTypes";
+import { useStateContext } from "../context/data/useData";
 
 interface SideOutProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const teams: Team[] = [
-  { name: 'Team 1', isOwner: true },
-  { name: 'Team 2', isOwner: false },
-  { name: 'Team 3', isOwner: false },
-]
-
 function SideOut({ isOpen, onClose }: SideOutProps) {
   const { addNotification, } = useNotification();
-  const [searchText, setSearchText] = useState('');
+  const state = useStateContext();
   
-  const searchClicked = () => {
-    addNotification(`Searching for: ${searchText}`);
-    //TODO: Implement search logic
-    setSearchText('');
+  const [teams, setTeams] = useState<TeamAffiliations[]>([]);
+  const [filteredTeams, setFilteredTeams] = useState<TeamAffiliations[]>([]);
+  const [createTeamText, setCreateTeamText] = useState('');
+  const [loading, setLoading] = useState(false);
+  const errorNotifiedRef = useRef(false); // used to prevent error notification loop
+
+  const createTeamClicked = () => {
+    addNotification(`Creating Team: ${createTeamText}`, NotificationType.INFO);
+    //TODO: Implement create logic
   };
 
+  // Fetch teams by user locally
+  useEffect(() => {
+    if (state.teamState.teamsByUser) {
+      const formattedTeams = state.teamState.teamsByUser.map((team) => ({
+        ...team,
+        // TODO: provide context for current user id
+        isOwner: team.ownerId === 1,
+      }));
+      setTeams(formattedTeams);
+    }
+    if (state.teamState.error && !errorNotifiedRef.current) {
+      addNotification(state.teamState.error, NotificationType.ERROR);
+      errorNotifiedRef.current = true;
+    }
+    setLoading(state.teamState.loading);
+  }, [addNotification, state.teamState.teamsByUser, state.teamState.error, state.teamState.loading]);
+
+  // Prevents error notification loop
+  useEffect(() => {
+    if (state.teamState.loading) {
+      errorNotifiedRef.current = false;
+    }
+  }, [state.teamState.loading]);
+
+  // Filter teams by search text
+  useEffect(() => {
+    if (createTeamText === '') {
+      setFilteredTeams(teams);
+    } else {
+      setFilteredTeams(teams.filter((team) => team.teamName.toLowerCase().includes(createTeamText.toLowerCase())));
+    }
+  }, [createTeamText, teams]);
+
   return (
-    <div className={`border-l-2 border-gray-200 p-4 w-1/2 h-full bg-white fixed top-0 right-0 z-40 transition-transform duration-300 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+    <div className={`border-l-2 border-gray-200 p-4 w-3/4 sm:w-1/2 lg:w-5/12 h-full bg-white fixed top-0 right-0 z-40 transition-transform duration-300 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
       <div className='flex w-full pb-4'>
         <div className='flex w-full justify-start gap-4'>
           <svg onClick={onClose} className="w-12 h-12 text-gray-800 dark:text-white mt-0.5 hover:text-gray-600 dark:hover:text-gray-400 cursor-pointer transition-transform transform hover:scale-110" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
@@ -46,13 +80,17 @@ function SideOut({ isOpen, onClose }: SideOutProps) {
             type="text"
             placeholder="Search..."
             className="border rounded p-2 flex-grow mr-2"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
+            value={createTeamText}
+            onChange={(e) => setCreateTeamText(e.target.value)}
           />
-          <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded" onClick={searchClicked}>Search</button>
+          <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded" 
+            onClick={createTeamClicked}
+            disabled={!createTeamText}>
+            Create
+          </button>
         </div>
       </div>
-      <TeamsList teams={teams}></TeamsList>
+      <TeamsList loading={loading} teams={filteredTeams}></TeamsList>
     </div>
   );
 }

@@ -42,4 +42,6 @@
   - **eslint-plugin-react-hooks**: ^4.6.0
   - **eslint-plugin-react-refresh**: ^0.4.5
 - **Axios**: ^1.8.1 - HTTP request library
+- **Crypto-JS**: ^4.2.0 - Library for standard and secure cryptographic algorithms
+  - **@types/crypto-js**: ^4.2.2
 - **MSW**: ^2.7.3 - Mocking API calls when turned on (auto generated `mockServiceWorker.js`)
