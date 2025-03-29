@@ -1,17 +1,21 @@
 // used for creating the data context
 
 import { createContext } from "react";
-import { Template } from "../../models/template";
+import { INITIAL_TEAM_STATE, INITIAL_TEMPLATE_STATE } from "./initialState";
+import { ActionPayload } from "./actionTypes";
+import { TemplateState } from "./reducers/templateReducer";
+import { TeamState } from "./reducers/teamReducer";
 
-interface State {
-  templateById: Template | null;
-  TemplatesByText: Template[] | null;
-  loading: boolean;
-  error: string | null;
+
+const INITIAL_STATE = {
+  templateState: INITIAL_TEMPLATE_STATE,
+  teamState: INITIAL_TEAM_STATE,
 }
 
-export const DataContext = createContext<{
-  state: State;
-  getTemplateById: (templateId: number) => void;
-  getTemplatesByText: (text: string) => void;
-  } | undefined>(undefined);
+export type StateTypes = {
+  templateState: TemplateState;
+  teamState: TeamState
+}
+
+export const DataStateContext = createContext<StateTypes>(INITIAL_STATE);
+export const DataDispatchContext = createContext<((action: ActionPayload) => void) | undefined>(undefined);

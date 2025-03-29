@@ -9,7 +9,7 @@ export interface ToastNotificationProps {
   order: number; // Index of the notification for dynamic positioning
 }
 
-function ToastNotification({ message, type, duration = 5000, onClose, order: index }: ToastNotificationProps) {
+function ToastNotification({ message, type, duration = 4000, onClose, order: index }: ToastNotificationProps) {
   setTimeout(() => {
     onClose();
   }, duration);

@@ -34,6 +34,11 @@ function App() {
     addNotification('Info Clicked', NotificationType.INFO);
   };
 
+  // For Debugging
+  /*useEffect(() => {
+    console.log('App rendered');
+  }, []);*/
+
   return (
     <div className='p-4 pt-2 w-full h-full flex flex-col'>
       <HeaderBar profileClicked={profileClicked} />
