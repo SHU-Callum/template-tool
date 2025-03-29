@@ -8,6 +8,7 @@ export const INITIAL_TEMPLATE_STATE: TemplateState = {
   templatesByText: [] as Template[] | null,
   loading: false,
   error: null,
+  templatesByTeams: null
 };
 
 export const INITIAL_TEAM_STATE: TeamState = {

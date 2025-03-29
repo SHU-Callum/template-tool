@@ -49,6 +49,7 @@ function Search() {
     setLoading(true);
   };
 
+  // When the user selects a team from the dropdown
   const selectTeamFilterChanged = useCallback((selectedTeam: string) => {
     const availableTeams = state.teamState.teamsByUser;
     const availableTemplates = state.templateState.templatesByTeams;

@@ -25,6 +25,7 @@ function SideOut({ isOpen, onClose }: SideOutProps) {
     //TODO: Implement create logic
   };
 
+  // Fetch teams by user locally
   useEffect(() => {
     if (state.teamState.teamsByUser) {
       const formattedTeams = state.teamState.teamsByUser.map((team) => ({
@@ -41,6 +42,7 @@ function SideOut({ isOpen, onClose }: SideOutProps) {
     setLoading(state.teamState.loading);
   }, [addNotification, state.teamState.teamsByUser, state.teamState.error, state.teamState.loading]);
 
+  // Prevents error notification loop
   useEffect(() => {
     if (state.teamState.loading) {
       errorNotifiedRef.current = false;

@@ -7,6 +7,7 @@ interface TemplateSearchResultsProps {
 
 function TemplateSearchResults({ results }: TemplateSearchResultsProps) {
   const state = useStateContext();
+  // Format the results to include team names
   const formattedTemplates = results.map((template: Template) => {
     const teamIdToMatch = template.teamId;
     const teamName = state.teamState.teamsByUser?.find((team) => team.id === teamIdToMatch)?.teamName;

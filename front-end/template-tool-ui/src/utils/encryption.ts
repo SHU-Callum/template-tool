@@ -2,6 +2,7 @@ import * as CryptoJS from 'crypto-js';
 
 const secretKey = import.meta.env.VITE_ENCRYPT_KEY;
 
+// Pads the key to ensure necessary length for AES encryption
 function padKey(key: string): string {
   if (key.length <= 16) {
     return key.padEnd(16, '0'); // Pad to 16 bytes

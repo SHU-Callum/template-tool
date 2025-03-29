@@ -9,6 +9,7 @@ interface TeamsListProps {
 
 function TeamsList ({ loading, teams }: TeamsListProps) {
   const { addNotification } = useNotification();
+  // split teams into owners and members groupings
   const members = teams.filter(team => !team.isOwner);
   const owners = teams.filter(team => team.isOwner);
 

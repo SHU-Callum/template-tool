@@ -7,6 +7,7 @@ import { ActionPayload, ActionType, DispatchType } from '../actionTypes';
 import { API_ROUTES } from '../../../constants/apis';
 import { encryptParameter } from '../../../utils/encryption';
 
+// Sets dispatch type to TEMPLATE for all actions
 const dispatchTemplateAction = (dispatch: Dispatch<ActionPayload>, action: Omit<ActionPayload, 'dispatchType'>) => {
   dispatch({ ...action, dispatchType: DispatchType.TEMPLATE });
 };
@@ -60,10 +61,10 @@ export const getTemplatesByText = async (text: string, dispatch: Dispatch<Action
 export const getTemplatesByTeams = async (teamIds: number[], dispatch: Dispatch<ActionPayload>) => {
   dispatchTemplateAction(dispatch, { type: ActionType.LOADING });
   try {
-    const { encryptedParameter, iv } = encryptParameter(JSON.stringify(teamIds));
+    const { encryptedParameter, iv } = encryptParameter(JSON.stringify(teamIds)); // Need to encrypt twice due to API handling in Springboot
     const response: AxiosResponse = await axios.get(API_ROUTES.GET_TEMPLATES_BY_TEAMS(encodeURIComponent(encryptedParameter)), {
       headers: {
-        'encryption-iv': iv
+        'encryption-iv': iv // each api call has a different encryption pattern
       },
       timeout: 3000
     });
