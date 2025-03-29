@@ -9,14 +9,9 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.Base64;
 
 @Component
@@ -24,6 +19,7 @@ public class Encryption {
     @Value("${encryptionKey}")
     private String encryptKey;
 
+    // Pad encryption key to compatible AES key size
     private String padKey(String key) {
         int length = key.length();
         if (length < 16) {
@@ -37,6 +33,7 @@ public class Encryption {
         }
     }
 
+    // Decrypts using IV and encrypted data
     public String decrypt(String encryptedData, String iv) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
         SecretKeySpec keySpec = new SecretKeySpec(padKey(encryptKey).getBytes(), "AES");
         IvParameterSpec ivSpec = new IvParameterSpec(Base64.getDecoder().decode(iv));

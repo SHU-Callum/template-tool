@@ -47,7 +47,9 @@ public class TemplateController {
             try {
                 String decodedTeamIds = URLDecoder.decode(eTeamIds, StandardCharsets.UTF_8);
                 String decryptedTeamIds = encryption.decrypt(decodedTeamIds, iv);
+                // Convert to JSON array
                 String[] teamIds = new ObjectMapper().readValue(decryptedTeamIds, String[].class);
+                // Search for templates by team ids
                 List<Template> results = templateRepository.findByTeamIdIn(teamIds);
                 if (results.isEmpty()) {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No templates found for the team IDs: " + eTeamIds);

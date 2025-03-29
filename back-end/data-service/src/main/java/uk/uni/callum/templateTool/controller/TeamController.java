@@ -30,6 +30,7 @@ public class TeamController {
             try {
                 String decodedUserId = URLDecoder.decode(eUserId, StandardCharsets.UTF_8);
                 String decryptedUserId = encryption.decrypt(decodedUserId, iv);
+                // Search for teams by user id
                 List<Team> teams = teamRepository.findByUserId(decryptedUserId);
                 if (teams.isEmpty()) {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No teams found for the user id: " + decryptedUserId);

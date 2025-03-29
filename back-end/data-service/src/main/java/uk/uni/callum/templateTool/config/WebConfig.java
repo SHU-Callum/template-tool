@@ -7,6 +7,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+// Configuration to communication between two different ports
 @Configuration
 @EnableWebMvc // @EnableWebMvc Required for Swagger-UI
 public class WebConfig {
