@@ -28,9 +28,6 @@ Features:
 > Carries code for front-end development and prepares features to integrate. Also handles authentication
 
 - <b>back-end</b>
-> Carries code for back-end development and prepares features to integrate
-
-- <b>db</b>
-> Carries code for database initialisation
+> Carries code for back-end development and prepares features to integrate. Also contains database
 
 Feature branches will link to **back-end**, **front-end** and **db** branches
