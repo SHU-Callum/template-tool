@@ -52,12 +52,12 @@ function SideOut({ isOpen, onClose }: SideOutProps) {
     if (createTeamText === '') {
       setFilteredTeams(teams);
     } else {
-      setFilteredTeams(teams.filter((team) => team.name.toLowerCase().includes(createTeamText.toLowerCase())));
+      setFilteredTeams(teams.filter((team) => team.teamName.toLowerCase().includes(createTeamText.toLowerCase())));
     }
   }, [createTeamText, teams]);
 
   return (
-    <div className={`border-l-2 border-gray-200 p-4 w-1/2 h-full bg-white fixed top-0 right-0 z-40 transition-transform duration-300 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+    <div className={`border-l-2 border-gray-200 p-4 w-3/4 sm:w-1/2 lg:w-5/12 h-full bg-white fixed top-0 right-0 z-40 transition-transform duration-300 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
       <div className='flex w-full pb-4'>
         <div className='flex w-full justify-start gap-4'>
           <svg onClick={onClose} className="w-12 h-12 text-gray-800 dark:text-white mt-0.5 hover:text-gray-600 dark:hover:text-gray-400 cursor-pointer transition-transform transform hover:scale-110" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 24 24">

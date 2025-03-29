@@ -42,7 +42,7 @@ function Search() {
   };
 
   const searchClicked = () => {
-    const searchTeamsText = searchTeamFilter.length == 1 ? searchTeamFilter[0].name : 'All Teams';
+    const searchTeamsText = searchTeamFilter.length == 1 ? searchTeamFilter[0].teamName : 'All Teams';
     addNotification(`Searching for: ${searchText}, Team: ${searchTeamsText}, Include View Only: ${searchIncludeViewOnly}`, NotificationType.INFO);
     // TODO: Update by text to by params
     handleGetTemplatesByText(searchText);
@@ -51,15 +51,19 @@ function Search() {
 
   const selectTeamFilterChanged = useCallback((selectedTeam: string) => {
     const availableTeams = state.teamState.teamsByUser;
+    const availableTemplates = state.templateState.templatesByTeams;
     if (selectedTeam === 'All Teams') {
       setSearchTeamFilter(availableTeams ? availableTeams : []);
-    } else if (availableTeams) {
-      const filteredTeams = availableTeams.filter(team => team.name === selectedTeam);
+      setSearchResults(state.templateState.templatesByTeams || []);
+    } else if (availableTeams && availableTemplates) {
+      const filteredTeams = availableTeams.filter(team => team.teamName === selectedTeam);
       setSearchTeamFilter(filteredTeams);
+      const filteredTemplates = availableTemplates.filter(template => template.teamId === filteredTeams[0].id);
+      setSearchResults(filteredTemplates);
     } else {
       setSearchTeamFilter([]);
     }
-  }, [state.teamState.teamsByUser]);
+  }, [state.teamState.teamsByUser, state.templateState.templatesByTeams]);
 
   const checkboxViewOnlyClicked = () => {
     setSearchIncludeViewOnly(!searchIncludeViewOnly);
@@ -76,7 +80,7 @@ function Search() {
     // When the user's teams are fetched
     if(state.teamState.teamsByUser) {
       // Set the available teams for dropdown
-      const availableTeams = ['All Teams', ...state.teamState.teamsByUser.map(team => team.name)];
+      const availableTeams = ['All Teams', ...state.teamState.teamsByUser.map(team => team.teamName)];
       setSearchTeamFilter(state.teamState.teamsByUser);
       setDropdownTeams(availableTeams);
       // Map over state.teamState.teamsByUser to extract teamId values
@@ -114,37 +118,39 @@ function Search() {
   }, [state.templateState.loading]);
 
   return (
-    <div className="p-4 w-3/4 mx-auto">
-      <div className="flex justify-between mb-4 items-center space-x-8">
-        <SelectInput 
-          value={searchTeamFilter.length == 1 ? searchTeamFilter[0].name : 'All Teams'}
-          onChange={selectTeamFilterChanged}
-          options={dropdownTeams}
-          label="Filter by Team:"
-        />      
-        <div className="flex items-center">
-          <div className="mb-1 text-right pr-1">
-            <label className="mr-2" htmlFor="check">Include View-only templates</label>
-          </div>
-          <input type="checkbox" id="check" className="w-4 h-4" 
+    <div className="p-4 w-full sm:w-6/7 mx-auto">
+      <div className="w-full sm:w-4/5 lg:w-2/3 mx-auto">
+        <div className="flex justify-between mb-4 items-center space-x-8">
+          <SelectInput 
+            value={searchTeamFilter.length == 1 ? searchTeamFilter[0].teamName : 'All Teams'}
+            onChange={selectTeamFilterChanged}
+            options={dropdownTeams}
+            label="Filter by Team:"
+          />      
+          <div className="flex items-center">
+            <div className="mb-1 text-right pr-3">
+            <label htmlFor="check">Include View-only templates</label>
+            </div>
+            <input type="checkbox" id="check" className="w-4 h-4" 
             onChange={checkboxViewOnlyClicked}
             checked={searchIncludeViewOnly}
-          />
+            />
+          </div>
         </div>
-      </div>
-      <div className="flex mb-4">
-        <input
-          type="text"
-          placeholder="Search..."
-          className="border rounded p-2 flex-grow mr-2"
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-        />
-        <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded" onClick={searchClicked}>Search</button>
+        <div className="flex mb-4">
+          <input
+            type="text"
+            placeholder="Search..."
+            className="border rounded p-2 mr-2 w-4/5"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+          />
+          <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded w-2/5 sm:w-1/5" onClick={searchClicked}>Search</button>
+        </div>
       </div>
       <hr />
       <div className="pt-4">
-        {loading ? <div>Loading...</div> : <TemplateSearchResults results={searchResults}/>}
+      {loading ? <div>Loading...</div> : <TemplateSearchResults results={searchResults}/>}
       </div>
     </div>
   );

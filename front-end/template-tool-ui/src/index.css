@@ -76,19 +76,19 @@ body {
   }
 
   span {
-    font-size: clamp(0.8rem, 0.7vw + 0.7rem, 1.1rem);
+    font-size: clamp(0.8rem, 0.6vw + 0.6rem, 1.1rem);
   }
 
   input {
-    font-size: clamp(0.8rem, 0.75vw + 0.75rem, 1rem);
+    font-size: clamp(0.8rem, 0.7vw + 0.7rem, 1rem);
   }
 
   select {
-    font-size: clamp(0.8rem, 0.75vw + 0.75rem, 1rem);
+    font-size: clamp(0.8rem, 0.7vw + 0.7rem, 1rem);
   }
 
   td {
-    font-size: clamp(0.8rem, 0.75vw + 0.75rem, 1rem);
+    font-size: clamp(0.8rem, 0.6vw + 0.6rem, 1rem);
   }
 
   th {
@@ -97,7 +97,7 @@ body {
   }
 
   button {
-    font-size: clamp(0.8rem, 0.75vw + 0.75rem, 1rem);
+    font-size: clamp(0.8rem, 0.65vw + 0.65rem, 1rem);
   }
 }
 
