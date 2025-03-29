@@ -1,15 +1,16 @@
 package uk.uni.callum.templateTool.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import uk.uni.callum.templateTool.model.Template;
 import uk.uni.callum.templateTool.repository.TemplateRepository;
+import uk.uni.callum.templateTool.utils.Encryption;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
@@ -19,10 +20,13 @@ public class TemplateController {
     @Autowired
     private TemplateRepository templateRepository;
 
-    @GetMapping(value = "/all")
-    public List<Template> getAllTemplates() {
-        return templateRepository.findAll();
-    }
+    @Autowired
+    private Encryption encryption;
+
+//    @GetMapping(value = "/all")
+//    public List<Template> getAllTemplates() {
+//        return templateRepository.findAll();
+//    }
 
     @GetMapping
     public ResponseEntity<?> searchTemplatesByText(@RequestParam(value = "search", required = false) String search) {
@@ -34,6 +38,31 @@ public class TemplateController {
             return ResponseEntity.status(HttpStatus.OK).body(results);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Search parameter is required");
+        }
+    }
+
+    @GetMapping(value = "all")
+    public ResponseEntity<?> getTemplatesByTeams(@RequestParam(value = "teams") String eTeamIds, @RequestHeader("encryption-iv") String iv) {
+        if (eTeamIds != null && !eTeamIds.isEmpty()) {
+            try {
+                String decodedTeamIds = URLDecoder.decode(eTeamIds, StandardCharsets.UTF_8);
+                String decryptedTeamIds = encryption.decrypt(decodedTeamIds, iv);
+                // Convert to JSON array
+                String[] teamIds = new ObjectMapper().readValue(decryptedTeamIds, String[].class);
+                // Search for templates by team ids
+                List<Template> results = templateRepository.findByTeamIdIn(teamIds);
+                if (results.isEmpty()) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No templates found for the team IDs: " + eTeamIds);
+                }
+                return ResponseEntity.status(HttpStatus.OK).body(results);
+            } catch (IllegalArgumentException iae) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid team IDs - Error: " + iae.getMessage());
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e + e.getMessage());
+            }
+
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Team ID parameter is required");
         }
     }
 }
