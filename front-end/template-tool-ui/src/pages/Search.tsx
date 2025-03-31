@@ -13,7 +13,7 @@ function Search() {
   const initialResults: Template[] = [];
 
   // from context providers
-  const { addNotification } = useNotification();
+  const { addNotification, handleNetworkError, networkError } = useNotification();
   const state = useStateContext();
   const dispatch = useDispatchContext();
 
@@ -74,42 +74,81 @@ function Search() {
   useEffect(() => {
     // Fetch the list of teams
     fetchAllTeamsRef.current(1);
+    // Update loading state
+    setLoading(true);
   }, []);
 
-  // When the API call returns
+  // When the GET Teams By User API call returns
   useEffect(() => {
     // When the user's teams are fetched
-    if(state.teamState.teamsByUser) {
-      // Set the available teams for dropdown
-      const availableTeams = ['All Teams', ...state.teamState.teamsByUser.map(team => team.teamName)];
-      setSearchTeamFilter(state.teamState.teamsByUser);
-      setDropdownTeams(availableTeams);
-      // Map over state.teamState.teamsByUser to extract teamId values
-      const teamIds = state.teamState.teamsByUser.map(team => team.id);
-      // Fetch the list of templates
-      fetchAllTemplatesRef.current(teamIds);
+    if(loading) {
+      if(state.teamState.teamsByUser) {
+        // Set the available teams for dropdown
+        const availableTeams = ['All Teams', ...state.teamState.teamsByUser.map(team => team.teamName)];
+        setSearchTeamFilter(state.teamState.teamsByUser);
+        setDropdownTeams(availableTeams);
+        // Map over state.teamState.teamsByUser to extract teamId values
+        const teamIds = state.teamState.teamsByUser.map(team => team.id);
+        // Fetch the list of templates
+        fetchAllTemplatesRef.current(teamIds);
+        handleNetworkError(false);
+      }
+      // Show error notification if there is an error
+      if(state.teamState.error && !errorNotifiedRef.current) {
+        addNotification(state.teamState.error, NotificationType.ERROR);
+        errorNotifiedRef.current = true;
+        if(state.teamState.error.includes('Network Error') && !networkError) {
+          handleNetworkError(true);
+        }
+      }
+      // Update loading state
+      setLoading(state.teamState.loading);
     }
-  }, [state.teamState.teamsByUser]);
+  }, [addNotification, state.teamState.teamsByUser, state.teamState.error, networkError, handleNetworkError, state.teamState.loading, loading]);
 
-  // When the API call returns
+  // When the GET Templates By Teams API call returns
+  useEffect(() => {
+    // When the initial templates are fetched
+    if (state.templateState.loading) {
+      if(state.templateState.templatesByTeams) {
+        const templates = state.templateState.templatesByTeams;
+        setSearchResults(templates);
+        handleNetworkError(false);
+      }
+      // Show error notification if there is an error
+      else if(state.templateState.error && !errorNotifiedRef.current) {
+        addNotification(state.templateState.error, NotificationType.ERROR);
+        errorNotifiedRef.current = true;
+        if(state.templateState.error.includes('Network Error') && !networkError) {
+          handleNetworkError(true);
+        }
+      }
+      // Update loading state
+      setLoading(state.templateState.loading);
+    }
+  }, [addNotification, state.templateState.templatesByTeams, state.templateState.error, networkError, handleNetworkError, state.templateState.loading]);
+
+  // When the GET Templates By Text API call returns
   useEffect(() => {
     // Update search results when the API call returns
-    if(state.templateState.templatesByText) {
-      const templates = state.templateState.templatesByText;
-      setSearchResults(templates);
+    if (state.templateState.loading) {
+      if(state.templateState.templatesByText) {
+        const templates = state.templateState.templatesByText;
+        setSearchResults(templates);
+        handleNetworkError(false);
+      }
+      // Show error notification if there is an error
+      else if(state.templateState.error && !errorNotifiedRef.current) {
+        addNotification(state.templateState.error, NotificationType.ERROR);
+        errorNotifiedRef.current = true;
+        if(state.templateState.error.includes('Network Error') && !networkError) {
+          handleNetworkError(true);
+        }
+      }
+      // Update loading state
+      setLoading(state.templateState.loading);
     }
-    if (state.templateState.templatesByTeams) {
-      const templates = state.templateState.templatesByTeams;
-      setSearchResults(templates);
-    }
-    // Show error notification if there is an error
-    if(state.templateState.error && !errorNotifiedRef.current) {
-      addNotification(state.templateState.error, NotificationType.ERROR);
-      errorNotifiedRef.current = true;
-    }
-    // Update loading state
-    setLoading(state.templateState.loading);
-  }, [addNotification, state.templateState.templatesByText, state.templateState.templatesByTeams, state.templateState.error, state.templateState.loading]);
+  }, [addNotification, state.templateState.templatesByText, state.templateState.error, state.templateState.loading, networkError, handleNetworkError]);
 
   // reset error notification flag when an API call is loading
   useEffect(() => {
