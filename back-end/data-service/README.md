@@ -1,7 +1,7 @@
 # Data Service Setup
 - [Home guide](../../README.md)
-- [Backend guide](../README.md)
-    - [Database guide](../db/README.md)
+- [Back-end guide](../README.md)
+    - [Database Setup](../db/README.md)
 
 ## Version Info
 | Name              | Version |
