@@ -1,0 +1,12 @@
+/back-end/db/.env.dev
+/back-end/data-service/.idea
+/back-end/.idea
+/back-end/data-service/.target
+/back-end/data-service/.HELP.md
+
+/front-end/template-tool-ui/node_modules
+/front-end/template-tool-ui/.env.development
+/front-end/template-tool-ui/.vite
+/front-end/template-tool-ui/dist-electron
+
+.idea/
