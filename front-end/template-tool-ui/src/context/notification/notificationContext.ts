@@ -8,6 +8,8 @@ export interface NotificationContextType {
   notifications: ToastNotificationProps[];
   addNotification: (message: string, type: NotificationType) => void;
   removeNotification: (id: number) => void;
+  handleNetworkError: (errorState: boolean) => void;
+  networkError: boolean;
 }
 
 export const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
