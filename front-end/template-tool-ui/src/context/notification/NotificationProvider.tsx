@@ -11,6 +11,7 @@ interface NotificationProviderProps {
 
 export const NotificationProvider = ({ children }: NotificationProviderProps) => {
   const [notifications, setNotifications] = useState<ToastNotificationProps[]>([]);
+  const [networkError, setNetworkError] = useState(false);
 
   const addNotification = (message: string, type: NotificationType) => {
     const newId = Date.now();
@@ -28,8 +29,16 @@ export const NotificationProvider = ({ children }: NotificationProviderProps) =>
     });
   }, []);
 
+  const handleNetworkError = useCallback((errorState: boolean) => {
+    if(errorState && !networkError) {
+      setNetworkError(errorState);
+    } else if(!errorState && networkError) {
+      setNetworkError(errorState);
+    }
+  }, [networkError]);
+
   return (
-    <NotificationContext.Provider value={{ notifications, addNotification, removeNotification }}>
+    <NotificationContext.Provider value={{ notifications, addNotification, removeNotification, handleNetworkError, networkError }}>
       {children /* renders app.tsx etc. */ }
       <div className="fixed bottom-4 right-4 space-y-2 z-50">
         {notifications.map((notification) => (
