@@ -33,3 +33,9 @@
 ## Running Swagger-ui
 1. Run the project
 2. Go to `http://localhost:8080/api/swagger-ui/index.html`
+
+
+## Running JUnit Tests (via IntelliJ)
+1. Add environment variables in Junit configuration
+   - VITE_API_HOST=xxxx;VITE_API_PORT=xxxx;VITE_MOCK_API=xxxx;VITE_ENCRYPT_KEY='xxxx';VITE_UI_URL=xxxx;VITE_UI_PORT=xxxx;MYSQL_DATABASE=xxxx;MYSQL_USER=xxxx;MYSQL_PASSWORD=xxxx;MYSQL_PORT=xxxx;MYSQL_HOST=xxxx
+2. Run tests
