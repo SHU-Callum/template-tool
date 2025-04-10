@@ -8,3 +8,7 @@ export interface Template {
   editable: boolean;
   lastAmendDate: Date;
 }
+
+export interface TemplateWithTeamName extends Template {
+  teamName: string;
+}

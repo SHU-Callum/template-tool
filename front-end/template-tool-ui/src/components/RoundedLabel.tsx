@@ -1,0 +1,36 @@
+import OpenButton from "./OpenButton";
+
+interface RoundedLabelProps {
+  text: string;
+  borderColour?: string;
+  textBold?: boolean;
+  clickAction?: () => void;
+}
+
+function RoundedLabel({ text, borderColour="border-blue-500", textBold=false, clickAction}: RoundedLabelProps) {
+  return (
+    <div className={`
+    border-4 
+    rounded-3xl 
+    ${borderColour}
+    p-3 
+    mb-0.5
+    ml-auto
+    text-center
+    flex
+    items-center
+    justify-center
+    leading-none
+    gap-2`}>
+      {textBold ? 
+      <span className="font-bold">{text}</span>
+      :
+      <span>{text}</span>
+      }
+      {clickAction && (
+        <OpenButton clickAction={clickAction} />
+      )}
+    </div>
+  )
+}
+export default RoundedLabel;
