@@ -3,16 +3,11 @@
 
 import { http, HttpResponse } from 'msw'
 import { API_BASE_URL } from '../constants/apis'
-import { GET_TEAMS_BY_USER_DATA, GET_TEMPLATE_DATA, GET_TEMPLATES_BY_SEARCH_DATA, GET_TEMPLATES_BY_TEAMS_DATA } from './data'
+import { GET_TEAMS_BY_USER_DATA, GET_TEMPLATES_BY_SEARCH_DATA, GET_TEMPLATES_BY_TEAMS_DATA } from './data'
  
 export const handlers = [
   http.get('/', () => {
     return HttpResponse.text('Hello, World!')
-  }),
-  
-  // Intercept "GET localhost/api/template/*" requests...
-  http.get(`${API_BASE_URL}/template/:templateId`, () => {
-    return HttpResponse.json(GET_TEMPLATE_DATA)
   }),
 
   // Intercept "GET localhost/api/templates/?search=*" requests...

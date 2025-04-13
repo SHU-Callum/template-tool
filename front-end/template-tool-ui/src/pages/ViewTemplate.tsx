@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router";
 import { TemplateWithTeamName } from "../models/template";
 import BackButton from "../components/BackButton";
 import RoundedLabel from "../components/RoundedLabel";
+import TextEditor from "../components/textEditor/TextEditor";
 
 function ViewTemplate() {
   const location = useLocation();
@@ -32,7 +33,7 @@ function ViewTemplate() {
         <hr />
         <div className="flex justify-start gap-4 mt-4">
           <div className="text-left p-2 border rounded-lg w-full">
-            <p>{templateFromState.content}</p>
+            <TextEditor jsonContentFromStorage={templateFromState.content}/>
           </div>
           <div className="flex justify-end mt-4 flex-col gap-1">
             <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded" onClick={() => {}}>

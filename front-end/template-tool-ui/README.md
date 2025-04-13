@@ -48,3 +48,6 @@
 - **Crypto-JS**: ^4.2.0 - Library for cryptographic algorithms
   - **@types/crypto-js**: ^4.2.2 - TypeScript definitions for Crypto-JS
 - **MSW**: ^2.7.3 - Mock Service Worker for API mocking during development (auto generated `mockServiceWorker.js`)
+- **Remirror**: ^3.0.1 - Toolkit for building rich-text editors
+  - **@remirror/pm**: ^3.0.0 - ProseMirror utilities for Remirror
+  - **@remirror/react**: ^3.0.1 - React bindings for Remirror

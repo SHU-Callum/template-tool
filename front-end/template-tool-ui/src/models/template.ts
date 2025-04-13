@@ -1,8 +1,10 @@
+import { RemirrorContentType } from "remirror";
+
 export interface Template {
   id: number;
   title: string;
   detail: string;
-  content: string
+  content: RemirrorContentType
   ownerId: number;
   teamId: number;
   editable: boolean;
