@@ -1,10 +1,19 @@
-import { RemirrorContentType } from "remirror";
+export interface TempTemplate {
+  id: number;
+  title: string;
+  detail: string;
+  content: string
+  ownerId: number;
+  teamId: number;
+  editable: boolean;
+  lastAmendDate: string;
+}
 
 export interface Template {
   id: number;
   title: string;
   detail: string;
-  content: RemirrorContentType
+  content: string
   ownerId: number;
   teamId: number;
   editable: boolean;

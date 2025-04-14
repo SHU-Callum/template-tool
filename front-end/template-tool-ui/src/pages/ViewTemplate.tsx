@@ -3,10 +3,20 @@ import { TemplateWithTeamName } from "../models/template";
 import BackButton from "../components/BackButton";
 import RoundedLabel from "../components/RoundedLabel";
 import TextEditor from "../components/textEditor/TextEditor";
+import { RemirrorContentType } from "remirror";
 
 function ViewTemplate() {
   const location = useLocation();
   const templateFromState: TemplateWithTeamName = location.state.template
+  let jsonContent = {};
+  let validJSON = true;
+  try {
+    jsonContent = JSON.parse(templateFromState.content);
+    jsonContent as RemirrorContentType; // tests if valid RemirrorJSON
+  }
+  catch (error) {
+    validJSON = false;
+  }
 
   const lastAmendDate = new Date(templateFromState.lastAmendDate);
   return (
@@ -31,19 +41,25 @@ function ViewTemplate() {
         <h3 className="text-left">{templateFromState.title}</h3>
         <p className="text-left italic p-1">Created by: Test User, Last update: {lastAmendDate.toLocaleDateString()}</p>
         <hr />
-        <div className="flex justify-start gap-4 mt-4">
-          <div className="text-left p-2 border rounded-lg w-full">
-            <TextEditor jsonContentFromStorage={templateFromState.content}/>
+        {validJSON ? (
+          <div className="flex justify-start gap-4 mt-4">
+            <div className="text-left p-2 border rounded-lg w-full">
+              <TextEditor jsonContentFromStorage={jsonContent as RemirrorContentType}/>
+            </div>
+            <div className="flex justify-end mt-4 flex-col gap-1">
+              <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded" onClick={() => {}}>
+                Input
+              </button>
+              <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded" disabled onClick={() => {}}>
+                Preview
+              </button>
+            </div>
           </div>
-          <div className="flex justify-end mt-4 flex-col gap-1">
-            <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded" onClick={() => {}}>
-              Input
-            </button>
-            <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded" disabled onClick={() => {}}>
-              Preview
-            </button>
-          </div>
-        </div>
+            ) : (
+            <div className="text-left p-2 border rounded-lg w-full">
+              <p className="text-red-500">Invalid JSON content. Please check the template content.</p>
+            </div>
+        )}
       </div>
       )}
     </div>
