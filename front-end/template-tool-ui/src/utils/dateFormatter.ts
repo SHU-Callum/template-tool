@@ -7,6 +7,11 @@ export function mysqlDatetimeToDate(mysqlDatetime: string | number[]): Date {
   }
 
   if (typeof mysqlDatetime === 'string') {
+    // if valid ISO 8601 string, parse it directly
+    if (!isNaN(Date.parse(mysqlDatetime))) {
+      return new Date(mysqlDatetime); // Directly create a Date object
+    }
+    // else
     // MySQL datetime format: "YYYY-MM-DD HH:MM:SS"
     const [datePart, timePart] = mysqlDatetime.split(' ');
     const [year, month, day] = datePart.split('-').map(Number);
