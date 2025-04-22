@@ -10,3 +10,4 @@
 /front-end/template-tool-ui/dist-electron
 
 .idea/
+back-end/data-service/.combined.env

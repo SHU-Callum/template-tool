@@ -25,8 +25,11 @@
 ## Database Commands (using docker-compose)
 `cd db`
 
-### Build and Run
+### Building the docker image
 *Using environment configuration from **.env.dev***
+- `docker-compose --env-file .env.dev build`
+
+### Create Containers and Run
 - `docker-compose --env-file .env.dev up -d`
 
 ### Run existing containers
