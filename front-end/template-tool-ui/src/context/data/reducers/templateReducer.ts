@@ -2,7 +2,8 @@
 // Used to update the state based on the API calls
 
 import { ActionPayload, ActionType } from "../actionTypes";
-import { Template } from "../../../models/template";
+import { Template, TempTemplate } from "../../../models/template";
+import { mysqlDatetimeToDate } from "../../../utils/dateFormatter";
 
 export interface TemplateState {
   templateById: Template | null;
@@ -47,7 +48,10 @@ const templateReducer = (state: TemplateState, action: ActionPayload): TemplateS
             error: null,
             templateById: null,
             templatesByText: null,
-            templatesByTeams: action.payload as Template[],
+            templatesByTeams: (action.payload as TempTemplate[]).map(template => ({
+              ...template,
+              lastAmendDate: mysqlDatetimeToDate(template.lastAmendDate), // convert to Date object
+            })),
           };
         default:
           return state;
