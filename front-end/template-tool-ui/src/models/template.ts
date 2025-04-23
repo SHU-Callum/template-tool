@@ -8,3 +8,11 @@ export interface Template {
   editable: boolean;
   lastAmendDate: Date;
 }
+
+export interface TempTemplate extends Omit<Template, 'lastAmendDate'> {
+  lastAmendDate: string;
+}
+
+export interface TemplateWithTeamName extends Template {
+  teamName: string;
+}

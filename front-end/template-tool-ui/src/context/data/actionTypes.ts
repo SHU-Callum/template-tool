@@ -1,7 +1,7 @@
 // Definition of the action types used in the data context
 
 import { Team } from "../../models/team";
-import { Template } from "../../models/template";
+import { Template, TempTemplate } from "../../models/template";
 
 export enum ActionType {
   LOADING,
@@ -29,5 +29,6 @@ export enum DispatchType
 export type PayloadType =
     Template
   | Template[]
+  | TempTemplate[]
   | Team[]
   | string;

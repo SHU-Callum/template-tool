@@ -3,8 +3,10 @@ import FooterBar from './components/FooterBar';
 import HeaderBar from './components/HeaderBar';
 import { useNotification } from './context/notification/useNotification';
 import Search from './pages/Search';
+import ViewTemplate from './pages/ViewTemplate';
 import SideOut from './components/SideOut';
 import { NotificationType } from './types/notificationTypes';
+import { BrowserRouter, Route, Routes  } from 'react-router';
 
 
 function App() {
@@ -40,17 +42,22 @@ function App() {
   }, []);*/
 
   return (
-    <div className='p-4 pt-2 w-full h-full flex flex-col'>
-      <HeaderBar profileClicked={profileClicked} />
-      <div className='flex items-center w-full'>
-        <Search />
+    <BrowserRouter>
+      <div className='p-4 pt-2 w-full h-full flex flex-col'>
+        <HeaderBar profileClicked={profileClicked} />
+        <div className='flex items-center w-full'>
+          <Routes>
+            <Route path="/" element={<Search />} />
+            <Route path="/view-template" element={<ViewTemplate />} />
+          </Routes>
+        </div>
+        <div className='flex-grow flex items-center w-full'>
+          {/* Empty space that will grow */}
+        </div>
+        <FooterBar infoClicked={infoClicked} />
+        {isSideOutRendered && <SideOut isOpen={isSideOutOpen} onClose={closeSideout} />}
       </div>
-      <div className='flex-grow flex items-center w-full'>
-        {/* Empty space that will grow */}
-      </div>
-      <FooterBar infoClicked={infoClicked} />
-      {isSideOutRendered && <SideOut isOpen={isSideOutOpen} onClose={closeSideout} />}
-    </div>
+    </BrowserRouter>
   );
 }
 
