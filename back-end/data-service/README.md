@@ -19,7 +19,6 @@
 
 
 
-
 ## Running the Data Service in IntelliJ
 1. Edit Run Configuration
     - **Use Java 21 SDK**
@@ -30,6 +29,22 @@
 
 2. Run as application
 
+## Running as Package
+- `mvn clean package`
+
+### Run Application via JAR
+1. Ensure `java -version` is jdk-21
+
+2. Run `startup.sh`
+    - via Git Bash - `sh startup.sh`
+
+
 ## Running Swagger-ui
 1. Run the project
 2. Go to `http://localhost:8080/api/swagger-ui/index.html`
+
+
+## Running JUnit Tests (via IntelliJ)
+1. Add environment variables in Junit configuration
+   - VITE_API_HOST=xxxx;VITE_API_PORT=xxxx;VITE_MOCK_API=xxxx;VITE_ENCRYPT_KEY='xxxx';VITE_UI_URL=xxxx;VITE_UI_PORT=xxxx;MYSQL_DATABASE=xxxx;MYSQL_USER=xxxx;MYSQL_PASSWORD=xxxx;MYSQL_PORT=xxxx;MYSQL_HOST=xxxx
+2. Run tests

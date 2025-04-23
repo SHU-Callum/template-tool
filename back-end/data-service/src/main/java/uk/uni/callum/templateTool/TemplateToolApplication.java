@@ -9,5 +9,4 @@ public class TemplateToolApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(TemplateToolApplication.class, args);
 	}
-
 }

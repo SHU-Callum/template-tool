@@ -1,4 +1,4 @@
-# Use the official MySQL image from the Docker Hub
+# Official MySQL image from the Docker Hub
 FROM mysql:latest
 
 # Set build arguments
@@ -19,9 +19,6 @@ ENV MYSQL_HOST=${MYSQL_HOST}
 
 # Initialisation scripts
 COPY ./init-scripts/ /docker-entrypoint-initdb.d/
-
-# Expose the default MySQL port
-EXPOSE ${MYSQL_PORT}
 
 # Start the MySQL server when the container is run
 CMD ["mysqld"]
