@@ -19,7 +19,6 @@
 
 
 
-
 ## Running the Data Service in IntelliJ
 1. Edit Run Configuration
     - **Use Java 21 SDK**
@@ -29,6 +28,16 @@
       - `template-tool/front-end/template-tool-ui/.env.development`
 
 2. Run as application
+
+## Running as Package
+- `mvn clean package`
+
+### Run Application via JAR
+1. Ensure `java -version` is jdk-21
+
+2. Run `startup.sh`
+    - via Git Bash - `sh startup.sh`
+
 
 ## Running Swagger-ui
 1. Run the project
