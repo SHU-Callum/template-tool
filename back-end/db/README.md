@@ -23,32 +23,32 @@
 - `docker rm template-tool-db-container`
 
 ## Database Commands (using docker-compose)
-`cd db`
+*In root directory, run:*
 
 ### Building the docker image
 *Using environment configuration from **.env.dev***
-- `docker-compose --env-file .env.dev build`
+- `docker-compose --env-file .env build`
 
 ### Create Containers and Run
-- `docker-compose --env-file .env.dev up -d`
+- `docker-compose --env-file .env up -d`
 
 ### Run existing containers
-- `docker-compose --env-file .env.dev start`
+- `docker-compose --env-file .env start`
 
 ### Stop existing containers
 *this will keep the data as is*
-- `docker-compose --env-file .env.dev stop`
+- `docker-compose --env-file .env stop`
 
 ### Stop and remove containers & volumes
 *When you want fresh data next time*
-- `docker-compose --env-file .env.dev down -v`
+- `docker-compose --env-file .env down -v`
 
 ### Troubleshooting
 *If encountering issues with running container, run:*
 - `docker logs -f template-tool-db-container`
 
 ## Connecting with DBeaver
-(default settings for .env.dev)
+(default settings for .env)
 - Server Host: localhost
 - Database: devdb
 - Port: 3306

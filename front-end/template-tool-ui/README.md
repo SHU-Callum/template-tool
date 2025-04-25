@@ -1,7 +1,6 @@
 # UI Setup
 - [Home guide](../README.md)
 - [Front-end guide](../README.md)
-  - [Authentication Setup](../authentication/README.md)
   
 ## Setup
 - `cd template-tool-ui`
