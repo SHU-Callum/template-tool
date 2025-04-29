@@ -50,7 +50,6 @@ export const getTemplatesByText = async (text: string, dispatch: Dispatch<Action
     if (axios.isCancel(error)) {
       dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: 'Timeout Error' });
     } else if (axios.isAxiosError(error)) {
-      console.log(error);
       dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: `${error.response?.data.error}: Error Code ${error.response?.status}` });
     } else {
       dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: 'An unknown error occurred' });
@@ -79,7 +78,6 @@ export const getTemplatesByTeams = async (teamIds: number[], dispatch: Dispatch<
     if (axios.isCancel(error)) {
       dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: 'Timeout Error' });
     } else if (axios.isAxiosError(error)) {
-      console.log(error);
       dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: `${error.response?.data.error}: Error Code ${error.response?.status}` });
     } else {
       dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: 'An unknown error occurred' });

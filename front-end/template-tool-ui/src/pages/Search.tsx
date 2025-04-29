@@ -6,7 +6,6 @@ import { Template } from "../models/template";
 import TemplateSearchResults from "../components/TemplateSearchResults";
 import { useDispatchContext, useStateContext } from "../context/data/useData";
 import { getTemplatesByTeams, getTemplatesByText } from "../context/data/actions/templateActions";
-import { getTeamsByUserId } from "../context/data/actions/teamActions";
 import { Team } from "../models/team";
 
 function Search() {
@@ -25,13 +24,6 @@ function Search() {
   const [searchResults, setSearchResults] = useState(initialResults);
   const [loading, setLoading] = useState(false);
   const errorNotifiedRef = useRef(false); // used to prevent error notification loop
-
-  // API dispatches
-  const handleGetTeamsByUser = (userId: number) => {
-    getTeamsByUserId(userId, dispatch);
-    setLoading(true);
-  };/* - is handled by useRef */
-  const fetchAllTeamsRef = useRef(handleGetTeamsByUser);
 
   const handleGetTemplatesByTeams = (teams: number[]) => {
     getTemplatesByTeams(teams, dispatch);
@@ -72,14 +64,6 @@ function Search() {
   const checkboxViewOnlyClicked = () => {
     setSearchIncludeViewOnly(!searchIncludeViewOnly);
   };
-
-  // When the component mounts
-  useEffect(() => {
-    // Fetch the list of teams
-    fetchAllTeamsRef.current(1);
-    // Update loading state
-    setLoading(true);
-  }, []);
 
   // When the GET Teams By User API call returns
   useEffect(() => {

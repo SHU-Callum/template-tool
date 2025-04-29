@@ -76,3 +76,11 @@ export const GET_TEMPLATES_BY_TEAMS_DATA = [
     lastAmendDate: '2025-02-16T10:00:00Z'
   },
 ]
+
+export const GET_USER_DETAILS_DATA = 
+{
+  userId: 1,
+  email: 'user1@example.com',
+  displayName: 'User One',
+  keycloakId: 'abc123'
+}

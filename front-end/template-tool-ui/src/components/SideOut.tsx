@@ -31,8 +31,7 @@ function SideOut({ isOpen, onClose }: SideOutProps) {
     if (state.teamState.teamsByUser) {
       const formattedTeams = state.teamState.teamsByUser.map((team) => ({
         ...team,
-        // TODO: provide context for current user id
-        isOwner: team.ownerId === 1,
+        isOwner: team.ownerId === state.userState.userDetails?.userId,
       }));
       setTeams(formattedTeams);
     }
@@ -41,7 +40,7 @@ function SideOut({ isOpen, onClose }: SideOutProps) {
       errorNotifiedRef.current = true;
     }
     setLoading(state.teamState.loading);
-  }, [addNotification, state.teamState.teamsByUser, state.teamState.error, state.teamState.loading]);
+  }, [addNotification, state.teamState.teamsByUser, state.teamState.error, state.teamState.loading, state.userState.userDetails?.userId]);
 
   // Prevents error notification loop
   useEffect(() => {
@@ -67,10 +66,13 @@ function SideOut({ isOpen, onClose }: SideOutProps) {
           <h2 className='text-left pt-0'>Profile</h2>
         </div>
       </div>
-      {/* TODO: Dynamic data */}
       <div className="text-left p-2">
-        <h3>Test User</h3>
-        <p>test@user.com</p>
+        {state.userState.userDetails?.displayName ? (
+          <div>
+            <h3>{state.userState.userDetails?.displayName}</h3>
+            <p>{state.userState.userDetails?.email}</p>
+          </div>
+        ) : <div>N/A</div>}
       </div>
       <div className="p-6 pb-0">
         <h4 className="text-left">Teams:</h4>
