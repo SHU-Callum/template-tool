@@ -6,6 +6,7 @@ import { Dispatch } from 'react';
 import { ActionPayload, ActionType, DispatchType } from '../actionTypes';
 import { API_ROUTES } from '../../../constants/apis';
 import { encryptParameter } from '../../../utils/encryption';
+import authorisedAxios from '../../../utils/authTokenPrep';
 
 // Sets dispatch type to TEAM for all actions
 const dispatchUserAction = (dispatch: Dispatch<ActionPayload>, action: Omit<ActionPayload, 'dispatchType'>) => {
@@ -17,7 +18,7 @@ export const getUserDetails = async (keycloakId: string, dispatch: Dispatch<Acti
   dispatchUserAction(dispatch, { type: ActionType.LOADING });
   try {
     const { encryptedParameter, iv } = encryptParameter(keycloakId.toString()); // Need to encrypt twice due to API handling in Springboot
-    const response: AxiosResponse = await axios.get(API_ROUTES.GET_USER_DETAILS(encodeURIComponent(encryptedParameter)), {
+    const response: AxiosResponse = await authorisedAxios.get(API_ROUTES.GET_USER_DETAILS(encodeURIComponent(encryptedParameter)), {
       headers: {
         'encryption-iv': iv // each api call has a different encryption pattern
       },

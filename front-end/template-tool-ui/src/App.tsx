@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import FooterBar from './components/FooterBar';
 import HeaderBar from './components/HeaderBar';
 import { useNotification } from './context/notification/useNotification';
@@ -12,10 +12,12 @@ import Loading from './components/Loading';
 import { useDispatchContext, useStateContext } from './context/data/useData';
 import { getUserDetails } from './context/data/actions/userActions';
 import { getTeamsByUserId } from './context/data/actions/teamActions';
+import { setupAxiosInterceptors } from './utils/authTokenPrep';
+import { UserAuthDetails } from './context/auth/authContext';
 
 function App() {
   const { addNotification, handleNetworkError, networkError} = useNotification();
-  const {isLoggedIn, initializeAuth, authMsg, userAuthDetails} = useAuth();
+  const {isLoggedIn, initializeAuth, authMsg, userAuthDetails, setAuthTokens} = useAuth();
   const state = useStateContext();
   const dispatch = useDispatchContext();
   const [isSideOutOpen, setIsSideOutOpen] = useState(false);
@@ -31,7 +33,11 @@ function App() {
   const handleGetTeamsByUser = (userId: number) => {
       getTeamsByUserId(userId, dispatch);
     };/* - is handled by useRef */
-    const fetchAllTeamsRef = useRef(handleGetTeamsByUser);
+  const fetchAllTeamsRef = useRef(handleGetTeamsByUser);
+
+  const handleSetAuthTokens = useCallback((accessToken: string, refreshToken: string) => {
+    setAuthTokens(accessToken, refreshToken);
+  }, [setAuthTokens]);
 
   const openSideout = () => {
     setIsSideOutRendered(true);
@@ -62,15 +68,22 @@ function App() {
 
   // On render begin authentication
   useEffect(() => {
-    initializeAuth();
-  }, [initializeAuth]);
+    const storedUserAuthDetails = localStorage.getItem('userAuthDetails');
+    if (!userAuthDetails && storedUserAuthDetails) { // if only local storage exists
+      const localAuthDetails: UserAuthDetails = JSON.parse(storedUserAuthDetails);
+      initializeAuth(localAuthDetails);
+    } else if (!userAuthDetails) { // if both doesn't exist
+      initializeAuth();
+    }
+  }, [initializeAuth, userAuthDetails]);
 
   // When the authentication is completed
   useEffect(() => {
-    if(userAuthDetails && userAuthDetails.username){
+    if(userAuthDetails && userAuthDetails.accessToken && userAuthDetails.refreshToken) {
+      setupAxiosInterceptors(userAuthDetails.accessToken, userAuthDetails.refreshToken, handleSetAuthTokens);
       fetchUserDetailsRef.current(userAuthDetails.username);
     }
-  }, [userAuthDetails])
+  }, [handleSetAuthTokens, userAuthDetails])
 
   // When the GET User Details API call returns
   useEffect(() => {

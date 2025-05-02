@@ -3,6 +3,7 @@
 import { ReactNode, useRef, useState } from 'react';
 import { AuthContext, UserAuthDetails } from './authContext';
 import Keycloak from 'keycloak-js';
+import { isTokenExpired } from '../../utils/authExpiry';
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -10,12 +11,34 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userAuthDetails, setUserDetails] = useState<UserAuthDetails | null>(null);
+  const [userAuthDetails, setUserAuthDetails] = useState<UserAuthDetails | null>(null);
   const [authMsg, setAuthMsg] = useState('Authenticating...')
   const authenticationAttempted = useRef(false);
 
-  const initializeAuth = () => {
+  const setAuthTokens = (accessToken: string, refreshToken: string) => {
+    setUserAuthDetails((prevDetails) => {
+      if (prevDetails) {
+      const updatedDetails = {
+        ...prevDetails,
+        accessToken,
+        refreshToken,
+      };
+      localStorage.setItem('userAuthDetails', JSON.stringify(updatedDetails));
+      return updatedDetails;
+      }
+      return null;
+    });
+  };
+
+  const initializeAuth = (localAuthDetails?: UserAuthDetails) => {
+    if (localAuthDetails && localAuthDetails.expiresIn && !isTokenExpired(localAuthDetails.expiresIn)) {
+      setUserAuthDetails(localAuthDetails);
+      setIsLoggedIn(true);
+      setAuthMsg('Authenticated');
+      return;
+    }
     if (!authenticationAttempted.current) {
+      console.log('full auth')
       authenticationAttempted.current = true;
       setAuthMsg('Authenticating...');
       const client = new Keycloak({
@@ -30,14 +53,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           if (authenticated) {
             setIsLoggedIn(true);
             setAuthMsg(`Authenticated`)
-            setUserDetails({
+            const newAuthDetails = {
               username: client.tokenParsed?.preferred_username,
               email: client.tokenParsed?.email,
               roles: client.tokenParsed?.realm_access?.roles || [],
-              accessToken: client.token,
-              refreshToken: client.refreshToken,
+              accessToken: client.token || '',
+              refreshToken: client.refreshToken || '',
               expiresIn: client.tokenParsed?.exp,
-            });
+            }
+            console.log(isTokenExpired(client.tokenParsed?.exp ?? 0))
+            setUserAuthDetails(newAuthDetails);
+            localStorage.setItem(
+              'userAuthDetails', JSON.stringify(newAuthDetails)
+            );
           } else {
             setIsLoggedIn(false);
           }
@@ -50,7 +78,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
   
   return (
-    <AuthContext.Provider value={{ isLoggedIn, userAuthDetails: userAuthDetails, initializeAuth, authMsg }}>
+    <AuthContext.Provider value={{ isLoggedIn, userAuthDetails, setAuthTokens, initializeAuth, authMsg }}>
       {children /* renders app.tsx etc. */ }
     </AuthContext.Provider>
   );
