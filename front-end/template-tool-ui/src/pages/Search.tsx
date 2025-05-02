@@ -114,24 +114,21 @@ function Search() {
   // When the GET Templates By Text API call returns
   useEffect(() => {
     // Update search results when the API call returns
-    if (state.templateState.loading) {
-      if(state.templateState.templatesByText) {
-        const templates = state.templateState.templatesByText;
-        setSearchResults(templates);
-        handleNetworkError(false);
-      }
-      // Show error notification if there is an error
-      else if(state.templateState.error && !errorNotifiedRef.current) {
-        addNotification(state.templateState.error, NotificationType.ERROR);
-        errorNotifiedRef.current = true;
-        if(state.templateState.error.includes('Network Error') && !networkError) {
-          handleNetworkError(true);
-        }
-      }
-      // Update loading state
-      setLoading(state.templateState.loading);
+    if(state.templateState.templatesByText) {
+      const templates = state.templateState.templatesByText;
+      setSearchResults(templates);
+      handleNetworkError(false);
     }
-  }, [addNotification, state.templateState.templatesByText, state.templateState.error, state.templateState.loading, networkError, handleNetworkError]);
+    // Show error notification if there is an error
+    else if(state.templateState.error && !errorNotifiedRef.current) {
+      addNotification(state.templateState.error, NotificationType.ERROR);
+      errorNotifiedRef.current = true;
+      if(state.templateState.error.includes('Network Error') && !networkError) {
+        handleNetworkError(true);
+      }
+    }
+    setLoading(false)
+  }, [addNotification, state.templateState.templatesByText, state.templateState.error, networkError, handleNetworkError]);
 
   // reset error notification flag when an API call is loading
   useEffect(() => {

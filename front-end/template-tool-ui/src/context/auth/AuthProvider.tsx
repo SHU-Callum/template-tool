@@ -38,7 +38,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       return;
     }
     if (!authenticationAttempted.current) {
-      console.log('full auth')
       authenticationAttempted.current = true;
       setAuthMsg('Authenticating...');
       const client = new Keycloak({
@@ -61,7 +60,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
               refreshToken: client.refreshToken || '',
               expiresIn: client.tokenParsed?.exp,
             }
-            console.log(isTokenExpired(client.tokenParsed?.exp ?? 0))
             setUserAuthDetails(newAuthDetails);
             localStorage.setItem(
               'userAuthDetails', JSON.stringify(newAuthDetails)
