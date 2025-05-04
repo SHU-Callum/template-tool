@@ -11,6 +11,7 @@ export interface AuthContextType {
 }
 
 export interface UserAuthDetails {
+  kcid: string;
   username: string;
   email: string;
   roles: string[];

@@ -79,7 +79,7 @@ export const GET_TEMPLATES_BY_TEAMS_DATA = [
 
 export const GET_USER_DETAILS_DATA = 
 {
-  userId: 1,
+  id: 1,
   email: 'user1@example.com',
   displayName: 'User One',
   keycloakId: 'abc123'

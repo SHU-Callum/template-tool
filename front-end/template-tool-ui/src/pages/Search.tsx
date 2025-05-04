@@ -24,6 +24,7 @@ function Search() {
   const [searchResults, setSearchResults] = useState(initialResults);
   const [loading, setLoading] = useState(false);
   const errorNotifiedRef = useRef(false); // used to prevent error notification loop
+  const prevTeamsRef = useRef(state.teamState.teamsByUser); // used to prevent unnecessary rerendering
 
   const handleGetTemplatesByTeams = (teams: number[]) => {
     getTemplatesByTeams(teams, dispatch);
@@ -73,10 +74,12 @@ function Search() {
         const availableTeams = ['All Teams', ...state.teamState.teamsByUser.map(team => team.teamName)];
         setSearchTeamFilter(state.teamState.teamsByUser);
         setDropdownTeams(availableTeams);
-        // Map over state.teamState.teamsByUser to extract teamId values
-        const teamIds = state.teamState.teamsByUser.map(team => team.id);
-        // Fetch the list of templates
-        fetchAllTemplatesRef.current(teamIds);
+        if(state.teamState.teamsByUser !== prevTeamsRef.current) {
+          // Map over state.teamState.teamsByUser to extract teamId values
+          const teamIds = state.teamState.teamsByUser.map(team => team.id);
+          // Fetch the list of templates
+          fetchAllTemplatesRef.current(teamIds);
+        }
         handleNetworkError(false);
       }
       // Show error notification if there is an error
@@ -88,6 +91,8 @@ function Search() {
         }
       // Update loading state
       setLoading(false);
+      // remember the previous teams
+      prevTeamsRef.current = state.teamState.teamsByUser;
     }
   }, [addNotification, state.teamState.teamsByUser, state.teamState.error, networkError, handleNetworkError]);
 

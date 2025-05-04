@@ -53,6 +53,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             setIsLoggedIn(true);
             setAuthMsg(`Authenticated`)
             const newAuthDetails = {
+              kcid: client.subject || '',
               username: client.tokenParsed?.preferred_username,
               email: client.tokenParsed?.email,
               roles: client.tokenParsed?.realm_access?.roles || [],

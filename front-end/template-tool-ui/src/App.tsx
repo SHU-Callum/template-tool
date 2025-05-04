@@ -81,7 +81,7 @@ function App() {
   useEffect(() => {
     if(userAuthDetails && userAuthDetails.accessToken && userAuthDetails.refreshToken) {
       setupAxiosInterceptors(userAuthDetails.accessToken, userAuthDetails.refreshToken, handleSetAuthTokens);
-      fetchUserDetailsRef.current(userAuthDetails.username);
+      fetchUserDetailsRef.current(userAuthDetails.kcid);
     }
   }, [handleSetAuthTokens, userAuthDetails])
 
@@ -89,9 +89,9 @@ function App() {
   useEffect(() => {
     // When the user details are fetched
     if(state.userState?.userDetails) {
-      if(state.userState.userDetails.userId) {
+      if(state.userState.userDetails.id) {
         // Fetch the teams for the user
-        fetchAllTeamsRef.current(state.userState.userDetails.userId);
+        fetchAllTeamsRef.current(state.userState.userDetails.id);
         handleNetworkError(false);
       }
     }
