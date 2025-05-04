@@ -39,7 +39,7 @@
 *this will keep the data as is*
 - `docker-compose --env-file .env stop`
 
-### Stop and remove containers & volumes
+### Stop and remove all containers & volumes
 *When you want fresh data next time*
 - `docker-compose --env-file .env down -v`
 
