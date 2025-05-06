@@ -30,7 +30,6 @@ public class EmployeeController {
                 String decodedKcId = URLDecoder.decode(kcid, StandardCharsets.UTF_8);
                 String decryptedKcId = encryption.decrypt(decodedKcId, iv);
                 // Search for employee by keycloak id
-                System.out.println(decryptedKcId);
                 Employee employee = employeeRepository.findByKeycloakId(decryptedKcId);
                 if (employee == null) {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No user found for the keycloak id: " + decryptedKcId);
