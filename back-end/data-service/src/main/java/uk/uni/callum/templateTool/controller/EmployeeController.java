@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.*;
 import uk.uni.callum.templateTool.model.Employee;
 import uk.uni.callum.templateTool.repository.EmployeeRepository;
@@ -12,6 +13,7 @@ import uk.uni.callum.templateTool.utils.Encryption;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
+@EnableMethodSecurity
 @RestController
 @RequestMapping(value = "/user")
 public class EmployeeController {

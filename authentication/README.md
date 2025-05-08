@@ -1,5 +1,5 @@
 # Authentication Setup
-- [Home guide](../../README.md)
+- [Home guide](../README.md)
 
 
 ## Keycloak Setup
@@ -11,10 +11,13 @@
 *In root directory, run:*
 - `docker-compose --env-file .env up -d` (also starts the database)
 
-#### To Stop Keycloak Service ####
+#### To Run Only Keycloak Service 
+- `docker-compose --env-file .env start template-tool-keycloak`
+
+#### To Stop Keycloak Service
  - `docker-compose stop template-tool-keycloak`
 
-#### To Remove Keycloak Container ####
+#### To Remove Keycloak Container
 - `docker-compose rm template-tool-keycloak`
 
 #### Stop and remove all containers & volumes
@@ -24,12 +27,22 @@
 
 Data (Realms, users... etc) will remain in database until database is rebuilt
 
-### Exporting Realm & User Data
+<hr>
+
+## Exporting Realm & User Data
 Make export directory in container
 - `docker exec -it keycloak-container mkdir -p /opt/keycloak/data/export`
+
 Full realm export including users
 - `docker exec -it keycloak-container /opt/keycloak/bin/kc.sh export --realm test-realm --file /opt/keycloak/data/export/test-realm.json`
+
 Copy to local from container
 - `docker cp keycloak-container:/opt/keycloak/data/export/test-realm.json ./authentication/export/test-realm.json`
 
 When starting container, ensure json file is in `./authentication/export`
+
+<hr>
+
+## Notes
+- Keycloak version: 26.2.1
+- Uses JWT for token validation. Valid tokens cache for local validation to reduce latency.
