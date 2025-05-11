@@ -5,8 +5,8 @@ import { createContext } from 'react';
 export interface AuthContextType {
   isLoggedIn: boolean;
   userAuthDetails: UserAuthDetails | null;
-  setAuthTokens: (accessToken: string, refreshToken: string) => void;
   initializeAuth: (localDetails?: UserAuthDetails) => void;
+  refreshAccessToken: () => Promise<void>;
   authMsg: string;
 }
 
@@ -18,6 +18,7 @@ export interface UserAuthDetails {
   accessToken: string;
   refreshToken: string;
   expiresIn?: number;
+  refreshTokenExpiresIn?: number;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);

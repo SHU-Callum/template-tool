@@ -32,9 +32,17 @@ export const getUserDetails = async (keycloakId: string, dispatch: Dispatch<Acti
   } catch (error) {
     if (axios.isCancel(error)) {
       dispatchUserAction(dispatch, { type: ActionType.ERROR, payload: 'Timeout Error' });
-    } else if (axios.isAxiosError(error)) {
-      dispatchUserAction(dispatch, { type: ActionType.ERROR, payload: `Something went wrong: ${error.message}` });
-    } else {
+    } else if (axios.isAxiosError(error) && error) {
+      if (error.code === 'ERR_NETWORK') {
+        dispatchUserAction(dispatch, { type: ActionType.ERROR, payload: 'Network Error: Server is unreachable' });
+      } else if (error.status === 401 && error.config?.headers['Refreshed']) {
+        dispatchUserAction(dispatch, { type: ActionType.ERROR, payload: 'Bad Request' });
+      }else {
+        dispatchUserAction(dispatch, { type: ActionType.ERROR, payload: `Something went wrong: ${error.message}` });
+      }
+    } 
+    else {
+      console.error('Unknown error:', error);
       dispatchUserAction(dispatch, { type: ActionType.ERROR, payload: 'An unknown error occurred' });
     }
   }

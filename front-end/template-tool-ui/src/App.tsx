@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import FooterBar from './components/FooterBar';
 import HeaderBar from './components/HeaderBar';
 import { useNotification } from './context/notification/useNotification';
@@ -17,12 +17,13 @@ import { UserAuthDetails } from './context/auth/authContext';
 
 function App() {
   const { addNotification, handleNetworkError, networkError} = useNotification();
-  const {isLoggedIn, initializeAuth, authMsg, userAuthDetails, setAuthTokens} = useAuth();
+  const {isLoggedIn, initializeAuth, authMsg, userAuthDetails, refreshAccessToken} = useAuth();
   const state = useStateContext();
   const dispatch = useDispatchContext();
   const [isSideOutOpen, setIsSideOutOpen] = useState(false);
   const [isSideOutRendered, setIsSideOutRendered] = useState(false);
   const errorNotifiedRef = useRef(false);
+  const obtainedKcid = useRef(false);
 
   // API dispatches
   const handleGetUserDetails = (keycloakId: string) => {
@@ -34,10 +35,6 @@ function App() {
       getTeamsByUserId(userId, dispatch);
     };/* - is handled by useRef */
   const fetchAllTeamsRef = useRef(handleGetTeamsByUser);
-
-  const handleSetAuthTokens = useCallback((accessToken: string, refreshToken: string) => {
-    setAuthTokens(accessToken, refreshToken);
-  }, [setAuthTokens]);
 
   const openSideout = () => {
     setIsSideOutRendered(true);
@@ -79,11 +76,15 @@ function App() {
 
   // When the authentication is completed
   useEffect(() => {
-    if(userAuthDetails && userAuthDetails.accessToken && userAuthDetails.refreshToken) {
-      setupAxiosInterceptors(userAuthDetails.accessToken, userAuthDetails.refreshToken, handleSetAuthTokens);
-      fetchUserDetailsRef.current(userAuthDetails.kcid);
+    if (!obtainedKcid.current) { // Ensures only called on first render
+      const kcid = userAuthDetails?.kcid;
+      if (kcid && refreshAccessToken) {
+        setupAxiosInterceptors(refreshAccessToken);
+        fetchUserDetailsRef.current(kcid); // Search for user details
+        obtainedKcid.current = true;
+      }
     }
-  }, [handleSetAuthTokens, userAuthDetails])
+  }, [refreshAccessToken, userAuthDetails?.kcid])
 
   // When the GET User Details API call returns
   useEffect(() => {
