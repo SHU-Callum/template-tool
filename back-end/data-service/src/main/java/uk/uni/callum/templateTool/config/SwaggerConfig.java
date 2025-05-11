@@ -17,7 +17,7 @@ public class SwaggerConfig { // Configuration to enable Swagger UI
     @Bean
     public OpenAPI openAPIConfig() {
         var openApi = new OpenAPI().info(this.openApiInfo());
-        this.addSecurity(openApi);
+        this.addSecurity(openApi); // Adds input for security token
         return openApi;
     }
 

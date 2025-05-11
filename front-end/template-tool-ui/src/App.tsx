@@ -22,8 +22,8 @@ function App() {
   const dispatch = useDispatchContext();
   const [isSideOutOpen, setIsSideOutOpen] = useState(false);
   const [isSideOutRendered, setIsSideOutRendered] = useState(false);
-  const errorNotifiedRef = useRef(false);
-  const obtainedKcid = useRef(false);
+  const errorNotifiedRef = useRef(false); // to prevent error notification loop
+  const obtainedKcid = useRef(false); // to prevent fetch user data loop on token refresh
 
   // API dispatches
   const handleGetUserDetails = (keycloakId: string) => {
@@ -57,11 +57,6 @@ function App() {
   const infoClicked = () => {
     addNotification('Info Clicked', NotificationType.INFO);
   };
-
-  // For Debugging
-  /*useEffect(() => {
-    console.log('App rendered');
-  }, []);*/
 
   // On render begin authentication
   useEffect(() => {
@@ -106,7 +101,7 @@ function App() {
     }
   }, [addNotification, handleNetworkError, networkError, state.userState]);  
 
-  if (!isLoggedIn) {
+  if (!isLoggedIn) { // display fail screen
     return (
       <div className='p-4 pt-2 w-full h-full flex flex-col'>
         {

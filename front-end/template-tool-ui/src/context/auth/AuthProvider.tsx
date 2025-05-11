@@ -12,10 +12,10 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // state to check as a render condition
   const [userAuthDetails, setUserAuthDetails] = useState<UserAuthDetails | null>(null);
-  const [authMsg, setAuthMsg] = useState('Authenticating...')
-  const authenticationAttempted = useRef(false);
+  const [authMsg, setAuthMsg] = useState('Authenticating...') // loading message
+  const authenticationAttempted = useRef(false); // prevents authentication loop
   
   const client = new Keycloak({
     url: import.meta.env.VITE_KC_URL,
@@ -27,6 +27,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     if (localAuthDetails && localAuthDetails.expiresIn && !isTokenExpired(localAuthDetails.expiresIn)) {
       setUserAuthDetails(localAuthDetails);
       setIsLoggedIn(true);
+      applyTokens(localAuthDetails);
       setAuthMsg('Authenticated');
       return;
     }
@@ -96,7 +97,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const applyTokens = (newAuthDetails: UserAuthDetails) => {
     setUserAuthDetails(newAuthDetails);
     localStorage.setItem('userAuthDetails', JSON.stringify(newAuthDetails));
-    setInterceptAccessToken(newAuthDetails.accessToken)
+    setInterceptAccessToken(newAuthDetails.accessToken) // future requests use this new token
   }
   
   return (

@@ -30,7 +30,7 @@ public class WebConfig implements WebMvcConfigurer {
                     .anyRequest().authenticated() // all other requests require authentication
             ).oauth2ResourceServer(oauth2 -> oauth2
                     .jwt(jwt -> jwt.jwtAuthenticationConverter(new JwtAuthenticationConverter())
-                    )
+                    ) // Validates using JWT token
             )
             .build();
     }

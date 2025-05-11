@@ -34,10 +34,12 @@ Make export directory in container
 - `docker exec -it keycloak-container mkdir -p /opt/keycloak/data/export`
 
 Full realm export including users
-- `docker exec -it keycloak-container /opt/keycloak/bin/kc.sh export --realm test-realm --file /opt/keycloak/data/export/test-realm.json`
+- `docker exec -it keycloak-container /opt/keycloak/bin/kc.sh export --realm template-tool-test-realm --file /opt/keycloak/data/export/template-tool-test-realm.json`
 
 Copy to local from container
-- `docker cp keycloak-container:/opt/keycloak/data/export/test-realm.json ./authentication/export/test-realm.json`
+- `docker cp keycloak-container:/opt/keycloak/data/export/template-tool-test-realm.json ./authentication/export/template-tool-test-realm.json`
+
+Rename file to template-tool-test-realm-realm
 
 When starting container, ensure json file is in `./authentication/export`
 

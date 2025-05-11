@@ -29,7 +29,7 @@ export const setupAxiosInterceptors = (refreshAccessToken: () => Promise<void>) 
         const originalRequest = error.config;
         if (error.response?.status === 401 && originalRequest && !originalRequest.headers['Refreshed']) {
           try {
-            console.log('Axios error:', error);
+            console.log('Refreshing access token...');
             await refreshAccessToken(); // Refresh the access token
             originalRequest.headers['Refreshed'] = true;
             return authorisedAxios(originalRequest);
@@ -39,7 +39,7 @@ export const setupAxiosInterceptors = (refreshAccessToken: () => Promise<void>) 
           }
         }
       } else {
-        console.log('error:', error);
+        console.error('error:', error);
       }    
       return Promise.reject(error);
     }
