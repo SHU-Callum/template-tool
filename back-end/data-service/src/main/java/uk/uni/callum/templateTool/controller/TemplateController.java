@@ -1,9 +1,11 @@
 package uk.uni.callum.templateTool.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.*;
 import uk.uni.callum.templateTool.model.Template;
 import uk.uni.callum.templateTool.repository.TemplateRepository;
@@ -13,6 +15,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+@EnableMethodSecurity
 @RestController
 @RequestMapping(value = "/templates")
 public class TemplateController {
@@ -29,6 +32,7 @@ public class TemplateController {
 //    }
 
     @GetMapping
+    @Operation(summary = "Find templates by text", description = "Return list of templates containing the search term")
     public ResponseEntity<?> searchTemplatesByText(@RequestParam(value = "search", required = false) String search) {
         if (search != null && !search.isEmpty()) {
             List<Template> results = templateRepository.findByTitleOrDetail(search);
@@ -42,6 +46,7 @@ public class TemplateController {
     }
 
     @GetMapping(value = "all")
+    @Operation(summary = "Find all templates by user teams", description = "Return list of templates for a user id")
     public ResponseEntity<?> getTemplatesByTeams(@RequestParam(value = "teams") String eTeamIds, @RequestHeader("encryption-iv") String iv) {
         if (eTeamIds != null && !eTeamIds.isEmpty()) {
             try {

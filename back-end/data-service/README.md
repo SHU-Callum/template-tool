@@ -12,7 +12,8 @@
 | Lombok            | 1.18.30 |
 | Swagger           | 2.8.6   |
 
- Built with Springboot - 3.4.3  
+ Built with Springboot - 3.4.3 
+ -  with spring-boot-starter-security - 3.4.5
 
  ## Additional Requisites
  - MySQL Database Running

@@ -1,7 +1,8 @@
 CREATE TABLE employee (
   id INT PRIMARY KEY,
   email VARCHAR(255) NOT NULL,
-  display_name VARCHAR(255) NOT NULL
+  display_name VARCHAR(255) NOT NULL,
+  keycloak_id VARCHAR(255)
 );
 
 CREATE TABLE team (

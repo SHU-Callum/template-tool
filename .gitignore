@@ -11,3 +11,4 @@
 
 .idea/
 back-end/data-service/.combined.env
+.env

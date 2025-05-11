@@ -3,7 +3,7 @@
 
 import { http, HttpResponse } from 'msw'
 import { API_BASE_URL } from '../constants/apis'
-import { GET_TEAMS_BY_USER_DATA, GET_TEMPLATES_BY_SEARCH_DATA, GET_TEMPLATES_BY_TEAMS_DATA } from './data'
+import { GET_TEAMS_BY_USER_DATA, GET_TEMPLATES_BY_SEARCH_DATA, GET_TEMPLATES_BY_TEAMS_DATA, GET_USER_DETAILS_DATA } from './data'
  
 export const handlers = [
   http.get('/', () => {
@@ -38,5 +38,15 @@ export const handlers = [
       return HttpResponse.json({ error: 'User ID cannot be empty' }, { status: 400 });
     }
     return HttpResponse.json(GET_TEAMS_BY_USER_DATA);
+  }),
+
+  // Intercept "GET localhost/api/user?kcid=*" requests...
+  http.get(`${API_BASE_URL}/user`, async ({ request }) => {
+    const url = new URL(request.url);
+    const userParam = url.searchParams.get('kcid')
+    if (!userParam || userParam.length < 1) {
+      return HttpResponse.json({ error: 'User ID cannot be empty' }, { status: 400 });
+    }
+    return HttpResponse.json(GET_USER_DETAILS_DATA);
   })
 ]

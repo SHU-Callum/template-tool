@@ -1,7 +1,6 @@
 # UI Setup
 - [Home guide](../README.md)
 - [Front-end guide](../README.md)
-  - [Authentication Setup](../authentication/README.md)
   
 ## Setup
 - `cd template-tool-ui`
@@ -51,3 +50,4 @@
 - **Remirror**: ^3.0.1 - Toolkit for building rich-text editors
   - **@remirror/pm**: ^3.0.0 - ProseMirror utilities for Remirror
   - **@remirror/react**: ^3.0.1 - React bindings for Remirror
+- **Keycloak-JS**: ^26.1.5 - JavaScript adapter for integrating Keycloak authentication

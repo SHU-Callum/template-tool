@@ -13,21 +13,22 @@ export const NotificationProvider = ({ children }: NotificationProviderProps) =>
   const [notifications, setNotifications] = useState<ToastNotificationProps[]>([]);
   const [networkError, setNetworkError] = useState(false);
 
-  const addNotification = (message: string, type: NotificationType) => {
-    const newId = Date.now();
-    const newNotification: ToastNotificationProps = { id: newId, type, message, order: notifications.length, onClose: () => removeNotification(newId) };
-    setNotifications((prevNotifications) => {
-      const updatedNotifications = [...prevNotifications, newNotification];
-      return updatedNotifications.map((notification, index) => ({ ...notification, order: index }));
-    });
-  };
-
   const removeNotification = useCallback((id: number) => {
     setNotifications((prevNotifications) => {
       const updatedNotifications = prevNotifications.filter((notification) => notification.id !== id);
       return updatedNotifications.map((notification, index) => ({ ...notification, order: index }));
     });
   }, []);
+
+  const addNotification = useCallback((message: string, type: NotificationType) => {
+    const newId = Date.now();
+    setNotifications((prevNotifications) => {
+      const newNotification: ToastNotificationProps = 
+        { id: newId, type, message, order: prevNotifications.length, onClose: () => removeNotification(newId) };
+      const updatedNotifications = [...prevNotifications, newNotification];
+      return updatedNotifications.map((notification, index) => ({ ...notification, order: index }));
+    });
+  }, [removeNotification]);
 
   const handleNetworkError = useCallback((errorState: boolean) => {
     if(errorState && !networkError) {

@@ -10,8 +10,9 @@ Features:
 - Use a template, inputting necessary fields, and generating text to copy to clipboard
 
 ## Guides
+- [Authentication setup guide](./authentication/README.md)
+
 - [Front-end setup guide](./front-end/README.md)
-  - [Authentication setup guide](./front-end/authentication/README.md)
   - [UI Setup Guide](./front-end/template-tool-ui/README.md)
 - [Back-end setup guide](./back-end/README.md)
   - [Data Service guide](./back-end/data-service/README.md)
