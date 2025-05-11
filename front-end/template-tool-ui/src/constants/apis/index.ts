@@ -20,4 +20,6 @@ export const API_ROUTES = {
   DELETE_TEAM_URL: (teamId: string) => `${API_BASE_URL}/team/${teamId}/delete`,
   UPDATE_TEAM_URL: (teamId: string) => `${API_BASE_URL}/team/${teamId}/update`,
   CREATE_TEAM_URL: `${API_BASE_URL}/team/create`,
+
+  GET_USER_DETAILS: (keycloakId: string) => `${API_BASE_URL}/user?kcid=${keycloakId}`
 };

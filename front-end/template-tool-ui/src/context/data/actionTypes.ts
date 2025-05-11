@@ -2,6 +2,7 @@
 
 import { Team } from "../../models/team";
 import { Template, TempTemplate } from "../../models/template";
+import { User } from "../../models/user";
 
 export enum ActionType {
   LOADING,
@@ -11,6 +12,7 @@ export enum ActionType {
   GET_TEMPLATES_BY_TEXT,
   GET_TEMPLATES_BY_TEAMS,
   GET_TEAMS_BY_USER,
+  GET_USER_DETAILS
 }
 
 export interface ActionPayload {
@@ -23,7 +25,8 @@ export interface ActionPayload {
 export enum DispatchType
 {
   TEMPLATE,
-  TEAM
+  TEAM,
+  USER
 }
 
 export type PayloadType =
@@ -31,4 +34,5 @@ export type PayloadType =
   | Template[]
   | TempTemplate[]
   | Team[]
+  | User
   | string;

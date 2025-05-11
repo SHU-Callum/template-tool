@@ -5,6 +5,7 @@ import { NotificationProvider } from './context/notification/NotificationProvide
 import { worker } from './mocks/node.ts'
 import { DataProvider } from './context/data/dataProvider.tsx'
 import Loading from './components/Loading.tsx'
+import { AuthProvider } from './context/auth/AuthProvider.tsx'
 
   const App = lazy(() => import('./App.tsx'))
 
@@ -22,13 +23,15 @@ async function configureMocking() {
 configureMocking().then(() => {
   ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-      <DataProvider>
-        <NotificationProvider>
-          <Suspense fallback={<Loading/>}>
-            <App />
-          </Suspense>
-        </NotificationProvider>
-      </DataProvider>
+      <AuthProvider>
+        <DataProvider>
+          <NotificationProvider>
+            <Suspense fallback={<Loading/>}>
+              <App />
+            </Suspense>
+          </NotificationProvider>
+        </DataProvider>
+      </AuthProvider>
     </React.StrictMode>
   )
 })

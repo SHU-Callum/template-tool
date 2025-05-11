@@ -6,7 +6,6 @@ import { Template } from "../models/template";
 import TemplateSearchResults from "../components/TemplateSearchResults";
 import { useDispatchContext, useStateContext } from "../context/data/useData";
 import { getTemplatesByTeams, getTemplatesByText } from "../context/data/actions/templateActions";
-import { getTeamsByUserId } from "../context/data/actions/teamActions";
 import { Team } from "../models/team";
 
 function Search() {
@@ -25,13 +24,7 @@ function Search() {
   const [searchResults, setSearchResults] = useState(initialResults);
   const [loading, setLoading] = useState(false);
   const errorNotifiedRef = useRef(false); // used to prevent error notification loop
-
-  // API dispatches
-  const handleGetTeamsByUser = (userId: number) => {
-    getTeamsByUserId(userId, dispatch);
-    setLoading(true);
-  };/* - is handled by useRef */
-  const fetchAllTeamsRef = useRef(handleGetTeamsByUser);
+  const prevTeamsRef = useRef(state.teamState.teamsByUser); // used to prevent unnecessary rerendering
 
   const handleGetTemplatesByTeams = (teams: number[]) => {
     getTemplatesByTeams(teams, dispatch);
@@ -73,14 +66,6 @@ function Search() {
     setSearchIncludeViewOnly(!searchIncludeViewOnly);
   };
 
-  // When the component mounts
-  useEffect(() => {
-    // Fetch the list of teams
-    fetchAllTeamsRef.current(1);
-    // Update loading state
-    setLoading(true);
-  }, []);
-
   // When the GET Teams By User API call returns
   useEffect(() => {
     // When the user's teams are fetched
@@ -89,10 +74,12 @@ function Search() {
         const availableTeams = ['All Teams', ...state.teamState.teamsByUser.map(team => team.teamName)];
         setSearchTeamFilter(state.teamState.teamsByUser);
         setDropdownTeams(availableTeams);
-        // Map over state.teamState.teamsByUser to extract teamId values
-        const teamIds = state.teamState.teamsByUser.map(team => team.id);
-        // Fetch the list of templates
-        fetchAllTemplatesRef.current(teamIds);
+        if(state.teamState.teamsByUser !== prevTeamsRef.current) {
+          // Map over state.teamState.teamsByUser to extract teamId values
+          const teamIds = state.teamState.teamsByUser.map(team => team.id);
+          // Fetch the list of templates
+          fetchAllTemplatesRef.current(teamIds);
+        }
         handleNetworkError(false);
       }
       // Show error notification if there is an error
@@ -104,6 +91,8 @@ function Search() {
         }
       // Update loading state
       setLoading(false);
+      // remember the previous teams
+      prevTeamsRef.current = state.teamState.teamsByUser;
     }
   }, [addNotification, state.teamState.teamsByUser, state.teamState.error, networkError, handleNetworkError]);
 
@@ -130,24 +119,21 @@ function Search() {
   // When the GET Templates By Text API call returns
   useEffect(() => {
     // Update search results when the API call returns
-    if (state.templateState.loading) {
-      if(state.templateState.templatesByText) {
-        const templates = state.templateState.templatesByText;
-        setSearchResults(templates);
-        handleNetworkError(false);
-      }
-      // Show error notification if there is an error
-      else if(state.templateState.error && !errorNotifiedRef.current) {
-        addNotification(state.templateState.error, NotificationType.ERROR);
-        errorNotifiedRef.current = true;
-        if(state.templateState.error.includes('Network Error') && !networkError) {
-          handleNetworkError(true);
-        }
-      }
-      // Update loading state
-      setLoading(state.templateState.loading);
+    if(state.templateState.templatesByText) {
+      const templates = state.templateState.templatesByText;
+      setSearchResults(templates);
+      handleNetworkError(false);
     }
-  }, [addNotification, state.templateState.templatesByText, state.templateState.error, state.templateState.loading, networkError, handleNetworkError]);
+    // Show error notification if there is an error
+    else if(state.templateState.error && !errorNotifiedRef.current) {
+      addNotification(state.templateState.error, NotificationType.ERROR);
+      errorNotifiedRef.current = true;
+      if(state.templateState.error.includes('Network Error') && !networkError) {
+        handleNetworkError(true);
+      }
+    }
+    setLoading(false)
+  }, [addNotification, state.templateState.templatesByText, state.templateState.error, networkError, handleNetworkError]);
 
   // reset error notification flag when an API call is loading
   useEffect(() => {

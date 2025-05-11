@@ -1,0 +1,35 @@
+services:
+  template-tool-db:
+    build:
+      context: back-end/db
+      dockerfile: Dockerfile
+    image: template-tool-db-img
+    container_name: template-tool-db-container
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "${MYSQL_PORT}:${MYSQL_PORT}"
+    volumes:
+      - /var/lib/mysql
+
+  template-tool-keycloak:
+    image: quay.io/keycloak/keycloak:26.2.1
+    container_name: keycloak-container
+    command: start-dev --import-realm
+    environment:
+      KC_DB: mysql
+      KC_DB_URL: jdbc:mysql://template-tool-db-container:${MYSQL_PORT}/${MYSQL_DATABASE}
+      KC_DB_USERNAME: ${MYSQL_USER}
+      KC_DB_PASSWORD: ${MYSQL_PASSWORD}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_ADMIN_USERNAME}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD}
+      KEYCLOAK_IMPORT: /opt/keycloak/data/import/template-tool-test-realm-realm.json
+    ports:
+    - ${KC_CONTAINER_PORT}:${KC_HOST_PORT}
+    depends_on:
+    - template-tool-db
+    volumes:
+    - ./authentication/export:/opt/keycloak/data/import

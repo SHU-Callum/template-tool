@@ -33,26 +33,42 @@ const templateReducer = (state: TemplateState, action: ActionPayload): TemplateS
             templatesByTeams: null,
           };
         case ActionType.GET_TEMPLATES_BY_TEXT:
-          return {
-            ...state,
-            loading: false,
-            error: null,
-            templateById: null,
-            templatesByText: action.payload as Template[],
-            templatesByTeams: null,
-          };
+          if (Array.isArray(action.payload)) {
+            return {
+              ...state,
+              loading: false,
+              error: null,
+              templateById: null,
+              templatesByText: action.payload as Template[],
+              templatesByTeams: null,
+            };
+          } else {
+            return {
+              ...state,
+              loading: false,
+              error: "Invalid format received from server - Not an array of templates",
+            };
+          }
         case ActionType.GET_TEMPLATES_BY_TEAMS:
-          return {
-            ...state,
-            loading: false,
-            error: null,
-            templateById: null,
-            templatesByText: null,
-            templatesByTeams: (action.payload as TempTemplate[]).map(template => ({
-              ...template,
-              lastAmendDate: mysqlDatetimeToDate(template.lastAmendDate), // convert to Date object
-            })),
-          };
+          if (Array.isArray(action.payload)) {
+            return {
+              ...state,
+              loading: false,
+              error: null,
+              templateById: null,
+              templatesByText: null,
+              templatesByTeams: (action.payload as TempTemplate[]).map(template => ({
+                ...template,
+                lastAmendDate: mysqlDatetimeToDate(template.lastAmendDate), // convert to Date object
+              })),
+            };
+          } else {
+            return {
+              ...state,
+              loading: false,
+              error: "Invalid format received from server - Not an array of templates",
+            };
+          }
         default:
           return state;
         }
