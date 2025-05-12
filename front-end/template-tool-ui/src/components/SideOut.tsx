@@ -5,6 +5,7 @@ import TeamsList from "./TeamsList";
 import { NotificationType } from "../types/notificationTypes";
 import { useStateContext } from "../context/data/useData";
 import BackButton from "./BackButton";
+import { useAuth } from "../context/auth/useAuth";
 
 interface SideOutProps {
   isOpen: boolean;
@@ -13,6 +14,7 @@ interface SideOutProps {
 
 function SideOut({ isOpen, onClose }: SideOutProps) {
   const { addNotification, } = useNotification();
+  const { logout } = useAuth();
   const state = useStateContext();
   
   const [teams, setTeams] = useState<TeamAffiliations[]>([]);
@@ -31,7 +33,7 @@ function SideOut({ isOpen, onClose }: SideOutProps) {
     if (state.teamState.teamsByUser) {
       const formattedTeams = state.teamState.teamsByUser.map((team) => ({
         ...team,
-        isOwner: team.ownerId === state.userState.userDetails?.userId,
+        isOwner: team.ownerId === state.userState.userDetails?.id,
       }));
       setTeams(formattedTeams);
     }
@@ -40,7 +42,7 @@ function SideOut({ isOpen, onClose }: SideOutProps) {
       errorNotifiedRef.current = true;
     }
     setLoading(state.teamState.loading);
-  }, [addNotification, state.teamState.teamsByUser, state.teamState.error, state.teamState.loading, state.userState.userDetails?.userId]);
+  }, [addNotification, state.teamState.teamsByUser, state.teamState.error, state.teamState.loading, state.userState.userDetails?.id]);
 
   // Prevents error notification loop
   useEffect(() => {
@@ -64,6 +66,11 @@ function SideOut({ isOpen, onClose }: SideOutProps) {
         <div className='flex w-full justify-start gap-4'>
           <BackButton clickAction={onClose} />
           <h2 className='text-left pt-0'>Profile</h2>
+            <button 
+              className="p-2 m-1 ml-auto bg-orange-400 rounded hover:bg-orange-500 transition-colors"
+              onClick={ logout }>
+              Logout
+            </button>
         </div>
       </div>
       <div className="text-left p-2">
