@@ -129,7 +129,7 @@ function App() {
   return (
     <BrowserRouter>
       <div className='p-4 pt-2 w-full h-full flex flex-col'>
-        <HeaderBar profileClicked={profileClicked} />
+        <HeaderBar profileClicked={profileClicked} showProfile={!isSideOutRendered} />
         <div className='flex items-center w-full'>
           <Routes>
             <Route path="/" element={<Search />} />
