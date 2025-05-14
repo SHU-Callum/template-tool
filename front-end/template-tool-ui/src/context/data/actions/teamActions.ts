@@ -33,7 +33,12 @@ export const getTeamsByUserId = async (userId: number, dispatch: Dispatch<Action
     if (axios.isCancel(error)) {
       dispatchTeamAction(dispatch, { type: ActionType.ERROR, payload: 'Timeout Error' });
     } else if (axios.isAxiosError(error)) {
-      dispatchTeamAction(dispatch, { type: ActionType.ERROR, payload: `Something went wrong: ${error.message}` });
+      if (error.status === 404) {
+        dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.GET_TEAMS_BY_USER, payload: `No teams found for user` });
+      }
+      else {
+        dispatchTeamAction(dispatch, { type: ActionType.ERROR, payload: `Something went wrong: ${error.message}` });
+      }
     } else {
       dispatchTeamAction(dispatch, { type: ActionType.ERROR, payload: 'An unknown error occurred' });
     }

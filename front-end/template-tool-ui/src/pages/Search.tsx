@@ -69,7 +69,7 @@ function Search() {
   // When the GET Teams By User API call returns
   useEffect(() => {
     // When the user's teams are fetched
-      if(state.teamState.teamsByUser) {
+      if(state.teamState.teamsByUser && state.teamState.teamsByUser.length > 0) {
         // Set the available teams for dropdown
         const availableTeams = ['All Teams', ...state.teamState.teamsByUser.map(team => team.teamName)];
         setSearchTeamFilter(state.teamState.teamsByUser);
@@ -80,6 +80,13 @@ function Search() {
           // Fetch the list of templates
           fetchAllTemplatesRef.current(teamIds);
         }
+        handleNetworkError(false);
+      }
+      else if(state.teamState.teamsByUser && state.teamState.teamsByUser.length === 0) {
+        const availableTeams = ['All Teams'];
+        setSearchTeamFilter([]);
+        setDropdownTeams(availableTeams);
+        setSearchResults([]);
         handleNetworkError(false);
       }
       // Show error notification if there is an error
@@ -144,8 +151,8 @@ function Search() {
 
   return (
     <div className="p-4 w-full sm:w-6/7 mx-auto">
-      <div className="w-full sm:w-4/5 lg:w-2/3 mx-auto">
-        <div className="flex justify-between mb-4 items-center space-x-8">
+      <div className="w-full sm:w-6/7 md:w-5/6 lg:w-2/3 mx-auto">
+        <div className="flex justify-between mb-4 items-center space-x-8 sm:w-11/12 md:w-10/12 lg:space-x-0 lg:w-4/5 mx-auto">
           <SelectInput 
             value={searchTeamFilter.length == 1 ? searchTeamFilter[0].teamName : 'All Teams'}
             onChange={selectTeamFilterChanged}
@@ -162,7 +169,7 @@ function Search() {
             />
           </div>
         </div>
-        <div className="flex mb-4">
+        <div className="flex mb-4 sm:w-5/6 lg:w-2/3 mx-auto">
           <input
             type="text"
             placeholder="Search..."

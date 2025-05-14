@@ -101,11 +101,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }
 
   const logout = () => {
+    setIsLoggedIn(false);
+    setUserAuthDetails(null);
+    localStorage.clear();
+    setAuthMsg('Logged out');
     if (kcClientRef.current && kcClientRef.current.authenticated) {
-      setIsLoggedIn(false);
-      setUserAuthDetails(null);
-      localStorage.clear();
-      setAuthMsg('Logged out');
       try {
         kcClientRef.current.logout({
           redirectUri: `http://${import.meta.env.VITE_UI_URL}:${import.meta.env.VITE_UI_PORT}/` // back to home
