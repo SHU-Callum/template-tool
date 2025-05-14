@@ -21,7 +21,7 @@ export const NotificationProvider = ({ children }: NotificationProviderProps) =>
   }, []);
 
   const addNotification = useCallback((message: string, type: NotificationType) => {
-    const newId = Date.now();
+    const newId = performance.now(); // less likely to collide with existing IDs compared to Date.now()
     setNotifications((prevNotifications) => {
       const newNotification: ToastNotificationProps = 
         { id: newId, type, message, order: prevNotifications.length, onClose: () => removeNotification(newId) };
