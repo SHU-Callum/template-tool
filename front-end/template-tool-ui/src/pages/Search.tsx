@@ -5,8 +5,9 @@ import { NotificationType } from "../types/notificationTypes";
 import { Template } from "../models/template";
 import TemplateSearchResults from "../components/TemplateSearchResults";
 import { useDispatchContext, useStateContext } from "../context/data/useData";
-import { getTemplatesByTeams, getTemplatesByText } from "../context/data/actions/templateActions";
+import { getTemplatesByTeams, getTemplatesByParams } from "../context/data/actions/templateActions";
 import { Team } from "../models/team";
+import { addTeamNameToTemplates, filterTemplatesByEditable } from "../utils/idToName";
 
 function Search() {
   const initialResults: Template[] = [];
@@ -22,6 +23,7 @@ function Search() {
   const [searchTeamFilter, setSearchTeamFilter] = useState<Team[]>([]);
   const [searchIncludeViewOnly, setSearchIncludeViewOnly] = useState(false);
   const [searchResults, setSearchResults] = useState(initialResults);
+  const [activeSearchResults, setActiveSearchResults] = useState(initialResults);
   const [loading, setLoading] = useState(false);
   const errorNotifiedRef = useRef(false); // used to prevent error notification loop
   const prevTeamsRef = useRef(state.teamState.teamsByUser); // used to prevent unnecessary rerendering
@@ -32,35 +34,33 @@ function Search() {
   }; /* - is handled by useRef */
   const fetchAllTemplatesRef = useRef(handleGetTemplatesByTeams);
 
-  const handleGetTemplatesByText = (text: string) => {
-    getTemplatesByText(text, dispatch);
+  const handleGetTemplatesByParams = (teams: number[], text: string, includeViewOnly: boolean) => {
+    getTemplatesByParams(teams, text, includeViewOnly, dispatch);
     setLoading(true);
   };
 
   const searchClicked = () => {
-    const searchTeamsText = searchTeamFilter.length == 1 ? searchTeamFilter[0].teamName : 'All Teams';
-    addNotification(`Searching for: ${searchText}, Team: ${searchTeamsText}, Include View Only: ${searchIncludeViewOnly}`, NotificationType.INFO);
-    // TODO: Update by text to by params
-    handleGetTemplatesByText(searchText);
+    const searchTeamsIds = searchTeamFilter.map((team) => team.id);
+    handleGetTemplatesByParams(searchTeamsIds, searchText, searchIncludeViewOnly);
     setLoading(true);
   };
 
   // When the user selects a team from the dropdown
   const selectTeamFilterChanged = useCallback((selectedTeam: string) => {
     const availableTeams = state.teamState.teamsByUser;
-    const availableTemplates = state.templateState.templatesByTeams;
+    //const availableTemplates = state.templateState.templatesByTeams;
     if (selectedTeam === 'All Teams') {
       setSearchTeamFilter(availableTeams ? availableTeams : []);
-      setSearchResults(state.templateState.templatesByTeams || []);
-    } else if (availableTeams && availableTemplates) {
+      //setSearchResults(state.templateState.templatesByTeams || []);
+    } else if (availableTeams /*&& availableTemplates*/) {
       const filteredTeams = availableTeams.filter(team => team.teamName === selectedTeam);
       setSearchTeamFilter(filteredTeams);
-      const filteredTemplates = availableTemplates.filter(template => template.teamId === filteredTeams[0].id);
-      setSearchResults(filteredTemplates);
+      //const filteredTemplates = availableTemplates.filter(template => template.teamId === filteredTeams[0].id);
+      //setSearchResults(filteredTemplates);
     } else {
       setSearchTeamFilter([]);
     }
-  }, [state.teamState.teamsByUser, state.templateState.templatesByTeams]);
+  }, [state.teamState.teamsByUser]);
 
   const checkboxViewOnlyClicked = () => {
     setSearchIncludeViewOnly(!searchIncludeViewOnly);
@@ -87,6 +87,7 @@ function Search() {
         setSearchTeamFilter([]);
         setDropdownTeams(availableTeams);
         setSearchResults([]);
+        setActiveSearchResults([]);
         handleNetworkError(false);
       }
       // Show error notification if there is an error
@@ -109,6 +110,7 @@ function Search() {
       if(state.templateState.templatesByTeams) {
         const templates = state.templateState.templatesByTeams;
         setSearchResults(templates);
+        setActiveSearchResults(templates);
         handleNetworkError(false);
       }
       // Show error notification if there is an error
@@ -123,12 +125,13 @@ function Search() {
       setLoading(false);
   }, [addNotification, state.templateState.templatesByTeams, state.templateState.error, networkError, handleNetworkError]);
 
-  // When the GET Templates By Text API call returns
+  // When the GET Templates By Params API call returns
   useEffect(() => {
     // Update search results when the API call returns
-    if(state.templateState.templatesByText) {
-      const templates = state.templateState.templatesByText;
+    if(state.templateState.templatesByParams) {
+      const templates = state.templateState.templatesByParams;
       setSearchResults(templates);
+      setActiveSearchResults(templates);
       handleNetworkError(false);
     }
     // Show error notification if there is an error
@@ -140,7 +143,7 @@ function Search() {
       }
     }
     setLoading(false)
-  }, [addNotification, state.templateState.templatesByText, state.templateState.error, networkError, handleNetworkError]);
+  }, [addNotification, state.templateState.templatesByParams, state.templateState.error, networkError, handleNetworkError]);
 
   // reset error notification flag when an API call is loading
   useEffect(() => {
@@ -148,6 +151,31 @@ function Search() {
       errorNotifiedRef.current = false;
     }
   }, [state.teamState.loading, state.templateState.loading]);
+
+  useEffect(() => {
+    const templatesWithTeamNames = addTeamNameToTemplates(searchResults, state.teamState.teamsByUser || []);
+    // Filter the search results based on team dropdown
+    const teamFilteredResults = templatesWithTeamNames.filter((template) => {
+      return (
+      searchTeamFilter.map((team) => team.id).includes(template.teamId) // if the template teamId is in the selected teamIds
+      )
+    })
+    
+    const viewOnlyFilteredResults = (searchIncludeViewOnly && state.userState.userDetails)? 
+      filterTemplatesByEditable(teamFilteredResults, state.userState.userDetails, state.teamState.teamsByUser || [])
+      : teamFilteredResults;
+
+    const textFilteredResults = searchText.length > 0 ? viewOnlyFilteredResults.filter((template) => {
+      return (
+        template.title.toLowerCase().includes(searchText.toLowerCase())
+        || template.detail.toLowerCase().includes(searchText.toLowerCase())
+        || template.teamName.toLowerCase().includes(searchText.toLowerCase())
+        || template.content.toLowerCase().includes(searchText.toLowerCase()));
+    }) : viewOnlyFilteredResults;
+
+    setActiveSearchResults(textFilteredResults);
+  }
+  , [searchText, searchResults, state.teamState.teamsByUser, state.userState.userDetails?.id, searchIncludeViewOnly, searchTeamFilter, state.userState.userDetails]);
 
   return (
     <div className="p-4 w-full sm:w-6/7 mx-auto">
@@ -182,7 +210,7 @@ function Search() {
       </div>
       <hr />
       <div className="pt-4">
-      {loading ? <div>Loading...</div> : <TemplateSearchResults results={searchResults}/>}
+      {loading ? <div>Loading...</div> : <TemplateSearchResults results={activeSearchResults}/>}
       </div>
     </div>
   );

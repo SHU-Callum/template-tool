@@ -7,6 +7,7 @@ import { ActionPayload, ActionType, DispatchType } from '../actionTypes';
 import { API_ROUTES } from '../../../constants/apis';
 import { encryptParameter } from '../../../utils/encryption';
 import authorisedAxios from '../../../utils/authTokenPrep';
+import { TemplateSearchParams } from '../../../types/templateSearchParams';
 
 // Sets dispatch type to TEMPLATE for all actions
 const dispatchTemplateAction = (dispatch: Dispatch<ActionPayload>, action: Omit<ActionPayload, 'dispatchType'>) => {
@@ -36,28 +37,6 @@ export const getTemplateById = async (templateId: number, dispatch: Dispatch<Act
   }
 };
 
-export const getTemplatesByText = async (text: string, dispatch: Dispatch<ActionPayload>) => {
-  dispatchTemplateAction(dispatch, { type: ActionType.LOADING });
-  try {
-    const response: AxiosResponse = await authorisedAxios.get(API_ROUTES.GET_TEMPLATES_BY_SEARCH(text));
-    if (response.status === 200) {
-      dispatchTemplateAction(dispatch, { type: ActionType.SUCCESS, apiName: ActionType.GET_TEMPLATES_BY_TEXT, payload: response.data });
-    } else if (response.status === 400) {
-      dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: response.data });
-    } else {
-      throw new Error(`Failed to get template with id: ${text}`);
-    }
-  } catch (error) {
-    if (axios.isCancel(error)) {
-      dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: 'Timeout Error' });
-    } else if (axios.isAxiosError(error)) {
-      dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: `${error.response?.data.error}: Error Code ${error.response?.status}` });
-    } else {
-      dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: 'An unknown error occurred' });
-    }
-  }
-};
-
 export const getTemplatesByTeams = async (teamIds: number[], dispatch: Dispatch<ActionPayload>) => {
   dispatchTemplateAction(dispatch, { type: ActionType.LOADING });
   try {
@@ -70,6 +49,39 @@ export const getTemplatesByTeams = async (teamIds: number[], dispatch: Dispatch<
     });
     if (response.status === 200) {
       dispatchTemplateAction(dispatch, { type: ActionType.SUCCESS, apiName: ActionType.GET_TEMPLATES_BY_TEAMS, payload: response.data });
+    } else if (response.status === 400) {
+      dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: response.data });
+    } else {
+      throw new Error(`Failed to get user templates`);
+    }
+  } catch (error) {
+    if (axios.isCancel(error)) {
+      dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: 'Timeout Error' });
+    } else if (axios.isAxiosError(error)) {
+      dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: `${error.response?.data.error}: Error Code ${error.response?.status}` });
+    } else {
+      dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: 'An unknown error occurred' });
+    }
+  }
+};
+
+export const getTemplatesByParams = async (teamIds: number[], searchText: string, viewOnly: boolean, dispatch: Dispatch<ActionPayload>) => {
+  dispatchTemplateAction(dispatch, { type: ActionType.LOADING });
+  const params: TemplateSearchParams = {
+    text: searchText,
+    teams: teamIds,
+    viewOnly: viewOnly
+  };
+  try {
+    const { encryptedParameter, iv } = encryptParameter(JSON.stringify(params)); // Need to encrypt twice due to API handling in Springboot
+    const response: AxiosResponse = await authorisedAxios.get(API_ROUTES.GET_TEMPLATES_BY_PARAMS(encodeURIComponent(encryptedParameter)), {
+      headers: {
+        'encryption-iv': iv // each api call has a different encryption pattern
+      },
+      timeout: 3000
+    });
+    if (response.status === 200) {
+      dispatchTemplateAction(dispatch, { type: ActionType.SUCCESS, apiName: ActionType.GET_TEMPLATES_BY_PARAMS, payload: response.data });
     } else if (response.status === 400) {
       dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: response.data });
     } else {

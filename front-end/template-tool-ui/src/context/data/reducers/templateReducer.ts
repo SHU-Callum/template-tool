@@ -7,8 +7,8 @@ import { mysqlDatetimeToDate } from "../../../utils/dateFormatter";
 
 export interface TemplateState {
   templateById: Template | null;
-  templatesByText: Template[] | null
   templatesByTeams: Template[] | null;
+  templatesByParams: Template[] | null;
   loading: boolean;
   error: string | null;
 }
@@ -29,26 +29,9 @@ const templateReducer = (state: TemplateState, action: ActionPayload): TemplateS
             loading: false,
             error: null,
             templateById: action.payload as Template,
-            templatesByText: null,
+            templatesByParams: null,
             templatesByTeams: null,
           };
-        case ActionType.GET_TEMPLATES_BY_TEXT:
-          if (Array.isArray(action.payload)) {
-            return {
-              ...state,
-              loading: false,
-              error: null,
-              templateById: null,
-              templatesByText: action.payload as Template[],
-              templatesByTeams: null,
-            };
-          } else {
-            return {
-              ...state,
-              loading: false,
-              error: "Invalid format received from server - Not an array of templates",
-            };
-          }
         case ActionType.GET_TEMPLATES_BY_TEAMS:
           if (Array.isArray(action.payload)) {
             return {
@@ -56,7 +39,7 @@ const templateReducer = (state: TemplateState, action: ActionPayload): TemplateS
               loading: false,
               error: null,
               templateById: null,
-              templatesByText: null,
+              templatesByParams: null,
               templatesByTeams: (action.payload as TempTemplate[]).map(template => ({
                 ...template,
                 lastAmendDate: mysqlDatetimeToDate(template.lastAmendDate), // convert to Date object
@@ -69,6 +52,26 @@ const templateReducer = (state: TemplateState, action: ActionPayload): TemplateS
               error: "Invalid format received from server - Not an array of templates",
             };
           }
+        case ActionType.GET_TEMPLATES_BY_PARAMS:
+        if (Array.isArray(action.payload)) {
+          return {
+            ...state,
+            loading: false,
+            error: null,
+            templateById: null,
+            templatesByTeams: null,
+            templatesByParams: (action.payload as TempTemplate[]).map(template => ({
+              ...template,
+              lastAmendDate: mysqlDatetimeToDate(template.lastAmendDate), // convert to Date object
+            })),
+          };
+        } else {
+          return {
+            ...state,
+            loading: false,
+            error: "Invalid format received from server - Not an array of templates",
+          };
+        }
         default:
           return state;
         }
