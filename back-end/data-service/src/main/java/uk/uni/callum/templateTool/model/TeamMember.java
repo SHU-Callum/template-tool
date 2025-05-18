@@ -7,16 +7,21 @@ import lombok.Data;
 @Table(name = "team_member")
 @Data
 public class TeamMember {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @EmbeddedId
+    private TeamMemberId id;
 
-    @Column(name = "team_id", nullable = false)
-    private Long teamId;
+    @ManyToOne
+    @MapsId("userId")
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+    private Employee userId;
 
-    @Column(name = "permission_role", nullable = false)
-    private Integer permissionRole;
+    @ManyToOne
+    @MapsId("teamId")
+    @JoinColumn(name = "team_id", referencedColumnName = "id", nullable = false)
+    private Team teamId;
+
+    @ManyToOne
+    @JoinColumn(name = "permission_role", referencedColumnName = "id", nullable = false)
+    private MemberRole permissionRole;
 }

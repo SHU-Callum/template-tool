@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Table(name = "template")
 @Data
 public class Template {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

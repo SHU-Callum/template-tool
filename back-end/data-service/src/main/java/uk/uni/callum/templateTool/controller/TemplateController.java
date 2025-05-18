@@ -8,7 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.*;
 import uk.uni.callum.templateTool.model.Template;
+import uk.uni.callum.templateTool.model.requestParams.FindTemplateParams;
 import uk.uni.callum.templateTool.repository.TemplateRepository;
+import uk.uni.callum.templateTool.service.TemplateService;
 import uk.uni.callum.templateTool.utils.Encryption;
 
 import java.net.URLDecoder;
@@ -21,25 +23,30 @@ import java.util.List;
 public class TemplateController {
 
     @Autowired
-    private TemplateRepository templateRepository;
+    private TemplateService templateService;
 
     @Autowired
     private Encryption encryption;
 
-//    @GetMapping(value = "/all")
-//    public List<Template> getAllTemplates() {
-//        return templateRepository.findAll();
-//    }
-
     @GetMapping
-    @Operation(summary = "Find templates by text", description = "Return list of templates containing the search term")
-    public ResponseEntity<?> searchTemplatesByText(@RequestParam(value = "search", required = false) String search) {
-        if (search != null && !search.isEmpty()) {
-            List<Template> results = templateRepository.findByTitleOrDetail(search);
-            if (results.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No templates found for the search term: " + search);
+    @Operation(summary = "Find templates by params", description = "Return list of templates containing the search criteria")
+    public ResponseEntity<?> searchTemplatesByParams(@RequestParam(value = "search", required = true) String encryptedSearch, @RequestHeader("encryption-iv") String iv) {
+        if (encryptedSearch != null && !encryptedSearch.isEmpty()) {
+            try {
+                String decodedParams = URLDecoder.decode(encryptedSearch, StandardCharsets.UTF_8);
+                String decryptedParams = encryption.decrypt(decodedParams, iv);
+                // Convert to JSON object
+                FindTemplateParams searchParams = new ObjectMapper().readValue(decryptedParams, FindTemplateParams.class);
+                List<Template> results = templateService.findTemplatesByParams(searchParams);
+                if (results.isEmpty()) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No templates found for the search criteria");
+                }
+                return ResponseEntity.status(HttpStatus.OK).body(results);
+            } catch (IllegalArgumentException iae) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid search parameters - Error: " + iae.getMessage());
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
             }
-            return ResponseEntity.status(HttpStatus.OK).body(results);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Search parameter is required");
         }
@@ -55,7 +62,7 @@ public class TemplateController {
                 // Convert to JSON array
                 String[] teamIds = new ObjectMapper().readValue(decryptedTeamIds, String[].class);
                 // Search for templates by team ids
-                List<Template> results = templateRepository.findByTeamIdIn(teamIds);
+                List<Template> results = templateService.findTemplatesByTeamIdIn(teamIds);
                 if (results.isEmpty()) {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No templates found for the team IDs: " + eTeamIds);
                 }
