@@ -33,7 +33,7 @@ function SideOut({ isOpen, onClose }: SideOutProps) {
     if (state.teamState.teamsByUser) {
       const formattedTeams = state.teamState.teamsByUser.map((team) => ({
         ...team,
-        isOwner: team.ownerId === state.userState.userDetails?.id,
+        isOwner: team.ownerIds.includes(state.userState.userDetails!.id),
       }));
       setTeams(formattedTeams);
     }
@@ -42,7 +42,7 @@ function SideOut({ isOpen, onClose }: SideOutProps) {
       errorNotifiedRef.current = true;
     }
     setLoading(state.teamState.loading);
-  }, [addNotification, state.teamState.teamsByUser, state.teamState.error, state.teamState.loading, state.userState.userDetails?.id]);
+  }, [addNotification, state.teamState.teamsByUser, state.teamState.error, state.teamState.loading, state.userState.userDetails]);
 
   // Prevents error notification loop
   useEffect(() => {

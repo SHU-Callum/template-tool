@@ -7,9 +7,6 @@ import uk.uni.callum.templateTool.model.Template;
 
 import java.util.List;
 
-public interface TemplateRepository extends JpaRepository<Template, Long> {
-    @Query("SELECT t FROM Template t WHERE t.title LIKE %:search% OR t.detail LIKE %:search%")
-    List<Template> findByTitleOrDetail(@Param("search") String search);
-
+public interface TemplateRepository extends JpaRepository<Template, Long>, TemplateRepositoryCustom {
     List<Template> findByTeamIdIn(String[] teamId);
 }

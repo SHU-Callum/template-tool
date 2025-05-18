@@ -6,8 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.*;
-import uk.uni.callum.templateTool.model.Team;
-import uk.uni.callum.templateTool.repository.TeamRepository;
+import uk.uni.callum.templateTool.dto.TeamDTO;
+import uk.uni.callum.templateTool.service.TeamService;
 import uk.uni.callum.templateTool.utils.Encryption;
 
 import java.net.URLDecoder;
@@ -20,7 +20,7 @@ import java.util.List;
 public class TeamController {
 
     @Autowired
-    private TeamRepository teamRepository;
+    private TeamService teamService;
 
     @Autowired
     private Encryption encryption;
@@ -32,8 +32,11 @@ public class TeamController {
             try {
                 String decodedUserId = URLDecoder.decode(eUserId, StandardCharsets.UTF_8);
                 String decryptedUserId = encryption.decrypt(decodedUserId, iv);
+                Long formattedDecryptedUserId = null;
+                formattedDecryptedUserId = Long.parseLong(encryption.decrypt(decodedUserId, iv));
+
                 // Search for teams by user id
-                List<Team> teams = teamRepository.findByUserId(decryptedUserId);
+                List<TeamDTO> teams = teamService.findTeamsByUserId(formattedDecryptedUserId);
                 if (teams.isEmpty()) {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No teams found for the user id: " + decryptedUserId);
                 }
