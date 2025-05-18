@@ -21,22 +21,25 @@ function Search() {
   const [searchText, setSearchText] = useState('');
   const [dropdownTeams, setDropdownTeams] = useState<string[]>([]);
   const [searchTeamFilter, setSearchTeamFilter] = useState<Team[]>([]);
-  const [searchIncludeViewOnly, setSearchIncludeViewOnly] = useState(false);
+  const [searchIncludeViewOnly, setSearchIncludeViewOnly] = useState(true);
   const [searchResults, setSearchResults] = useState(initialResults);
   const [activeSearchResults, setActiveSearchResults] = useState(initialResults);
   const [loading, setLoading] = useState(false);
+  const [lastSearchParams, setLastSearchParams] = useState({ teams: 'All Teams', text: '', includeViewOnly: 'True' });
   const errorNotifiedRef = useRef(false); // used to prevent error notification loop
   const prevTeamsRef = useRef(state.teamState.teamsByUser); // used to prevent unnecessary rerendering
 
   const handleGetTemplatesByTeams = (teams: number[]) => {
     getTemplatesByTeams(teams, dispatch);
     setLoading(true);
+    setLastSearchParams({ teams: 'All Teams', text: '', includeViewOnly: 'True' });
   }; /* - is handled by useRef */
   const fetchAllTemplatesRef = useRef(handleGetTemplatesByTeams);
 
   const handleGetTemplatesByParams = (teams: number[], text: string, includeViewOnly: boolean) => {
     getTemplatesByParams(teams, text, includeViewOnly, dispatch);
     setLoading(true);
+    setLastSearchParams({ teams: searchTeamFilter.length > 1 ? 'All Teams' : searchTeamFilter[0].teamName, text, includeViewOnly: searchIncludeViewOnly? 'True' : 'False' });
   };
 
   const searchClicked = () => {
@@ -161,7 +164,7 @@ function Search() {
       )
     })
     
-    const viewOnlyFilteredResults = (searchIncludeViewOnly && state.userState.userDetails)? 
+    const viewOnlyFilteredResults = (!searchIncludeViewOnly && state.userState.userDetails)? 
       filterTemplatesByEditable(teamFilteredResults, state.userState.userDetails, state.teamState.teamsByUser || [])
       : teamFilteredResults;
 
@@ -180,7 +183,7 @@ function Search() {
   return (
     <div className="p-4 w-full sm:w-6/7 mx-auto">
       <div className="w-full sm:w-6/7 md:w-5/6 lg:w-2/3 mx-auto">
-        <div className="flex justify-between mb-4 items-center space-x-8 sm:w-11/12 md:w-10/12 lg:space-x-0 lg:w-4/5 mx-auto">
+        <div className="flex justify-between mb-2 items-center space-x-8 sm:w-11/12 md:w-10/12 lg:space-x-0 lg:w-4/5 mx-auto">
           <SelectInput 
             value={searchTeamFilter.length == 1 ? searchTeamFilter[0].teamName : 'All Teams'}
             onChange={selectTeamFilterChanged}
@@ -201,16 +204,16 @@ function Search() {
           <input
             type="text"
             placeholder="Search..."
-            className="border rounded p-2 mr-2 w-4/5"
+            className="border rounded p-1.5 mr-2 w-4/5"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
-          <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded w-2/5 sm:w-1/5" onClick={searchClicked}>Search</button>
+          <button className="bg-blue-500 text-white p-1.5 rounded w-2/5 sm:w-1/5" onClick={searchClicked}>Search</button>
         </div>
       </div>
       <hr />
-      <div className="pt-4">
-      {loading ? <div>Loading...</div> : <TemplateSearchResults results={activeSearchResults}/>}
+      <div className="pt-3">
+      {loading ? <div>Loading...</div> : <TemplateSearchResults results={activeSearchResults} criteria={lastSearchParams}/>}
       </div>
     </div>
   );

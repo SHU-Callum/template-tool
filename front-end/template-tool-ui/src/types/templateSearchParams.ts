@@ -1,6 +1,6 @@
 
 export interface TemplateSearchParams {
-  text?: string;
-  teams?: number[];
-  viewOnly?: boolean;
+  searchText?: string;
+  teamIds?: number[];
+  includeViewOnly?: boolean;
 }

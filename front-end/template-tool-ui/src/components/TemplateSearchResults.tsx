@@ -5,33 +5,42 @@ import { addTeamNameToTemplates, templateIsEditable } from "../utils/idToName";
 
 interface TemplateSearchResultsProps {
   results: Template[];
+  criteria: { teams: string, text: string, includeViewOnly: string }
 }
 
-function TemplateSearchResults({ results }: TemplateSearchResultsProps) {
+function TemplateSearchResults({ results, criteria }: TemplateSearchResultsProps) {
   const state = useStateContext();
   // Format the results to include team names
   const formattedTemplates: TemplateWithTeamName[] = addTeamNameToTemplates(results, state.teamState.teamsByUser || []);
   return (
     <div>
-      <h3 className="mb-4">Search Results ({results.length})</h3>
+      <div className="flex justify-between items-center mb-3 pl-1 pr-1">
+        <h3 className="align-middle">Search Results ({results.length})</h3>
+         {criteria.text.length > 0 ? (
+            <p className="text-xs sm:text-sm text-gray-500 align-middle">Team: <b>{criteria.teams}</b>, Text: <b>{criteria.text}</b>, Include View-only: <b>{criteria.includeViewOnly}</b></p>
+          ) : (
+            <p className="text-xs sm:text-sm text-gray-500 align-middle">Team: <b>{criteria.teams}</b>, Include View-only: <b>{criteria.includeViewOnly}</b></p>
+          )}
+      </div>
+      
       {results.length == 0 ? (<p className="font-semibold">No associated templates</p>) : (
         <div className="max-h-96 overflow-y-auto">
           <table className="min-w-full bg-white border border-gray-200">
             <thead>
               <tr>
-                <th className="py-2 px-4 border">Name</th>
-                <th className="py-2 px-4 border">Description</th>
-                <th className="py-2 px-4 border">Team</th>
-                <th className="py-2 px-4 border">Action</th>
+                <th className="py-1 px-2 border">Name</th>
+                <th className="py-1 px-2 border">Team</th>
+                <th className="py-1 px-2 border">Action</th>
+                <th className="py-1 px-2 border">Description</th>
               </tr>
             </thead>
             <tbody>
               {formattedTemplates.map((template, index) => (
                 <tr key={index} className="hover:bg-gray-100">
-                  <td className="py-2 px-2 border w-1/5">{template.title}</td>
-                  <td className="py-2 px-2 border w-2/5">{template.detail}</td>
-                  <td className="py-2 px-2 border w-1/5">{template.teamName}</td>
-                  <td className="py-2 px-2 border w-1/5">
+                  <td className="py-1 px-2 border w-1/5">{template.title}</td>
+                  <td className="py-1 px-2 border w-2/5">{template.detail}</td>
+                  <td className="py-1 px-2 border w-1/5">{template.teamName}</td>
+                  <td className="py-1 px-2 border w-1/5">
                     <div className="flex justify-center gap-1">
                     {/* Edit Template Button*/}
                     {templateIsEditable(template, state.userState.userDetails, state.teamState.teamsByUser || []) && (

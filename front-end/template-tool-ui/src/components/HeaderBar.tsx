@@ -7,7 +7,7 @@ interface HeaderProps {
 
 function HeaderBar({profileClicked, showProfile}: HeaderProps) {
   return (
-    <div className='flex w-full pb-2'>
+    <div className='flex w-full'>
       <div className='flex w-full justify-between'>
         <Link to="/" reloadDocument >
           <h1 className='text-left'>Template Tool</h1>

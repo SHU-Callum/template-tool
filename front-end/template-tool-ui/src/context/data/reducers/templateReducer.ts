@@ -76,11 +76,22 @@ const templateReducer = (state: TemplateState, action: ActionPayload): TemplateS
           return state;
         }
     case ActionType.ERROR:
-      return {
-        ...state,
-        loading: false,
-        error: action.payload as string,
-      };
+      switch (action.apiName) {
+        case ActionType.GET_TEMPLATES_BY_PARAMS:
+          return {
+            ...state,
+            loading: false,
+            error: action.payload as string,
+            templatesByTeams: null,
+            templatesByParams: [],
+          };
+        default:
+          return {
+            ...state,
+            loading: false,
+            error: action.payload as string,
+          };
+        }
     default:
       return state;
   }

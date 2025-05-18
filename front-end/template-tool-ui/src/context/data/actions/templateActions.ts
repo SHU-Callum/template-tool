@@ -65,12 +65,12 @@ export const getTemplatesByTeams = async (teamIds: number[], dispatch: Dispatch<
   }
 };
 
-export const getTemplatesByParams = async (teamIds: number[], searchText: string, viewOnly: boolean, dispatch: Dispatch<ActionPayload>) => {
+export const getTemplatesByParams = async (teamIdsParam: number[], searchtextParam: string, includeViewOnlyParam: boolean, dispatch: Dispatch<ActionPayload>) => {
   dispatchTemplateAction(dispatch, { type: ActionType.LOADING });
   const params: TemplateSearchParams = {
-    text: searchText,
-    teams: teamIds,
-    viewOnly: viewOnly
+    searchText: searchtextParam,
+    teamIds: teamIdsParam,
+    includeViewOnly: includeViewOnlyParam
   };
   try {
     const { encryptedParameter, iv } = encryptParameter(JSON.stringify(params)); // Need to encrypt twice due to API handling in Springboot
@@ -91,7 +91,12 @@ export const getTemplatesByParams = async (teamIds: number[], searchText: string
     if (axios.isCancel(error)) {
       dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: 'Timeout Error' });
     } else if (axios.isAxiosError(error)) {
-      dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: `${error.response?.data.error}: Error Code ${error.response?.status}` });
+        if (error.status === 404) {
+          dispatchTemplateAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.GET_TEMPLATES_BY_PARAMS, payload: `No templates found matching criteria` });
+        }
+        else {
+          dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: `${error.response?.data.error}: Error Code ${error.response?.status}` });
+        }
     } else {
       dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: 'An unknown error occurred' });
     }

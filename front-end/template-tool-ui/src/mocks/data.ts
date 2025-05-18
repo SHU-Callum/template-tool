@@ -40,19 +40,19 @@ export const GET_TEAMS_BY_USER_DATA = [
   {
     id: 1,
     teamName: 'Team 1',
-    ownerId: 3,
+    ownerIds: [3],
     members: [1, 2, 3]
   },
   {
     id: 2,
     teamName: 'Team 2',
-    ownerId: 2,
+    ownerIds: [2],
     members: [1, 3, 4]
   },
   {
     id: 3,
     teamName: 'My Test Team',
-    ownerId: 1,
+    ownerIds: [1],
     members: [1, 4]
   }
 ]
