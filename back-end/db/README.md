@@ -23,7 +23,9 @@
 - `docker rm template-tool-db-container`
 
 ## Database Commands (using docker-compose)
-*In root directory, run:*
+*In root directory*
+
+### Ensure .env file is created in root
 
 ### Building the docker image
 *Using environment configuration from **.env.dev***
