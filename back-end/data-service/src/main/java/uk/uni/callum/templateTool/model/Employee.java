@@ -7,6 +7,15 @@ import lombok.Data;
 @Table
 @Data
 public class Employee {
+    public Employee(String email, String displayName, String keycloakId) {
+        this.email = email;
+        this.displayName = displayName;
+        this.keycloakId = keycloakId;
+    }
+
+    public Employee() {
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

@@ -1,7 +1,7 @@
 export interface Team {
   id: number
   teamName: string;
-  ownerId: number;
+  ownerIds: number[];
   members: string[];
 }
 

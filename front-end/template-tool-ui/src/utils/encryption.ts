@@ -29,3 +29,18 @@ export const encryptParameter = (parameter: string) => {
       iv: encodedIV
   };
 };
+
+export const decryptParameter = (encryptedParameter: string, iv: string): string => {
+  const paddedKey = padKey(secretKey); // Pad key to compatible length
+  const cryptoKey = CryptoJS.enc.Utf8.parse(paddedKey); // Convert the key to WordArray
+  const decodedIV = CryptoJS.enc.Base64.parse(iv); // Decode IV from Base64
+  const decodedEncryptedParameter = decodeURIComponent(encryptedParameter); // Decode URI component
+
+  const decrypted = CryptoJS.AES.decrypt(decodedEncryptedParameter, cryptoKey, {
+    iv: decodedIV,
+    mode: CryptoJS.mode.CBC,
+    padding: CryptoJS.pad.Pkcs7,
+  });
+
+  return decrypted.toString(CryptoJS.enc.Utf8);
+};

@@ -8,6 +8,7 @@ export interface AuthContextType {
   initializeAuth: (localDetails?: UserAuthDetails) => void;
   refreshAccessToken: () => Promise<void>;
   authMsg: string;
+  logout: () => void;
 }
 
 export interface UserAuthDetails {

@@ -31,11 +31,21 @@ const teamReducer = (state: TeamState, action: ActionPayload): TeamState => {
           return state;
         }
     case ActionType.ERROR:
-      return {
-        ...state,
-        loading: false,
-        error: action.payload as string,
-      };
+      switch (action.apiName) {
+        case ActionType.GET_TEAMS_BY_USER:
+          return {
+            ...state,
+            loading: false,
+            error: action.payload as string,
+            teamsByUser: [],
+          };
+        default:
+          return {
+            ...state,
+            loading: false,
+            error: action.payload as string,
+          };
+        }
     default:
       return state;
   }

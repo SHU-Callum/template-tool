@@ -17,11 +17,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [authMsg, setAuthMsg] = useState('Authenticating...') // loading message
   const authenticationAttempted = useRef(false); // prevents authentication loop
   
-  const client = new Keycloak({
-    url: import.meta.env.VITE_KC_URL,
-    realm: import.meta.env.VITE_KC_REALM,
-    clientId: import.meta.env.VITE_KC_CLIENT,
-  });
+  const kcClientRef = useRef<Keycloak>(new Keycloak({
+      url: import.meta.env.VITE_KC_URL,
+      realm: import.meta.env.VITE_KC_REALM,
+      clientId: import.meta.env.VITE_KC_CLIENT,
+    }));
 
   const initializeAuth = (localAuthDetails?: UserAuthDetails) => {
     if (localAuthDetails && localAuthDetails.expiresIn && !isTokenExpired(localAuthDetails.expiresIn)) {
@@ -35,21 +35,21 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       authenticationAttempted.current = true;
       setAuthMsg('Authenticating...');
 
-      client
+      kcClientRef.current
         .init({ onLoad: 'login-required' })
         .then((authenticated) => {
           if (authenticated) {
             setIsLoggedIn(true);
             setAuthMsg(`Authenticated`);
             const newAuthDetails = {
-              kcid: client.subject || '',
-              username: client.tokenParsed?.preferred_username,
-              email: client.tokenParsed?.email,
-              roles: client.tokenParsed?.realm_access?.roles || [],
-              accessToken: client.token || '',
-              refreshToken: client.refreshToken || '',
-              expiresIn: client.tokenParsed?.exp,
-              refreshTokenExpiresIn: client.refreshTokenParsed?.exp,
+              kcid: kcClientRef.current.subject || '',
+              username: kcClientRef.current.tokenParsed?.preferred_username,
+              email: kcClientRef.current.tokenParsed?.email,
+              roles: kcClientRef.current.tokenParsed?.realm_access?.roles || [],
+              accessToken: kcClientRef.current.token || '',
+              refreshToken: kcClientRef.current.refreshToken || '',
+              expiresIn: kcClientRef.current.tokenParsed?.exp,
+              refreshTokenExpiresIn: kcClientRef.current.refreshTokenParsed?.exp,
             }
             applyTokens(newAuthDetails);
           } else {
@@ -99,9 +99,27 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     localStorage.setItem('userAuthDetails', JSON.stringify(newAuthDetails));
     setInterceptAccessToken(newAuthDetails.accessToken) // future requests use this new token
   }
+
+  const logout = () => {
+    setIsLoggedIn(false);
+    setUserAuthDetails(null);
+    localStorage.clear();
+    setAuthMsg('Logged out');
+    if (kcClientRef.current && kcClientRef.current.authenticated) {
+      try {
+        kcClientRef.current.logout({
+          redirectUri: `http://${import.meta.env.VITE_UI_URL}:${import.meta.env.VITE_UI_PORT}/` // back to home
+        });
+      } catch (error) {
+        console.error('Error during logout:', error);
+      }
+    } else {
+      console.error('Keycloak client is not initialized');
+    }
+  };
   
   return (
-    <AuthContext.Provider value={{ isLoggedIn, userAuthDetails, initializeAuth, refreshAccessToken, authMsg }}>
+    <AuthContext.Provider value={{ isLoggedIn, userAuthDetails, initializeAuth, refreshAccessToken, authMsg, logout}}>
       {children /* renders app.tsx etc. */ }
     </AuthContext.Provider>
   );

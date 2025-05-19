@@ -3,7 +3,8 @@
 
 import { http, HttpResponse } from 'msw'
 import { API_BASE_URL } from '../constants/apis'
-import { GET_TEAMS_BY_USER_DATA, GET_TEMPLATES_BY_SEARCH_DATA, GET_TEMPLATES_BY_TEAMS_DATA, GET_USER_DETAILS_DATA } from './data'
+import { GET_TEAMS_BY_USER_DATA, GET_TEMPLATES_BY_PARAMS_DATA, GET_TEMPLATES_BY_PARAMS_DATA_2, GET_TEMPLATES_BY_TEAMS_DATA, GET_USER_DETAILS_DATA } from './data'
+import { decryptParameter } from '../utils/encryption'
  
 export const handlers = [
   http.get('/', () => {
@@ -12,12 +13,18 @@ export const handlers = [
 
   // Intercept "GET localhost/api/templates/?search=*" requests...
   http.get(`${API_BASE_URL}/templates`, ({request}) => {
+    const headers = request.headers;
     const url = new URL(request.url);
-    const textParam = url.searchParams.get('search')
-    if (!textParam) {
+    const paramString = url.searchParams.get('search')
+    if (!paramString) {
       return HttpResponse.json({ error: 'Search value cannot be empty' }, { status: 400 })
     }
-    return HttpResponse.json(GET_TEMPLATES_BY_SEARCH_DATA)
+    const params = JSON.parse(decryptParameter(paramString, headers.get('encryption-iv') || ''));
+    const { text } = params;
+    if (!text || text.length < 1) {
+      return HttpResponse.json(GET_TEMPLATES_BY_PARAMS_DATA)
+    }
+    return HttpResponse.json(GET_TEMPLATES_BY_PARAMS_DATA_2)
   }),
 
   // Intercept "GET localhost/api/templates/all?teams=*" requests...
