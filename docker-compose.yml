@@ -18,7 +18,7 @@ services:
   template-tool-keycloak:
     image: quay.io/keycloak/keycloak:26.2.1
     container_name: keycloak-container
-    command: start-dev --import-realm
+    command: start-dev --import-realm --http-port=${KC_CONTAINER_PORT}
     environment:
       KC_DB: mysql
       KC_DB_URL: jdbc:mysql://template-tool-db-container:${MYSQL_PORT}/${MYSQL_DATABASE}
