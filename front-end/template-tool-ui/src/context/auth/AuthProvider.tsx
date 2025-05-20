@@ -17,6 +17,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [authMsg, setAuthMsg] = useState('Authenticating...') // loading message
   const authenticationAttempted = useRef(false); // prevents authentication loop
   
+  // Mock API for development purposes
   if (import.meta.env.VITE_MOCK_API === 'true') {
     const [isLoggedIn, setIsLoggedIn] = useState(true);
     const [userAuthDetails, setUserAuthDetails] = useState<UserAuthDetails | null>({
@@ -49,6 +50,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     );
   }
 
+  // If not using mock API, use Keycloak for authentication
   const kcClientRef = useRef<Keycloak>(new Keycloak({
       url: import.meta.env.VITE_KC_URL,
       realm: import.meta.env.VITE_KC_REALM,
@@ -68,7 +70,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setAuthMsg('Authenticating...');
 
       kcClientRef.current
-        .init({ onLoad: 'login-required' })
+        .init({ onLoad: 'login-required', redirectUri: `http://${import.meta.env.VITE_UI_URL}:${import.meta.env.VITE_UI_PORT}/` })
         .then((authenticated) => {
           if (authenticated) {
             setIsLoggedIn(true);

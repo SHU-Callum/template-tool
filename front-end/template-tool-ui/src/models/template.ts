@@ -9,6 +9,7 @@ export interface Template {
   lastAmendDate: Date;
 }
 
+// Used for converting MySQL date to typescript date
 export interface TempTemplate extends Omit<Template, 'lastAmendDate'> {
   lastAmendDate: string;
 }

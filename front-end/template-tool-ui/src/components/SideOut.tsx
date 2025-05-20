@@ -28,7 +28,7 @@ function SideOut({ isOpen, onClose }: SideOutProps) {
     //TODO: Implement create logic
   };
 
-  // Fetch teams by user locally
+  // Fetch teams by user locally. Splits teams into owner and regular member roles
   useEffect(() => {
     if (state.teamState.teamsByUser) {
       const formattedTeams = state.teamState.teamsByUser.map((team) => ({

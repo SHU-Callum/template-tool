@@ -7,7 +7,6 @@ export const API_BASE_URL = `${apiUrl}/api`;
 
 export const API_ROUTES = {
   GET_TEMPLATE_URL: (templateId: number) => `${API_BASE_URL}/template/${templateId}`,
-  GET_TEMPLATES_BY_USER_URL: (userId: string) => `${API_BASE_URL}/templates/${userId}`,
   GET_TEMPLATES_BY_TEAMS: (eTeamIds: string) => `${API_BASE_URL}/templates/all?teams=${eTeamIds}`,
   GET_TEMPLATES_BY_PARAMS: (params: string) => `${API_BASE_URL}/templates?search=${params}`,
   DELETE_TEMPLATE_URL: (templateId: string) => `${API_BASE_URL}/template/${templateId}/delete`,

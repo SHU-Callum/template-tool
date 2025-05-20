@@ -5,6 +5,7 @@ interface SelectInputProps {
   label: string;
 }
 
+// Dropdown component for selecting a value from a list of options
 function SelectInput({ value, onChange, options, label }: SelectInputProps) {
   return (
     <div className="flex items-center">
