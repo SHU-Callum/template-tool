@@ -17,6 +17,38 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [authMsg, setAuthMsg] = useState('Authenticating...') // loading message
   const authenticationAttempted = useRef(false); // prevents authentication loop
   
+  if (import.meta.env.VITE_MOCK_API === 'true') {
+    const [isLoggedIn, setIsLoggedIn] = useState(true);
+    const [userAuthDetails, setUserAuthDetails] = useState<UserAuthDetails | null>({
+      kcid: 'mock-kcid',
+      username: 'mockuser',
+      email: 'mock@mock.com',
+      roles: ['user'],
+      accessToken: 'mock-token',
+      refreshToken: 'mock-refresh-token',
+      expiresIn: Date.now() / 1000 + 3600,
+      refreshTokenExpiresIn: Date.now() / 1000 + 7200,
+    });
+    const [authMsg, setAuthMsg] = useState('Authenticated (mock)');
+
+    const initializeAuth = () => {};
+    const refreshAccessToken = async () => {};
+    const logout = () => {
+      setIsLoggedIn(false);
+      setUserAuthDetails(null);
+      setAuthMsg('Logged out (mock - returning in 2 seconds)');
+      setTimeout(() => {
+        window.location.href = `http://${import.meta.env.VITE_UI_URL}:${import.meta.env.VITE_UI_PORT}/`;
+      }, 2000); // Redirect to home after 2 seconds
+    };
+
+    return (
+      <AuthContext.Provider value={{ isLoggedIn, userAuthDetails, initializeAuth, refreshAccessToken, authMsg, logout }}>
+        {children}
+      </AuthContext.Provider>
+    );
+  }
+
   const kcClientRef = useRef<Keycloak>(new Keycloak({
       url: import.meta.env.VITE_KC_URL,
       realm: import.meta.env.VITE_KC_REALM,

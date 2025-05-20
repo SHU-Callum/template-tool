@@ -29,9 +29,9 @@ function TemplateSearchResults({ results, criteria }: TemplateSearchResultsProps
             <thead>
               <tr>
                 <th className="py-1 px-2 border">Name</th>
+                <th className="py-1 px-2 border">Description</th>
                 <th className="py-1 px-2 border">Team</th>
                 <th className="py-1 px-2 border">Action</th>
-                <th className="py-1 px-2 border">Description</th>
               </tr>
             </thead>
             <tbody>
