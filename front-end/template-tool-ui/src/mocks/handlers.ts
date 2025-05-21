@@ -20,8 +20,8 @@ export const handlers = [
       return HttpResponse.json({ error: 'Search value cannot be empty' }, { status: 400 })
     }
     const params = JSON.parse(decryptParameter(paramString, headers.get('encryption-iv') || ''));
-    const { text } = params;
-    if (!text || text.length < 1) {
+    const { searchText } = params;
+    if (!searchText || searchText.length < 1) {
       return HttpResponse.json(GET_TEMPLATES_BY_PARAMS_DATA)
     }
     return HttpResponse.json(GET_TEMPLATES_BY_PARAMS_DATA_2)

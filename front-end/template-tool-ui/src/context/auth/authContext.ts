@@ -11,6 +11,7 @@ export interface AuthContextType {
   logout: () => void;
 }
 
+// Details are fetched by Keycloak on receiving token
 export interface UserAuthDetails {
   kcid: string;
   username: string;

@@ -6,7 +6,7 @@ import { User } from "../../models/user";
 
 export const INITIAL_TEMPLATE_STATE: TemplateState = {
   templateById: null as Template | null,
-  templatesByParams: [] as Template[] | null,
+  templatesByParams: null as Template[] | null,
   loading: false,
   error: null,
   templatesByTeams: null

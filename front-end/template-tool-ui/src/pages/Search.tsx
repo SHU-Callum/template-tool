@@ -51,15 +51,11 @@ function Search() {
   // When the user selects a team from the dropdown
   const selectTeamFilterChanged = useCallback((selectedTeam: string) => {
     const availableTeams = state.teamState.teamsByUser;
-    //const availableTemplates = state.templateState.templatesByTeams;
     if (selectedTeam === 'All Teams') {
       setSearchTeamFilter(availableTeams ? availableTeams : []);
-      //setSearchResults(state.templateState.templatesByTeams || []);
-    } else if (availableTeams /*&& availableTemplates*/) {
-      const filteredTeams = availableTeams.filter(team => team.teamName === selectedTeam);
+    } else if (availableTeams) {
+      const filteredTeams = availableTeams.filter(team => team.teamName === selectedTeam); // current selected team
       setSearchTeamFilter(filteredTeams);
-      //const filteredTemplates = availableTemplates.filter(template => template.teamId === filteredTeams[0].id);
-      //setSearchResults(filteredTemplates);
     } else {
       setSearchTeamFilter([]);
     }
