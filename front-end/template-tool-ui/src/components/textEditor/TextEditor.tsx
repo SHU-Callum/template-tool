@@ -1,25 +1,27 @@
-import { EditorComponent, Remirror } from "@remirror/react";
-import TextManager from "./TextManager";
-import TextMenu from "./TextMenu";
-import { RemirrorContentType } from "remirror";
+import { EditorProvider } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
+import TextMenu from './TextMenu'
+import Underline from '@tiptap/extension-underline'
+
+const extensions = [
+  StarterKit,
+  Underline
+]
 
 interface TextEditorProps {
-  jsonContentFromStorage: RemirrorContentType;
+  content: {} // template to display (JSON format)
 }
 
-function TextEditor({jsonContentFromStorage}: TextEditorProps) {
-  const { manager, state } = TextManager(jsonContentFromStorage);
-
+const TextEditor = (props: TextEditorProps) => {
   return (
-    <div className='remirror-theme'>
-      <Remirror manager={manager} initialContent={state}>
-        <div>
-          <EditorComponent />
-          <hr />
-          <TextMenu />
-        </div>
-      </Remirror >
-    </div>
-  );
+    <EditorProvider 
+      extensions={extensions} 
+      content={props.content} 
+      slotBefore={<TextMenu />}
+      editorContainerProps={{ className: "w-full h-full" }}
+      >
+    </EditorProvider>
+  )
 }
-export default TextEditor;
+
+export default TextEditor

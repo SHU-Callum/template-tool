@@ -3,7 +3,6 @@ import { TemplateWithTeamName } from "../models/template";
 import BackButton from "../components/BackButton";
 import RoundedLabel from "../components/RoundedLabel";
 import TextEditor from "../components/textEditor/TextEditor";
-import { RemirrorContentType } from "remirror";
 
 function ViewTemplate() {
   const location = useLocation();
@@ -12,7 +11,6 @@ function ViewTemplate() {
   let validJSON = true;
   try {
     jsonContent = JSON.parse(templateFromState.content);
-    jsonContent as RemirrorContentType; // tests if valid RemirrorJSON
   }
   catch (error) {
     validJSON = false;
@@ -20,47 +18,48 @@ function ViewTemplate() {
 
   const lastAmendDate = new Date(templateFromState.lastAmendDate);
   return (
-    <div className="p-4 w-full sm:w-6/7 mx-auto">
+    <div className="p-4 w-full sm:w-6/7 mx-auto self-start h-full">
       {!templateFromState || templateFromState === undefined ? (
         <div className="flex justify-center items-center h-full w-full text-gray-500 dark:text-gray-400">
           <p>No template selected. Please select a template to view.</p>
         </div>
         ) : (
-      <div className="border rounded-lg shadow-lg p-4 bg-white dark:bg-gray-800">
-        <div className="flex justify-start gap-4">
-          <Link to="/">
-            <BackButton />
-          </Link>
-          <h2 className="text-left">Viewing Template</h2>
-          {templateFromState.editable ? 
-            <RoundedLabel text={templateFromState.teamName} borderColour="border-green-500" textBold clickAction={() => {}} />
-            :
-            <RoundedLabel text={templateFromState.teamName} textBold />
-          }
-          </div>
-        <h3 className="text-left">{templateFromState.title}</h3>
-        <p className="text-left italic p-1">Created by: Test User, Last update: {lastAmendDate.toLocaleDateString()}</p>
-        <hr />
-        {validJSON ? (
-          <div className="flex justify-start gap-4 mt-4">
-            <div className="text-left p-2 border rounded-lg w-full">
-              <TextEditor jsonContentFromStorage={jsonContent as RemirrorContentType}/>
+        <div className="border rounded-lg shadow-lg p-3 bg-white dark:bg-gray-800 h-full flex flex-col">
+          <div className="flex justify-start gap-4">
+            <Link to="/">
+              <BackButton />
+            </Link>
+            <div>
+              <h3 className="text-left">{templateFromState.title}</h3>
+              <p className="text-left italic caption">Created by: Test User, Last update: {lastAmendDate.toLocaleDateString()}</p>
             </div>
-            <div className="flex justify-end mt-4 flex-col gap-1">
-              <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded" onClick={() => {}}>
-                Input
-              </button>
-              <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded" disabled onClick={() => {}}>
-                Preview
-              </button>
-            </div>
+            {templateFromState.editable ? 
+              <RoundedLabel text={templateFromState.teamName} borderColour="border-green-500" textBold clickAction={() => {}} />
+              :
+              <RoundedLabel text={templateFromState.teamName} textBold />
+            }
           </div>
+          <hr />
+          {validJSON ? (
+            <div className="flex justify-start gap-4 mt-2 flex-grow">
+              <div className="text-left p-2 border rounded-lg w-full h-full flex flex-col">
+                <TextEditor content={jsonContent}/>
+              </div>
+              <div className="flex justify-end mt-4 flex-col gap-1">
+                <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded" onClick={() => {}}>
+                  Input
+                </button>
+                <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded" disabled onClick={() => {}}>
+                  Preview
+                </button>
+              </div>
+            </div>
             ) : (
             <div className="text-left p-2 border rounded-lg w-full">
               <p className="text-red-500">Invalid JSON content. Please check the template content.</p>
             </div>
-        )}
-      </div>
+          )}
+        </div>
       )}
     </div>
   );

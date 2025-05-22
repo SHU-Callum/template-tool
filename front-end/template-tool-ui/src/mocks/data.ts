@@ -15,7 +15,7 @@ export const GET_TEMPLATES_BY_PARAMS_DATA = [
     id: 2,
     title: 'Goodbye Email',
     detail: 'Template for saying goodbye to users',
-    content: '{"Dear {{name}},\n\nWe are sorry to see you go. Please come back soon!\n\nBest regards,\nThe Team"}',
+    content: '{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Dear {{name}}, "}]} ,{"type":"paragraph"},{"type":"paragraph","content":[{"type":"text","text":"We are sorry to see you go. "}]} ,{"type":"paragraph","content":[{"type":"text","text":"Please come back soon! "}]} ,{"type":"paragraph"},{"type":"paragraph","content":[{"type":"text","text":"Best regards, "}]} ,{"type":"paragraph","content":[{"type":"text","text":"The Team"}]}]}',
     ownerId: 2,
     teamId: 1,
     editable: false,

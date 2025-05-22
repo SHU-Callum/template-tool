@@ -177,7 +177,7 @@ function Search() {
   , [searchText, searchResults, state.teamState.teamsByUser, state.userState.userDetails?.id, searchIncludeViewOnly, searchTeamFilter, state.userState.userDetails]);
 
   return (
-    <div className="p-4 w-full sm:w-6/7 mx-auto">
+    <div className="p-4 w-full sm:w-6/7 mx-auto self-start h-full">
       <div className="w-full sm:w-6/7 md:w-5/6 lg:w-2/3 mx-auto">
         <div className="flex justify-between mb-2 items-center space-x-8 sm:w-11/12 md:w-10/12 lg:space-x-0 lg:w-4/5 mx-auto">
           <SelectInput 

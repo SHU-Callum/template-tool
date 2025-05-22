@@ -130,14 +130,11 @@ function App() {
     <BrowserRouter>
       <div className='p-4 pt-2 w-full h-full flex flex-col'>
         <HeaderBar profileClicked={profileClicked} showProfile={!isSideOutRendered} />
-        <div className='flex items-center w-full'>
+        <div className='flex items-center w-full flex-grow'>
           <Routes>
             <Route path="/" element={<Search />} />
             <Route path="/view-template" element={<ViewTemplate />} />
           </Routes>
-        </div>
-        <div className='flex-grow flex items-center w-full'>
-          {/* Empty space that will grow */}
         </div>
         <FooterBar infoClicked={infoClicked} />
         {isSideOutRendered && <SideOut isOpen={isSideOutOpen} onClose={closeSideout} />}

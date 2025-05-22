@@ -1,6 +1,7 @@
 import { useHelpers } from "@remirror/react";
 import { useCallback } from "react";
 
+// TODO: Replace with TipTap
 function SaveEditor() {
   const { getJSON } = useHelpers();
   const handleClick = useCallback(() => console.log(JSON.stringify(getJSON())), [getJSON]);
