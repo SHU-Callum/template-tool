@@ -4,14 +4,14 @@ import BackButton from "../components/BackButton";
 import RoundedLabel from "../components/RoundedLabel";
 import TextEditor from "../components/textEditor/TextEditor";
 import { TemplateViewMode } from "../types/templateViewTypes";
-import { useState } from "react";
+import { useDisplayMode } from "../context/templateDisplay/useDisplayMode";
 
 function ViewTemplate() {
   const location = useLocation();
-  const [viewMode, setViewMode] = useState(TemplateViewMode.Edit)
+  const { mode, setMode } = useDisplayMode();
 
-  const handleViewModeChange = (mode: TemplateViewMode) => {
-    setViewMode(mode);
+  const handleViewModeChange = (newMode: TemplateViewMode) => {
+    setMode(newMode);
   }
 
   const templateFromState: TemplateWithTeamName = location.state.template
@@ -50,20 +50,20 @@ function ViewTemplate() {
           <hr />
           {validJSON ? (
             <div className="flex justify-start gap-4 mt-2 flex-grow">
-              <div className="text-left p-2 border rounded-lg w-full h-full flex flex-col">
-                <TextEditor content={jsonContent} editable={viewMode == TemplateViewMode.Edit}/>
-              </div>
-              <div className="flex justify-end mt-4 flex-col gap-1">
-                <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded" disabled={viewMode == TemplateViewMode.Edit} onClick={() => handleViewModeChange(TemplateViewMode.Edit)}>
-                  Edit
-                </button>
-                <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded" disabled={viewMode == TemplateViewMode.Input} onClick={() => handleViewModeChange(TemplateViewMode.Input)}>
-                  Input
-                </button>
-                <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded" disabled={viewMode == TemplateViewMode.Render} onClick={() => handleViewModeChange(TemplateViewMode.Render)}>
-                  Preview
-                </button>
-              </div>
+                <div className="text-left p-2 border rounded-lg w-full h-full flex flex-col">
+                  <TextEditor content={jsonContent}/>
+                </div>
+                <div className="flex justify-end mt-4 flex-col gap-1">
+                  <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded" disabled={mode == TemplateViewMode.Edit} onClick={() => handleViewModeChange(TemplateViewMode.Edit)}>
+                    Edit
+                  </button>
+                  <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded" disabled={mode == TemplateViewMode.Input} onClick={() => handleViewModeChange(TemplateViewMode.Input)}>
+                    Input
+                  </button>
+                  <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded" disabled={mode == TemplateViewMode.Render} onClick={() => handleViewModeChange(TemplateViewMode.Render)}>
+                    Preview
+                  </button>
+                </div>
             </div>
             ) : (
             <div className="text-left p-2 border rounded-lg w-full">

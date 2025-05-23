@@ -1,44 +1,59 @@
 import { NodeViewProps, NodeViewWrapper } from "@tiptap/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useDisplayMode } from "../../context/templateDisplay/useDisplayMode";
+import { TemplateViewMode } from "../../types/templateViewTypes";
 
 const TextInput = (props: NodeViewProps) => {
-    const {editor, node, updateAttributes} = props;
+    const {node, updateAttributes} = props;
     const value = node.attrs.value || "";
-    const [charCount, setCharCount] = useState(0);
-    const [isEditable, setIsEditable] = useState(editor.isEditable);
+    const [displayText, setDisplayText] = useState<string>("");
+    const [promptCharCount, setPromptCharCount] = useState(value.length);
+    const [inputCharCount, setinputCharCount] = useState(displayText.length);
+    const {mode} = useDisplayMode();
 
-    useEffect(() => {
-        const updateEditable = () => setIsEditable(editor.isEditable);
-        editor.on('update', updateEditable);
-        return () => {
-            editor.off('update', updateEditable);
-        };
-    }, [editor]);
-
-    if (isEditable) {
-        return (
+    switch (mode) {
+        case TemplateViewMode.Edit:
+            return (
             <NodeViewWrapper as="span" style={{ display: "inline"}}>
                 <input
-                type="text"
-                className={`border border-gray-300 rounded px-2 py-1 ml-1.5 mr-1.5 outline-none text-sm min-w-6`}
-                style={{ width: `${charCount > 14 ? charCount : 14}ch` }}
-                placeholder="Prompt here..."
-                onChange={(e) => {
-                    const newValue = e.target.value;
-                    setCharCount(newValue.length);
-                    updateAttributes({ value: newValue });
-                }}
+                    type="text"
+                    className={`border border-gray-300 rounded px-2 py-1 ml-1.5 mr-1.5 outline-none text-sm min-w-6`}
+                    style={{ width: `${promptCharCount > 14 ? promptCharCount : 14}ch` }}
+                    placeholder="Prompt here..."
+                    onChange={(e) => {
+                        const newValue = e.target.value;
+                        setPromptCharCount(newValue.length);
+                        updateAttributes({ value: newValue });
+                    }}
+                    value={value}
                 />
             </NodeViewWrapper>
-        );
-    } else {
-        return (
+            );
+        case TemplateViewMode.Input:
+            return (
             <NodeViewWrapper as="span" style={{ display: "inline" }}>
-                <span className="inline">
-                    {value || node.attrs.placeholder}
-                </span>
+                <input
+                    type="text"
+                    className={`border border-gray-300 rounded px-2 py-1 ml-1.5 mr-1.5 outline-none text-sm min-w-6`}
+                    style={{ width: `${inputCharCount > 14 ? inputCharCount : 14}ch` }}
+                    placeholder={value}
+                    value={displayText ?? ""}
+                    onChange={(e) => {
+                        const newValue = e.target.value;
+                        setinputCharCount(newValue.length);
+                        setDisplayText(newValue);
+                    }}
+                />
             </NodeViewWrapper>
-        );
+            );
+        case TemplateViewMode.Render:
+            return displayText && displayText.length > 0 ? (
+                <NodeViewWrapper as="span" style={{ display: "inline" }}>
+                    <span className="inline">
+                        {displayText}
+                    </span>
+                </NodeViewWrapper>
+            ) : null;
     }
 };
 

@@ -11,7 +11,7 @@ export const TextInputNode = Node.create({
     addAttributes() {
         return {
             placeholder: {
-                default: 'Enter text here...',
+                default: 'Prompt...',
             },
             value: {
                 default: '',

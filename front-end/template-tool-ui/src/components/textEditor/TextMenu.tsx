@@ -1,8 +1,9 @@
 import { Editor, useCurrentEditor } from "@tiptap/react";
 import { useEffect } from "react";
+import { TemplateViewMode } from "../../types/templateViewTypes";
 
 interface TextMenuProps {
-  edit: boolean;
+  mode: TemplateViewMode;
 }
 
 const TextMenu = (props: TextMenuProps) => {
@@ -14,9 +15,9 @@ const TextMenu = (props: TextMenuProps) => {
 
   useEffect(() => {
       if(editor) {
-        editor.setEditable(props.edit)
+        editor.setEditable(props.mode === TemplateViewMode.Edit)
       }
-    }, [props.edit, editor])
+    }, [props, editor])
     
   const handleSave = () => {
     const content = editor.getJSON()
@@ -34,7 +35,7 @@ const TextMenu = (props: TextMenuProps) => {
     }).run();
   };
 
-  if (props.edit) {
+  if (props.mode === TemplateViewMode.Edit) {
     return (
       <div className="flex justify-between gap-2 items-center">
         <div className="mb-2">

@@ -6,6 +6,7 @@ import { worker } from './mocks/node.ts'
 import { DataProvider } from './context/data/dataProvider.tsx'
 import Loading from './components/Loading.tsx'
 import { AuthProvider } from './context/auth/AuthProvider.tsx'
+import { DisplayModeProvider } from './context/templateDisplay/DisplayModeProvider.tsx'
 
   const App = lazy(() => import('./App.tsx'))
 
@@ -26,9 +27,11 @@ configureMocking().then(() => {
       <AuthProvider>
         <DataProvider>
           <NotificationProvider>
-            <Suspense fallback={<Loading/>}>
-              <App />
-            </Suspense>
+            <DisplayModeProvider>
+              <Suspense fallback={<Loading/>}>
+                <App />
+              </Suspense>
+            </DisplayModeProvider>
           </NotificationProvider>
         </DataProvider>
       </AuthProvider>
