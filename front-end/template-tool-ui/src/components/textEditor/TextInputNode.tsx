@@ -1,0 +1,70 @@
+import { Node } from '@tiptap/core'
+import { ReactNodeViewRenderer } from '@tiptap/react'
+import TextInput from './TextInput'
+
+export const TextInputNode = Node.create({
+    name: 'textInput',
+    group: 'inline',
+    inline: true,
+    atom: false,
+    selectable: false,
+    addAttributes() {
+        return {
+            placeholder: {
+                default: 'Enter text here...',
+            },
+            value: {
+                default: '',
+            },
+        }
+    },
+    parseHTML() {
+        return [{ tag: 'input[type="text"]' }]
+    },
+    renderHTML({ HTMLAttributes }) {
+        return ['input', { ...HTMLAttributes, type: 'text' }]
+    },
+    addKeyboardShortcuts() {
+        return {
+            Backspace: ({ editor }) => {
+                const { state, dispatch } = editor.view;
+                const { selection } = state;
+                const node = selection.$from.nodeAfter;
+                if (
+                    selection.empty &&
+                    node &&
+                    node.type.name === this.name &&
+                    selection.$from.parentOffset === selection.$from.parent.content.size - node.nodeSize
+                ) {
+                    // Remove the node if backspace is pressed right after it
+                    dispatch(
+                        state.tr.delete(selection.$from.pos, selection.$from.pos + node.nodeSize)
+                    );
+                    return true;
+                }
+                return false;
+            },
+            Delete: ({ editor }) => {
+                const { state, dispatch } = editor.view;
+                const { selection } = state;
+                const node = selection.$from.nodeAfter;
+                if (
+                    selection.empty &&
+                    node &&
+                    node.type.name === this.name
+                ) {
+                    // Remove the node if delete is pressed right before it
+                    dispatch(
+                        state.tr.delete(selection.$from.pos, selection.$from.pos + node.nodeSize)
+                    );
+                    return true;
+                }
+                return false;
+            },
+        }
+    },
+    addNodeView() {
+        return ReactNodeViewRenderer(TextInput)
+    }
+})
+    

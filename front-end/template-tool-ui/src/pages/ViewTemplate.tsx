@@ -3,9 +3,17 @@ import { TemplateWithTeamName } from "../models/template";
 import BackButton from "../components/BackButton";
 import RoundedLabel from "../components/RoundedLabel";
 import TextEditor from "../components/textEditor/TextEditor";
+import { TemplateViewMode } from "../types/templateViewTypes";
+import { useState } from "react";
 
 function ViewTemplate() {
   const location = useLocation();
+  const [viewMode, setViewMode] = useState(TemplateViewMode.Edit)
+
+  const handleViewModeChange = (mode: TemplateViewMode) => {
+    setViewMode(mode);
+  }
+
   const templateFromState: TemplateWithTeamName = location.state.template
   let jsonContent = {};
   let validJSON = true;
@@ -43,13 +51,16 @@ function ViewTemplate() {
           {validJSON ? (
             <div className="flex justify-start gap-4 mt-2 flex-grow">
               <div className="text-left p-2 border rounded-lg w-full h-full flex flex-col">
-                <TextEditor content={jsonContent}/>
+                <TextEditor content={jsonContent} editable={viewMode == TemplateViewMode.Edit}/>
               </div>
               <div className="flex justify-end mt-4 flex-col gap-1">
-                <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded" onClick={() => {}}>
+                <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded" disabled={viewMode == TemplateViewMode.Edit} onClick={() => handleViewModeChange(TemplateViewMode.Edit)}>
+                  Edit
+                </button>
+                <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded" disabled={viewMode == TemplateViewMode.Input} onClick={() => handleViewModeChange(TemplateViewMode.Input)}>
                   Input
                 </button>
-                <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded" disabled onClick={() => {}}>
+                <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded" disabled={viewMode == TemplateViewMode.Render} onClick={() => handleViewModeChange(TemplateViewMode.Render)}>
                   Preview
                 </button>
               </div>
