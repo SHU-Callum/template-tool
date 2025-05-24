@@ -5,14 +5,27 @@ import RoundedLabel from "../components/RoundedLabel";
 import TextEditor from "../components/textEditor/TextEditor";
 import { TemplateViewMode } from "../types/templateViewTypes";
 import { useDisplayMode } from "../context/templateDisplay/useDisplayMode";
+import { useRef } from "react";
+import { Editor } from "@tiptap/react";
 
 function ViewTemplate() {
   const location = useLocation();
   const { mode, setMode } = useDisplayMode();
+  const editorRef = useRef<Editor | null>(null);
 
   const handleViewModeChange = (newMode: TemplateViewMode) => {
     setMode(newMode);
   }
+
+  const handleCopy = () => {
+    if (editorRef.current) {
+      const html = editorRef.current.getHTML();
+      const text = editorRef.current.getText();
+      if (window.electronClipboard && typeof window.electronClipboard.write === 'function') {
+        window.electronClipboard.write(html, text);
+      }
+    }
+  };
 
   const templateFromState: TemplateWithTeamName = location.state.template
   let jsonContent = {};
@@ -51,7 +64,7 @@ function ViewTemplate() {
           {validJSON ? (
             <div className="flex justify-start gap-4 mt-2 flex-grow">
                 <div className="text-left p-2 border rounded-lg w-full h-full flex flex-col">
-                  <TextEditor content={jsonContent}/>
+                  <TextEditor content={jsonContent} setEditorRef={editor => (editorRef.current = editor)}/>
                 </div>
                 <div className="flex justify-end mt-4 flex-col gap-1">
                   <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded" disabled={mode == TemplateViewMode.Edit} onClick={() => handleViewModeChange(TemplateViewMode.Edit)}>
@@ -63,6 +76,11 @@ function ViewTemplate() {
                   <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded" disabled={mode == TemplateViewMode.Render} onClick={() => handleViewModeChange(TemplateViewMode.Render)}>
                     Preview
                   </button>
+                  {mode == TemplateViewMode.Render && (
+                    <button className="bg-green-600 text-white p-2 pl-4 pr-4 rounded" onClick={handleCopy}>
+                      Copy
+                    </button>
+                  )}
                 </div>
             </div>
             ) : (
