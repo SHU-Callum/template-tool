@@ -7,20 +7,22 @@ import { TemplateViewMode } from "../types/templateViewTypes";
 import { useDisplayMode } from "../context/templateDisplay/useDisplayMode";
 import { useRef } from "react";
 import { Editor } from "@tiptap/react";
+import RenderModeView from "../components/textEditor/RenderModeView";
 
 function ViewTemplate() {
   const location = useLocation();
   const { mode, setMode } = useDisplayMode();
   const editorRef = useRef<Editor | null>(null);
+  const copyRef = useRef<HTMLDivElement | null>(null);
 
   const handleViewModeChange = (newMode: TemplateViewMode) => {
     setMode(newMode);
   }
 
   const handleCopy = () => {
-    if (editorRef.current) {
-      const html = editorRef.current.getHTML();
-      const text = editorRef.current.getText();
+    if (copyRef.current) {
+      const html = copyRef.current.innerHTML;
+      const text = copyRef.current.innerText;
       if (window.electronClipboard && typeof window.electronClipboard.write === 'function') {
         window.electronClipboard.write(html, text);
       }
@@ -81,6 +83,9 @@ function ViewTemplate() {
                       Copy
                     </button>
                   )}
+                  <div ref={copyRef} className="hidden">
+                    <RenderModeView content={editorRef.current?.getJSON()} /> 
+                  </div>
                 </div>
             </div>
             ) : (

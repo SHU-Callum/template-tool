@@ -13,6 +13,9 @@ export const TextInputNode = Node.create({
             placeholder: {
                 default: 'Prompt...',
             },
+            id: {
+                default: () => `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`, // Unique ID for the input
+            },
             value: {
                 default: '',
             },

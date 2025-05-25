@@ -5,11 +5,10 @@ import { TemplateViewMode } from "../../types/templateViewTypes";
 
 const TextInput = (props: NodeViewProps) => {
     const {node, updateAttributes} = props;
-    const value = node.attrs.value || "";
-    const [displayText, setDisplayText] = useState<string>("");
-    const [promptCharCount, setPromptCharCount] = useState(value.length);
-    const [inputCharCount, setinputCharCount] = useState(displayText.length);
-    const {mode} = useDisplayMode();
+    const id = node.attrs.id;
+    const prompt = node.attrs.value ?? "";
+    const [promptCharCount, setPromptCharCount] = useState(prompt.length);
+    const {mode, inputFields, setInputFields} = useDisplayMode();
 
     switch (mode) {
         case TemplateViewMode.Edit:
@@ -25,7 +24,7 @@ const TextInput = (props: NodeViewProps) => {
                         setPromptCharCount(newValue.length);
                         updateAttributes({ value: newValue });
                     }}
-                    value={value}
+                    value={prompt}
                 />
             </NodeViewWrapper>
             );
@@ -35,22 +34,21 @@ const TextInput = (props: NodeViewProps) => {
                 <input
                     type="text"
                     className={`border border-gray-300 rounded px-2 py-1 ml-1.5 mr-1.5 outline-none text-sm min-w-6`}
-                    style={{ width: `${inputCharCount > 14 ? inputCharCount : 14}ch` }}
-                    placeholder={value}
-                    value={displayText ?? ""}
+                    style={{ width: `${inputFields[id]?.length > 14 ? inputFields[id]?.length : 14}ch` }}
+                    placeholder={prompt}
+                    value={inputFields[id] ?? ""}
                     onChange={(e) => {
                         const newValue = e.target.value;
-                        setinputCharCount(newValue.length);
-                        setDisplayText(newValue);
+                        setInputFields((fields => ({...fields, [id]: newValue })));
                     }}
                 />
             </NodeViewWrapper>
             );
         case TemplateViewMode.Render:
-            return displayText && displayText.length > 0 ? (
+            return inputFields[id] && inputFields[id].length > 0 ? (
                 <NodeViewWrapper as="span" style={{ display: "inline" }}>
                     <span className="inline">
-                        {displayText}
+                        {inputFields[id]}
                     </span>
                 </NodeViewWrapper>
             ) : null;
