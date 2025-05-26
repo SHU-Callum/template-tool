@@ -1,4 +1,5 @@
 // used for providing the editor access to the template display mode context
+
 import { useContext } from "react";
 import { DisplayModeContext } from "./displayModeContext";
 

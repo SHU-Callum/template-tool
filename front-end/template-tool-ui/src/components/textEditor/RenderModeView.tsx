@@ -1,7 +1,7 @@
 import { Fragment, ReactNode } from "react";
 import { useDisplayMode } from "../../context/templateDisplay/useDisplayMode";
 
-// Helper to recursively render Tiptap JSON as HTML, replacing textInput nodes
+// Helper to recursively render Tiptap JSON as HTML, targeting marks and input fields
 function renderNode(node: any, inputFields: Record<string, string>) {
   if (!node) return null;
   if (node.type === "text") {
@@ -21,7 +21,7 @@ function renderNode(node: any, inputFields: Record<string, string>) {
     return <span className="inline">{inputFields[node.attrs.id] ?? ""}</span>;
   }
 
-  // Render other nodes recursively
+  // Converts TipTap node types to HTML tags
   const Tag = node.type === "paragraph" 
     ? "p"
   : node.type === "orderedList"
@@ -34,6 +34,7 @@ function renderNode(node: any, inputFields: Record<string, string>) {
     ? `h${node.attrs?.level || 1}` as keyof JSX.IntrinsicElements
   : node.type;
 
+  // Render nodes recursively
   return (
     <Tag>
       {node.content &&

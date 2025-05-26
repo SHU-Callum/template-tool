@@ -1,3 +1,5 @@
+// used for creating the template display mode context
+
 import { createContext } from "react";
 import { TemplateViewMode } from "../../types/templateViewTypes";
 import { InputFieldMap } from "./DisplayModeProvider";

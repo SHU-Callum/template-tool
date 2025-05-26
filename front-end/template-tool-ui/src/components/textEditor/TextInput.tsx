@@ -5,9 +5,9 @@ import { TemplateViewMode } from "../../types/templateViewTypes";
 
 const TextInput = (props: NodeViewProps) => {
     const {node, updateAttributes} = props;
-    const id = node.attrs.id;
-    const prompt = node.attrs.value ?? "";
-    const [promptCharCount, setPromptCharCount] = useState(prompt.length);
+    const id = node.attrs.id; // Unique for each text input
+    const prompt = node.attrs.value ?? ""; // updated in edit mode. Displayed in Input Mode placeholder
+    const [promptCharCount, setPromptCharCount] = useState(prompt.length); // used for setting the width of the input field
     const {mode, inputFields, setInputFields} = useDisplayMode();
 
     switch (mode) {

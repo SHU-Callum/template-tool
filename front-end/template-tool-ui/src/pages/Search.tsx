@@ -151,6 +151,7 @@ function Search() {
     }
   }, [state.teamState.loading, state.templateState.loading]);
 
+  // Filter the search results based on search text, team filter, and view-only checkbox
   useEffect(() => {
     const templatesWithTeamNames = addTeamNameToTemplates(searchResults, state.teamState.teamsByUser || []);
     // Filter the search results based on team dropdown

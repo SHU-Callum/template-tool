@@ -19,6 +19,7 @@ function ViewTemplate() {
   const copyRef = useRef<HTMLDivElement | null>(null); // reference to hidden div designed for copying rendered content
   const [showEditor, setShowEditor] = useState(false); // to prevent editor from remounting on every render
   
+  // Sets inital view mode based on if Edit or Open button was clicked in Search page
   useEffect(() => {
     if (location.state) {
       setMode(location.state.editMode == true ? TemplateViewMode.Edit : TemplateViewMode.Input);
@@ -29,6 +30,7 @@ function ViewTemplate() {
     setMode(newMode);
   }
 
+  // TODO: Implement save functionality to update template content in the database
   const handleSave = () => {
     if (editorRef.current) {
       const content = editorRef.current.getJSON();
@@ -37,8 +39,9 @@ function ViewTemplate() {
     }
   }
 
+  // Copies the rendered content to clipboard using Electron clipboard API
   const handleCopy = () => {
-    if (copyRef.current) {
+    if (copyRef.current) { // uses hidden div to copy rendered content
       const html = copyRef.current.innerHTML;
       const text = copyRef.current.innerText;
       if (window.electronClipboard && typeof window.electronClipboard.write === 'function') {
@@ -47,6 +50,7 @@ function ViewTemplate() {
     }
   };
 
+  // The selected template is passed from the Search page via location state
   const templateFromState: TemplateWithTeamName = location.state.template
   let jsonContent = {};
   let validJSON = true;
