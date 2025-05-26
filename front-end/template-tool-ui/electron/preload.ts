@@ -22,3 +22,9 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
   // You can expose other APTs you need here.
   // ...
 })
+
+contextBridge.exposeInMainWorld('electronClipboard', {
+  write(htmlText: string, plainText: string) {
+    ipcRenderer.invoke('clipboard:writeText', htmlText, plainText)
+  }
+});

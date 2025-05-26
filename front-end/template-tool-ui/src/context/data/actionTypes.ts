@@ -13,6 +13,7 @@ export enum ActionType {
   GET_TEMPLATES_BY_PARAMS,
   GET_TEAMS_BY_USER,
   GET_USER_DETAILS,
+  UPDATE_TEMPLATE,
 }
 
 export interface ActionPayload {
