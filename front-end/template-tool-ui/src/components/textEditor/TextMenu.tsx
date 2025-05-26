@@ -18,12 +18,6 @@ const TextMenu = (props: TextMenuProps) => {
         editor.setEditable(props.mode === TemplateViewMode.Edit)
       }
     }, [props, editor])
-    
-  const handleSave = () => {
-    const content = editor.getJSON()
-    // TODO: Replace this with save logic (API call, localStorage, etc.)
-    console.log('Document JSON:', content)
-  }
 
   const insertTextInput = (editor: Editor) => {
     editor.chain().focus().insertContent({
@@ -31,6 +25,7 @@ const TextMenu = (props: TextMenuProps) => {
       attrs: {
         placeholder: 'Enter text here...',
         value: '',
+        id: `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`, // Unique ID for the input
       },
     }).run();
   };
@@ -188,9 +183,6 @@ const TextMenu = (props: TextMenuProps) => {
           >
             Insert Field
           </button>
-        </div>
-        <div className="flex items-center ml-auto">
-          <button className="h-auto border-black justify-end" onClick={handleSave}> Save </button>
         </div>
         <hr />
       </div>
