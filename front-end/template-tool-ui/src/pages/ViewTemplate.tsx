@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router";
-import { TemplateWithTeamName } from "../models/template";
+import { TemplateWithTeamName, TempTemplate } from "../models/template";
 import BackButton from "../components/BackButton";
 import RoundedLabel from "../components/RoundedLabel";
 import TextEditor from "../components/textEditor/TextEditor";
@@ -10,6 +10,9 @@ import { Editor } from "@tiptap/react";
 import RenderModeView from "../components/textEditor/RenderModeView";
 import { useNotification } from "../context/notification/useNotification";
 import { NotificationType } from "../types/notificationTypes";
+import { dateToMysqlDatetime } from "../utils/dateFormatter";
+import { updateTemplate } from "../context/data/actions/templateActions";
+import { useDispatchContext, useStateContext } from "../context/data/useData";
 
 function ViewTemplate() {
   const location = useLocation(); // contains template state passed from Search page
@@ -18,24 +21,21 @@ function ViewTemplate() {
   const editorRef = useRef<Editor | null>(null); // reference to tiptap editor for save & copy functionality
   const copyRef = useRef<HTMLDivElement | null>(null); // reference to hidden div designed for copying rendered content
   const [showEditor, setShowEditor] = useState(false); // to prevent editor from remounting on every render
-  
-  // Sets inital view mode based on if Edit or Open button was clicked in Search page
-  useEffect(() => {
-    if (location.state) {
-      setMode(location.state.editMode == true ? TemplateViewMode.Edit : TemplateViewMode.Input);
-    }
-  }, [location.state, setMode]);
+  const dispatch = useDispatchContext();
+  const state = useStateContext();
 
-  const handleViewModeChange = (newMode: TemplateViewMode) => {
-    setMode(newMode);
-  }
-
-  // TODO: Implement save functionality to update template content in the database
   const handleSave = () => {
     if (editorRef.current) {
       const content = editorRef.current.getJSON();
-      console.log('Document JSON:', content)
-      addNotification('Template updated!', NotificationType.SUCCESS);
+      const timeOfUpdate = (dateToMysqlDatetime(new Date()));
+      // convert template with team name to regular template compatible with backend
+      const { teamName: _teamName, ...baseTemplate } = templateFromState;
+      const updatedTemplate: TempTemplate = {
+        ...baseTemplate,
+        lastAmendDate: timeOfUpdate,
+        content: JSON.stringify(content),
+      };
+      updateTemplate(updatedTemplate, dispatch);
     }
   }
 
@@ -61,6 +61,17 @@ function ViewTemplate() {
     validJSON = false;
   }
 
+  // Sets inital view mode based on if Edit or Open button was clicked in Search page
+  useEffect(() => {
+    if (location.state) {
+      setMode(location.state.editMode == true ? TemplateViewMode.Edit : TemplateViewMode.Input);
+    }
+  }, [location.state, setMode]);
+
+  const handleViewModeChange = (newMode: TemplateViewMode) => {
+    setMode(newMode);
+  }
+
   // Prevents editor from remounting until react render is completed
   useEffect(() => {
     setShowEditor(false);
@@ -68,6 +79,16 @@ function ViewTemplate() {
     const timeout = setTimeout(() => setShowEditor(true), 0);
     return () => clearTimeout(timeout);
 }, [templateFromState.id]);
+
+  // When the PUT Update Template API call returns
+  useEffect (() => {
+    if(state.templateState.updateTemplate) {
+      addNotification('Template updated successfully!', NotificationType.SUCCESS);
+    }
+    else if (state.templateState.error) {
+      addNotification(`Error updating template: ${state.templateState.error}`, NotificationType.ERROR);
+    }
+  }, [state.templateState.updateTemplate, addNotification]);
 
   const lastAmendDate = new Date(templateFromState.lastAmendDate);
   return (
@@ -117,9 +138,11 @@ function ViewTemplate() {
                   </div>
                   
                   <div className="flex justify-between gap-1 flex-col">
-                    <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded w-full" disabled={mode == TemplateViewMode.Edit} onClick={() => handleViewModeChange(TemplateViewMode.Edit)}>
-                      Edit
-                    </button>
+                    {location.state.canEdit && (
+                      <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded w-full" disabled={mode == TemplateViewMode.Edit} onClick={() => handleViewModeChange(TemplateViewMode.Edit)}>
+                        Edit
+                      </button>
+                    )}
                     <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded w-full" disabled={mode == TemplateViewMode.Input} onClick={() => handleViewModeChange(TemplateViewMode.Input)}>
                       Input
                     </button>

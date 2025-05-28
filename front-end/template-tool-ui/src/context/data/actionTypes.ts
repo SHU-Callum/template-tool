@@ -8,7 +8,6 @@ export enum ActionType {
   LOADING,
   SUCCESS,
   ERROR,
-  GET_TEMPLATES_BY_ID,
   GET_TEMPLATES_BY_TEAMS,
   GET_TEMPLATES_BY_PARAMS,
   GET_TEAMS_BY_USER,
@@ -33,6 +32,7 @@ export enum DispatchType
 export type PayloadType =
     Template
   | Template[]
+  | TempTemplate
   | TempTemplate[]
   | Team[]
   | User

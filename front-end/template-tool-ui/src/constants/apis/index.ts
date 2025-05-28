@@ -10,7 +10,7 @@ export const API_ROUTES = {
   GET_TEMPLATES_BY_TEAMS: (eTeamIds: string) => `${API_BASE_URL}/templates/all?teams=${eTeamIds}`,
   GET_TEMPLATES_BY_PARAMS: (params: string) => `${API_BASE_URL}/templates?search=${params}`,
   DELETE_TEMPLATE_URL: (templateId: string) => `${API_BASE_URL}/template/${templateId}/delete`,
-  UPDATE_TEMPLATE_URL: (templateId: string) => `${API_BASE_URL}/template/${templateId}/update`,
+  UPDATE_TEMPLATE: (templateId: string) => `${API_BASE_URL}/template/${templateId}/update`,
   CREATE_TEMPLATE_URL: `${API_BASE_URL}/template/create`,
 
   GET_TEAM_URL: (teamId: string) => `${API_BASE_URL}/team/${teamId}`,

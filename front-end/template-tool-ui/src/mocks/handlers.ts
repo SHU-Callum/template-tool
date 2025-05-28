@@ -22,9 +22,9 @@ export const handlers = [
     const params = JSON.parse(decryptParameter(paramString, headers.get('encryption-iv') || ''));
     const { searchText } = params;
     if (!searchText || searchText.length < 1) {
-      return HttpResponse.json(GET_TEMPLATES_BY_PARAMS_DATA)
+      return HttpResponse.json(GET_TEMPLATES_BY_PARAMS_DATA) // Successful response
     }
-    return HttpResponse.json(GET_TEMPLATES_BY_PARAMS_DATA_2)
+    return HttpResponse.json(GET_TEMPLATES_BY_PARAMS_DATA_2) // Successful response
   }),
 
   // Intercept "GET localhost/api/templates/all?teams=*" requests...
@@ -34,7 +34,24 @@ export const handlers = [
     if (!teamsParam) {
       return HttpResponse.json({ error: 'User is not part of any teams' }, { status: 400 })
     }
-    return HttpResponse.json(GET_TEMPLATES_BY_TEAMS_DATA)
+    return HttpResponse.json(GET_TEMPLATES_BY_TEAMS_DATA) // Successful response
+  }),
+
+  // Intercept "PUT localhost/api/template/*/update requests...
+  http.put(`${API_BASE_URL}/template/:id/update`, async ({ request }) => {
+    const url = new URL(request.url);
+    const pathParts = url.pathname.split('/');
+    const templateId = pathParts[pathParts.indexOf('template') + 1];
+    if (!templateId || templateId.length < 1) {
+      return HttpResponse.json({ error: 'Template ID cannot be empty' }, { status: 400 });
+    }
+    const body = await request.text();
+    const headers = request.headers;
+    const decryptedBody = JSON.parse(decryptParameter((body), headers.get('encryption-iv') || ''));
+    if (!decryptedBody || Object.keys(decryptedBody).length === 0) {
+      return HttpResponse.json({ error: 'Request body cannot be empty' }, { status: 400 });
+    }
+    return HttpResponse.json(decryptedBody); // Successful response
   }),
 
   // Intercept "GET localhost/api/teams/all?user=*" requests...
@@ -44,7 +61,7 @@ export const handlers = [
     if (!userParam || userParam.length < 1) {
       return HttpResponse.json({ error: 'User ID cannot be empty' }, { status: 400 });
     }
-    return HttpResponse.json(GET_TEAMS_BY_USER_DATA);
+    return HttpResponse.json(GET_TEAMS_BY_USER_DATA); // Successful response
   }),
 
   // Intercept "GET localhost/api/user?kcid=*" requests...
@@ -54,6 +71,6 @@ export const handlers = [
     if (!userParam || userParam.length < 1) {
       return HttpResponse.json({ error: 'User ID cannot be empty' }, { status: 400 });
     }
-    return HttpResponse.json(GET_USER_DETAILS_DATA);
+    return HttpResponse.json(GET_USER_DETAILS_DATA); // Successful response
   })
 ]
