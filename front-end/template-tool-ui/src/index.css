@@ -182,6 +182,10 @@ button:focus-visible {
   list-style-type: decimal;
 }
 
+.ProseMirror span {
+  font-size: clamp(0.8rem, 0.7vw + 0.7rem, 1.1rem);
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

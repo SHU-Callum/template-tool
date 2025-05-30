@@ -5,11 +5,12 @@ import { TeamState } from "./reducers/teamReducer";
 import { User } from "../../models/user";
 
 export const INITIAL_TEMPLATE_STATE: TemplateState = {
-  templateById: null as Template | null,
+  templatesByTeams: null as Template[] | null,
   templatesByParams: null as Template[] | null,
+  updateTemplate: null as Template | null,
+  resetUpdateTemplate: () => ({}), // will be replaced in DataProvider
   loading: false,
   error: null,
-  templatesByTeams: null
 };
 
 export const INITIAL_TEAM_STATE: TeamState = {

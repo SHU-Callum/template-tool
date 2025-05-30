@@ -1,5 +1,6 @@
 package uk.uni.callum.templateTool.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -28,6 +29,7 @@ public class Template {
 
     private boolean editable;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "last_amend_date")
     private LocalDateTime lastAmendDate;
 }
