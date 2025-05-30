@@ -44,7 +44,7 @@ public class TeamController {
             } catch (IllegalArgumentException iae) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid user id - Error: " + iae.getMessage());
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
             }
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No user ID was sent");

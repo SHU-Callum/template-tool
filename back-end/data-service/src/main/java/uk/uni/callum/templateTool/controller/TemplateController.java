@@ -1,6 +1,7 @@
 package uk.uni.callum.templateTool.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,7 +10,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.web.bind.annotation.*;
 import uk.uni.callum.templateTool.model.Template;
 import uk.uni.callum.templateTool.model.requestParams.FindTemplateParams;
-import uk.uni.callum.templateTool.repository.TemplateRepository;
 import uk.uni.callum.templateTool.service.TemplateService;
 import uk.uni.callum.templateTool.utils.Encryption;
 
@@ -45,7 +45,7 @@ public class TemplateController {
             } catch (IllegalArgumentException iae) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid search parameters - Error: " + iae.getMessage());
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
             }
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Search parameter is required");
@@ -70,11 +70,40 @@ public class TemplateController {
             } catch (IllegalArgumentException iae) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid team IDs - Error: " + iae.getMessage());
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
             }
 
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Team ID parameter is required");
+        }
+    }
+
+    @PutMapping(value = "{id}/update")
+    @Operation(summary = "Update template", description = "Saves an existing template. **Note:** When inspecting this request in Chrome DevTools, use **'View source'** in the Network tab to see the raw payload.")
+    public ResponseEntity<?> updateTemplate(@PathVariable("id") Long id, @RequestHeader("encryption-iv") String iv, @RequestBody String encryptedTemplate) {
+        if (id != null && encryptedTemplate != null && !encryptedTemplate.isEmpty()) {
+            try {
+                String decodedTemplate = URLDecoder.decode(encryptedTemplate, StandardCharsets.UTF_8);
+                String decryptedTemplate = encryption.decrypt(decodedTemplate, iv);
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.registerModule(new JavaTimeModule());
+                // Convert to JSON array
+                Template templateToUpdate = mapper.readValue(decryptedTemplate, Template.class);
+                // Check for existing template
+                Template existingTemplate = templateService.findTemplateById(id);
+                if (existingTemplate == null) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Template not found");
+                }
+                // Update the existing template
+                Template savedTemplate = templateService.updateTemplate(templateToUpdate);
+                return ResponseEntity.status(HttpStatus.OK).body(savedTemplate);
+            } catch (IllegalArgumentException iae) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid template - Error: " + iae.getMessage());
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Template to update is required");
         }
     }
 }
