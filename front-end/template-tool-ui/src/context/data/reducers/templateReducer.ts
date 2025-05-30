@@ -9,6 +9,7 @@ export interface TemplateState {
   templatesByTeams: Template[] | null;
   templatesByParams: Template[] | null;
   updateTemplate: Template | null;
+  resetUpdateTemplate: () => void;
   loading: boolean;
   error: string | null;
 }
@@ -62,18 +63,38 @@ const templateReducer = (state: TemplateState, action: ActionPayload): TemplateS
             };
           }
         case ActionType.UPDATE_TEMPLATE:
+          const updatedTemplate = {
+              ...(action.payload as TempTemplate),
+              lastAmendDate: mysqlDatetimeToDate((action.payload as TempTemplate).lastAmendDate), // convert to Date object
+            }
           return {
             ...state,
             loading: false,
             error: null,
-            updateTemplate: {
-              ...(action.payload as TempTemplate),
-              lastAmendDate: mysqlDatetimeToDate((action.payload as TempTemplate).lastAmendDate), // convert to Date object
-            },
+            updateTemplate: updatedTemplate,
+            templatesByTeams: state.templatesByTeams
+              ? state.templatesByTeams.map(template =>
+                  template.id === (action.payload as TempTemplate).id
+                    ? updatedTemplate
+                    : template
+                )
+              : null,
+            templatesByParams: state.templatesByParams
+              ? state.templatesByParams.map(template =>
+                  template.id === (action.payload as TempTemplate).id
+                    ? updatedTemplate
+                    : template
+                )
+              : null,
           };
         default:
           return state;
       }
+    case ActionType.RESET_UPDATE_TEMPLATE:
+      return {
+        ...state,
+        updateTemplate: null,
+      };
     case ActionType.ERROR:
       switch (action.apiName) {
         case ActionType.GET_TEMPLATES_BY_PARAMS:

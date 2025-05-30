@@ -11,6 +11,14 @@ export function addTeamNameToTemplates(templates: Template[], teams: Team[]): Te
   }));
 }
 
+export function addTeamNameToTemplate(template: Template, teams: Team[]): TemplateWithTeamName {
+  const team = teams.find(team => team.id === template.teamId);
+  return {
+    ...template,
+    teamName: team ? team.teamName : ''
+  };
+}
+
 export function filterTemplatesByEditable(templates: TemplateWithTeamName[], user: User, teams: Team[]): TemplateWithTeamName[] {
   return templates.filter((template) => {
     return templateIsEditable(template, user, teams);

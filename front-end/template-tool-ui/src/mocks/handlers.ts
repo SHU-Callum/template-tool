@@ -38,7 +38,7 @@ export const handlers = [
   }),
 
   // Intercept "PUT localhost/api/template/*/update requests...
-  http.put(`${API_BASE_URL}/template/:id/update`, async ({ request }) => {
+  http.put(`${API_BASE_URL}/templates/:id/update`, async ({ request }) => {
     const url = new URL(request.url);
     const pathParts = url.pathname.split('/');
     const templateId = pathParts[pathParts.indexOf('template') + 1];

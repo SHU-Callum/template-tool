@@ -13,6 +13,7 @@ import { NotificationType } from "../types/notificationTypes";
 import { dateToMysqlDatetime } from "../utils/dateFormatter";
 import { updateTemplate } from "../context/data/actions/templateActions";
 import { useDispatchContext, useStateContext } from "../context/data/useData";
+import { addTeamNameToTemplate } from "../utils/idToName";
 
 function ViewTemplate() {
   const location = useLocation(); // contains template state passed from Search page
@@ -23,13 +24,20 @@ function ViewTemplate() {
   const [showEditor, setShowEditor] = useState(false); // to prevent editor from remounting on every render
   const dispatch = useDispatchContext();
   const state = useStateContext();
+  const [activeTemplate, setActiveTemplate] = useState<TemplateWithTeamName | null>(location.state.template);
+  const [validJSON, setValidJSON] = useState(true);
+
+  const handleViewModeChange = (newMode: TemplateViewMode) => {
+    setMode(newMode);
+  }
 
   const handleSave = () => {
     if (editorRef.current) {
       const content = editorRef.current.getJSON();
       const timeOfUpdate = (dateToMysqlDatetime(new Date()));
       // convert template with team name to regular template compatible with backend
-      const { teamName: _teamName, ...baseTemplate } = templateFromState;
+      if (!activeTemplate) return;
+      const { teamName: _teamName, ...baseTemplate } = activeTemplate;
       const updatedTemplate: TempTemplate = {
         ...baseTemplate,
         lastAmendDate: timeOfUpdate,
@@ -41,36 +49,38 @@ function ViewTemplate() {
 
   // Copies the rendered content to clipboard using Electron clipboard API
   const handleCopy = () => {
-    if (copyRef.current) { // uses hidden div to copy rendered content
-      const html = copyRef.current.innerHTML;
-      const text = copyRef.current.innerText;
-      if (window.electronClipboard && typeof window.electronClipboard.write === 'function') {
-        window.electronClipboard.write(html, text);
+    try {
+      if (copyRef.current) { // uses hidden div to copy rendered content
+        const html = copyRef.current.innerHTML;
+        const text = copyRef.current.innerText;
+        if (window.electronClipboard && typeof window.electronClipboard.write === 'function') {
+          window.electronClipboard.write(html, text);
+        }
+        addNotification('Copied to clipboard!', NotificationType.SUCCESS);
       }
+    } catch (error) {
+      addNotification(`Error copying content: ${error}`, NotificationType.ERROR);
     }
   };
 
-  // The selected template is passed from the Search page via location state
-  const templateFromState: TemplateWithTeamName = location.state.template
-  let jsonContent = {};
-  let validJSON = true;
-  try {
-    jsonContent = JSON.parse(templateFromState.content);
-  }
-  catch (error) {
-    validJSON = false;
-  }
+  // When active template is updated, check if the content is valid JSON
+  useEffect(() => {
+    if (activeTemplate) {
+      try {
+        JSON.parse(activeTemplate.content);
+      } catch (error) {
+        setValidJSON(false);
+      }
+    }
+  }, [activeTemplate]);
 
   // Sets inital view mode based on if Edit or Open button was clicked in Search page
   useEffect(() => {
     if (location.state) {
+      setActiveTemplate(location.state.template);
       setMode(location.state.editMode == true ? TemplateViewMode.Edit : TemplateViewMode.Input);
     }
   }, [location.state, setMode]);
-
-  const handleViewModeChange = (newMode: TemplateViewMode) => {
-    setMode(newMode);
-  }
 
   // Prevents editor from remounting until react render is completed
   useEffect(() => {
@@ -78,22 +88,23 @@ function ViewTemplate() {
     // Defer mounting to next tick
     const timeout = setTimeout(() => setShowEditor(true), 0);
     return () => clearTimeout(timeout);
-}, [templateFromState.id]);
+}, [activeTemplate?.id]);
 
   // When the PUT Update Template API call returns
   useEffect (() => {
-    if(state.templateState.updateTemplate) {
+    if(state.templateState.updateTemplate && state.teamState.teamsByUser) {
       addNotification('Template updated successfully!', NotificationType.SUCCESS);
+      setActiveTemplate(addTeamNameToTemplate(state.templateState.updateTemplate, state.teamState.teamsByUser));
+      state.templateState.resetUpdateTemplate(); // reset updateTemplate to null to prevent re-rendering
     }
     else if (state.templateState.error) {
       addNotification(`Error updating template: ${state.templateState.error}`, NotificationType.ERROR);
     }
   }, [state.templateState.updateTemplate, addNotification]);
 
-  const lastAmendDate = new Date(templateFromState.lastAmendDate);
   return (
     <div className="p-4 pl-2 pr-2 w-full sm:w-6/7 mx-auto self-start h-full">
-      {!templateFromState || templateFromState === undefined ? (
+      {!activeTemplate || activeTemplate === undefined ? (
         <div className="flex justify-center items-center h-full w-full text-gray-500 dark:text-gray-400">
           <p>No template selected. Please select a template to view.</p>
         </div>
@@ -104,13 +115,13 @@ function ViewTemplate() {
               <BackButton />
             </Link>
             <div>
-              <h3 className="text-left">{templateFromState.title}</h3>
-              <p className="text-left italic caption">Created by: Test User, Last update: {lastAmendDate.toLocaleDateString()}</p>
+              <h3 className="text-left">{activeTemplate.title}</h3>
+              <p className="text-left italic caption">Last update: {new Date(activeTemplate.lastAmendDate).toLocaleDateString()}</p>
             </div>
-            {templateFromState.editable ? 
-              <RoundedLabel text={templateFromState.teamName} borderColour="border-green-500" textBold clickAction={() => {}} />
+            {activeTemplate.editable ? 
+              <RoundedLabel text={activeTemplate.teamName} borderColour="border-green-500" textBold clickAction={() => {}} />
               :
-              <RoundedLabel text={templateFromState.teamName} textBold />
+              <RoundedLabel text={activeTemplate.teamName} textBold />
             }
           </div>
           <hr />
@@ -119,8 +130,8 @@ function ViewTemplate() {
               <div className="flex justify-start gap-3 mt-2 flex-grow">
                 <div className="text-left p-2 border rounded-lg w-full h-full flex flex-col">
                   <TextEditor 
-                    key={templateFromState.id}
-                    content={jsonContent} 
+                    key={activeTemplate.id}
+                    content={JSON.parse(activeTemplate.content)} 
                     setEditorRef={editor => (editorRef.current = editor)}/>
                 </div>
                 <div className="flex justify-between mt-4 flex-col gap-1">

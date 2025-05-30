@@ -4,7 +4,7 @@ import { useReducer, ReactNode, useCallback, useMemo } from "react";
 import { DataDispatchContext, DataStateContext } from "./dataContext";
 import { INITIAL_TEAM_STATE, INITIAL_TEMPLATE_STATE, INITIAL_USER_STATE } from "./initialState";
 import templateReducer from "./reducers/templateReducer";
-import { ActionPayload, DispatchType } from "./actionTypes";
+import { ActionPayload, ActionType, DispatchType } from "./actionTypes";
 import teamReducer from "./reducers/teamReducer";
 import userReducer from "./reducers/userReducer";
 
@@ -14,9 +14,16 @@ const DataProvider = ({children}: { children: ReactNode }) => {
   const [teamState, teamDispatch] = useReducer(teamReducer, INITIAL_TEAM_STATE);
   const [userState, userDispatch] = useReducer(userReducer, INITIAL_USER_STATE);
 
+  const resetUpdateTemplate = () => {
+    templateDispatch({ type: ActionType.RESET_UPDATE_TEMPLATE, dispatchType: DispatchType.TEMPLATE });
+  }
+
   const combinedState = useMemo(
     () => ({
-      templateState,
+      templateState: {
+        ...templateState, // Spread the existing template state
+        resetUpdateTemplate, // Add the reset function
+      },
       teamState,
       userState
     }),
