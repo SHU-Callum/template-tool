@@ -8,7 +8,9 @@ export const INITIAL_TEMPLATE_STATE: TemplateState = {
   templatesByTeams: null as Template[] | null,
   templatesByParams: null as Template[] | null,
   updateTemplate: null as Template | null,
+  deleteTemplate: null as number | null,
   resetUpdateTemplate: () => ({}), // will be replaced in DataProvider
+  resetDeleteTemplate: () => ({}), // will be replaced in DataProvider
   loading: false,
   error: null,
 };

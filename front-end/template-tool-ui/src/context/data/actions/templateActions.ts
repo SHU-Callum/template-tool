@@ -97,7 +97,7 @@ export const updateTemplate = async (newTemplate: TempTemplate, dispatch: Dispat
     } else if (response.status === 400) {
       dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: response.data });
     } else {
-      throw new Error(`Failed to get save template`);
+      throw new Error(`Failed to save template`);
     }
   } catch (error) {
     if (axios.isCancel(error)) {
@@ -105,6 +105,36 @@ export const updateTemplate = async (newTemplate: TempTemplate, dispatch: Dispat
     } else if (axios.isAxiosError(error)) {
         if (error.status === 404) {
             dispatchTemplateAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.UPDATE_TEMPLATE, payload: `Couldn't find template to update` });
+        }
+        else {
+          dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: `${error.response?.data.error}: Error Code ${error.response?.status}` });
+        }
+    } else {
+      dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: 'An unknown error occurred' });
+    }
+  }
+}
+
+export const deleteTemplate = async (templateToDelete: number, dispatch: Dispatch<ActionPayload>) => {
+  dispatchTemplateAction(dispatch, { type: ActionType.LOADING });
+  try {
+    const templateId = templateToDelete.toString();
+    const response: AxiosResponse = await authorisedAxios.delete(API_ROUTES.DELETE_TEMPLATE(templateId), {
+      timeout: 3000
+    });
+    if (response.status === 200) {
+      dispatchTemplateAction(dispatch, { type: ActionType.SUCCESS, apiName: ActionType.DELETE_TEMPLATE, payload: response.data });
+    } else if (response.status === 400) {
+      dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: response.data });
+    } else {
+      throw new Error(`Failed to delete template`);
+    }
+  } catch (error) {
+    if (axios.isCancel(error)) {
+      dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: 'Timeout Error' });
+    } else if (axios.isAxiosError(error)) {
+        if (error.status === 404) {
+            dispatchTemplateAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.UPDATE_TEMPLATE, payload: `Couldn't find template to delete` });
         }
         else {
           dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: `${error.response?.data.error}: Error Code ${error.response?.status}` });

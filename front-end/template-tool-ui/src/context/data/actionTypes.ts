@@ -13,7 +13,16 @@ export enum ActionType {
   GET_TEAMS_BY_USER,
   GET_USER_DETAILS,
   UPDATE_TEMPLATE,
-  RESET_UPDATE_TEMPLATE
+  RESET_UPDATE_TEMPLATE,
+  DELETE_TEMPLATE,
+  RESET_DELETE_TEMPLATE
+}
+
+export enum ApiStates {
+  IDLE,
+  PENDING,
+  SUCCESS,
+  ERROR
 }
 
 export interface ActionPayload {
@@ -37,4 +46,5 @@ export type PayloadType =
   | TempTemplate[]
   | Team[]
   | User
-  | string;
+  | string
+  | number;

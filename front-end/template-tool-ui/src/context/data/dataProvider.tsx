@@ -18,11 +18,16 @@ const DataProvider = ({children}: { children: ReactNode }) => {
     templateDispatch({ type: ActionType.RESET_UPDATE_TEMPLATE, dispatchType: DispatchType.TEMPLATE });
   }
 
+  const resetDeleteTemplate = () => {
+    templateDispatch({ type: ActionType.RESET_DELETE_TEMPLATE, dispatchType: DispatchType.TEMPLATE });
+  }
+
   const combinedState = useMemo(
     () => ({
       templateState: {
         ...templateState, // Spread the existing template state
         resetUpdateTemplate, // Add the reset function
+        resetDeleteTemplate // Add the reset function
       },
       teamState,
       userState

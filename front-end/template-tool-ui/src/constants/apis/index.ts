@@ -9,7 +9,7 @@ export const API_ROUTES = {
   GET_TEMPLATE_URL: (templateId: number) => `${API_BASE_URL}/template/${templateId}`,
   GET_TEMPLATES_BY_TEAMS: (eTeamIds: string) => `${API_BASE_URL}/templates/all?teams=${eTeamIds}`,
   GET_TEMPLATES_BY_PARAMS: (params: string) => `${API_BASE_URL}/templates?search=${params}`,
-  DELETE_TEMPLATE_URL: (templateId: string) => `${API_BASE_URL}/template/${templateId}/delete`,
+  DELETE_TEMPLATE: (templateId: string) => `${API_BASE_URL}/templates/${templateId}/delete`,
   UPDATE_TEMPLATE: (templateId: string) => `${API_BASE_URL}/templates/${templateId}/update`,
   CREATE_TEMPLATE_URL: `${API_BASE_URL}/template/create`,
 
