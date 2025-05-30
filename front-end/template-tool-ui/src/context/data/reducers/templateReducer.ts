@@ -9,7 +9,9 @@ export interface TemplateState {
   templatesByTeams: Template[] | null;
   templatesByParams: Template[] | null;
   updateTemplate: Template | null;
+  deleteTemplate: number | null;
   resetUpdateTemplate: () => void;
+  resetDeleteTemplate: () => void;
   loading: boolean;
   error: string | null;
 }
@@ -87,6 +89,20 @@ const templateReducer = (state: TemplateState, action: ActionPayload): TemplateS
                 )
               : null,
           };
+        case ActionType.DELETE_TEMPLATE:
+          const deletedTemplateId = (action.payload as number);
+          return {
+            ...state,
+            loading: false,
+            error: null,
+            deleteTemplate: deletedTemplateId,
+            templatesByTeams: state.templatesByTeams
+              ? state.templatesByTeams.filter(template => template.id !== deletedTemplateId)
+              : null,
+            templatesByParams: state.templatesByParams
+              ? state.templatesByParams.filter(template => template.id !== deletedTemplateId)
+              : null,
+          };
         default:
           return state;
       }
@@ -94,6 +110,11 @@ const templateReducer = (state: TemplateState, action: ActionPayload): TemplateS
       return {
         ...state,
         updateTemplate: null,
+      };
+    case ActionType.RESET_DELETE_TEMPLATE:
+      return {
+        ...state,
+        deleteTemplate: null,
       };
     case ActionType.ERROR:
       switch (action.apiName) {

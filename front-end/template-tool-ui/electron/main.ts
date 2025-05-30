@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, clipboard } from 'electron'
+import { app, BrowserWindow, ipcMain, clipboard, dialog } from 'electron'
 //import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
@@ -102,6 +102,14 @@ app.on('activate', () => {
 
 ipcMain.handle('clipboard:writeText', (_event, htmlText: string, plainText: string) => {
   clipboard.write({html: htmlText, text: plainText});
+});
+
+ipcMain.handle('dialog:showMessageBox', async (_event, options) => {
+  const win = BrowserWindow.getFocusedWindow();
+  if (!win) {
+    throw new Error('No focused window to show dialog');
+  }
+  return await dialog.showMessageBox(win, options);
 });
 
 app.whenReady().then(createWindow)

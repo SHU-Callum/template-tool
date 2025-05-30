@@ -28,3 +28,12 @@ contextBridge.exposeInMainWorld('electronClipboard', {
     ipcRenderer.invoke('clipboard:writeText', htmlText, plainText)
   }
 });
+
+interface ElectronDialogAPI {
+  showMessageBox: (options: Electron.MessageBoxOptions) => Promise<Electron.MessageBoxReturnValue>;
+}
+
+contextBridge.exposeInMainWorld('electronDialog', {
+  showMessageBox: (options: Electron.MessageBoxOptions): Promise<Electron.MessageBoxReturnValue> =>
+    ipcRenderer.invoke('dialog:showMessageBox', options),
+} as ElectronDialogAPI);

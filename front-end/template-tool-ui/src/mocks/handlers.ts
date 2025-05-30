@@ -41,7 +41,7 @@ export const handlers = [
   http.put(`${API_BASE_URL}/templates/:id/update`, async ({ request }) => {
     const url = new URL(request.url);
     const pathParts = url.pathname.split('/');
-    const templateId = pathParts[pathParts.indexOf('template') + 1];
+    const templateId = pathParts[pathParts.indexOf('templates') + 1];
     if (!templateId || templateId.length < 1) {
       return HttpResponse.json({ error: 'Template ID cannot be empty' }, { status: 400 });
     }
@@ -52,6 +52,17 @@ export const handlers = [
       return HttpResponse.json({ error: 'Request body cannot be empty' }, { status: 400 });
     }
     return HttpResponse.json(decryptedBody); // Successful response
+  }),
+
+  // Intercept "DELETE localhost/api/template/*/delete requests...
+  http.delete(`${API_BASE_URL}/templates/:id/delete`, async ({ request }) => {
+    const url = new URL(request.url);
+    const pathParts = url.pathname.split('/');
+    const templateId = pathParts[pathParts.indexOf('templates') + 1];
+    if (!templateId || templateId.length < 1) {
+      return HttpResponse.json({ error: 'Template ID cannot be empty' }, { status: 400 });
+    }
+    return HttpResponse.json(templateId); // Successful response
   }),
 
   // Intercept "GET localhost/api/teams/all?user=*" requests...

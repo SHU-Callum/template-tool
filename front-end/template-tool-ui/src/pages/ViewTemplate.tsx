@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { TemplateWithTeamName, TempTemplate } from "../models/template";
 import BackButton from "../components/BackButton";
 import RoundedLabel from "../components/RoundedLabel";
@@ -11,12 +11,13 @@ import RenderModeView from "../components/textEditor/RenderModeView";
 import { useNotification } from "../context/notification/useNotification";
 import { NotificationType } from "../types/notificationTypes";
 import { dateToMysqlDatetime } from "../utils/dateFormatter";
-import { updateTemplate } from "../context/data/actions/templateActions";
+import { deleteTemplate, updateTemplate } from "../context/data/actions/templateActions";
 import { useDispatchContext, useStateContext } from "../context/data/useData";
 import { addTeamNameToTemplate } from "../utils/idToName";
 
 function ViewTemplate() {
   const location = useLocation(); // contains template state passed from Search page
+  const navigate = useNavigate();
   const { mode, setMode } = useDisplayMode(); // edit, input, render modes
   const {addNotification} = useNotification();
   const editorRef = useRef<Editor | null>(null); // reference to tiptap editor for save & copy functionality
@@ -44,6 +45,22 @@ function ViewTemplate() {
         content: JSON.stringify(content),
       };
       updateTemplate(updatedTemplate, dispatch);
+    }
+  }
+
+  const handleDelete = async () => {
+    if (activeTemplate) {
+      const result = await window.electronDialog.showMessageBox({
+        type: 'warning',
+        buttons: ['Cancel', 'Delete'],
+        defaultId: 0,
+        cancelId: 0,
+        title: 'Delete Template',
+        message: 'Are you sure you want to delete this template? This action cannot be undone.',
+      });
+      if (result.response === 1) {
+        deleteTemplate(activeTemplate.id, dispatch);
+      }
     }
   }
 
@@ -102,6 +119,19 @@ function ViewTemplate() {
     }
   }, [state.templateState.updateTemplate, addNotification]);
 
+  // When the DELETE Delete Template API call returns
+  useEffect (() => {
+    if(state.templateState.deleteTemplate) {
+      addNotification('Template deleted successfully!', NotificationType.SUCCESS);
+      setActiveTemplate(null); // Clear active template after deletion
+      state.templateState.resetDeleteTemplate(); // reset deleteTemplate to null to prevent re-rendering
+      navigate("/");
+    }
+    else if (state.templateState.error) {
+      addNotification(`Error updating template: ${state.templateState.error}`, NotificationType.ERROR);
+    }
+  }, [state.templateState.deleteTemplate, addNotification]);
+
   return (
     <div className="p-4 pl-2 pr-2 w-full sm:w-6/7 mx-auto self-start h-full">
       {!activeTemplate || activeTemplate === undefined ? (
@@ -137,9 +167,14 @@ function ViewTemplate() {
                 <div className="flex justify-between mt-4 flex-col gap-1">
                   <div>
                     {mode == TemplateViewMode.Edit && (
-                      <button className="bg-green-600 text-white p-2 pl-4 pr-4 rounded w-full" onClick={handleSave}>
-                        Save
-                      </button>
+                      <div className="flex flex-col gap-1">
+                        <button className="bg-green-600 text-white p-2 pl-4 pr-4 rounded w-full" onClick={handleSave}>
+                          Save
+                        </button>
+                        <button className="bg-red-600 text-white p-2 pl-4 pr-4 rounded w-full" onClick={handleDelete}>
+                          Delete
+                        </button>
+                      </div>
                     )}
                     {mode == TemplateViewMode.Render && (
                       <button className="bg-green-600 text-white p-2 pl-4 pr-4 rounded w-full" onClick={handleCopy}>

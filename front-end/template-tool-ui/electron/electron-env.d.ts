@@ -25,8 +25,13 @@ interface ElectronClipboard {
   write: (htmlText: string, plainText: string) => void;
 }
 
+interface ElectronDialog {
+  showMessageBox: (options: Electron.MessageBoxOptions) => Promise<Electron.MessageBoxReturnValue>;
+}
+
 // Used in Renderer process, expose in `preload.ts`
 interface Window {
   ipcRenderer: import('electron').IpcRenderer;
   electronClipboard: ElectronClipboard;
+  electronDialog: ElectronDialog;
 }
