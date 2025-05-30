@@ -106,4 +106,27 @@ public class TemplateController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Template to update is required");
         }
     }
+
+    @DeleteMapping(value = "{id}/delete")
+    @Operation(summary = "Delete template", description = "Delete an existing template")
+    public ResponseEntity<?> deleteTemplate(@PathVariable("id") Long id) {
+        if (id != null) {
+            try {
+                // Check for existing template
+                Template existingTemplate = templateService.findTemplateById(id);
+                if (existingTemplate == null) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Template not found");
+                }
+                // Update the existing template
+                templateService.deleteTemplate(id);
+                return ResponseEntity.status(HttpStatus.OK).body(id);
+            } catch (IllegalArgumentException iae) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid template - Error: " + iae.getMessage());
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Template to update is required");
+        }
+    }
 }

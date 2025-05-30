@@ -62,5 +62,14 @@ public class TemplateService {
      */
     public Template updateTemplate(Template template) {
         return templateRepository.save(template);
-        }
+    }
+
+    /**
+     * Delete a template by its ID.
+     *
+     * @param templateId The ID of the template to delete.
+     */
+    public void deleteTemplate(Long templateId) {
+        templateRepository.deleteById(templateId);
+    }
 }
