@@ -15,6 +15,7 @@ import { getTeamsByUserId } from './context/data/actions/teamActions';
 import { setupAxiosInterceptors } from './utils/authTokenPrep';
 import { UserAuthDetails } from './context/auth/authContext';
 import CreateTemplate from './pages/CreateTemplate';
+import ManageTeam from './pages/ManageTeam';
 
 function App() {
   const { addNotification, handleNetworkError, networkError} = useNotification();
@@ -136,6 +137,7 @@ function App() {
             <Route path="/" element={<Search />} />
             <Route path="/view-template" element={<ViewTemplate />} />
             <Route path="/create-template" element={<CreateTemplate />} />
+            <Route path="/manage-team" element={<ManageTeam />} />
           </Routes>
         </div>
         <FooterBar infoClicked={infoClicked} />
