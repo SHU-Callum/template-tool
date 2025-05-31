@@ -6,6 +6,7 @@ interface TextMenuProps {
   mode: TemplateViewMode;
 }
 
+// TextMenu component provides text formatting options for the Tiptap editor
 const TextMenu = (props: TextMenuProps) => {
   const { editor } = useCurrentEditor()
 

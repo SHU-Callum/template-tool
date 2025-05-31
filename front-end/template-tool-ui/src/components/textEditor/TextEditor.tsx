@@ -9,13 +9,14 @@ import { useEffect } from 'react'
 const extensions = [
   StarterKit,
   Underline,
-  TextInputNode
+  TextInputNode // custom field
 ]
 
 interface EditorRefSetterProps {
   setEditorRef?: (editor: any) => void;
 }
 
+// provides a way to set the editor ref from outside the component
 const EditorRefSetter = ({ setEditorRef }: EditorRefSetterProps) => {
   const { editor } = useCurrentEditor();
   // Set the ref when editor is available
@@ -32,6 +33,7 @@ interface TextEditorProps {
   setEditorRef?: (editor: any) => void; // optional ref setter for the editor instance
 }
 
+// TipTap editor component for text editing
 const TextEditor = (props: TextEditorProps) => {
   const { mode } = useDisplayMode()
   return (

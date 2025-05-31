@@ -25,6 +25,14 @@ public class TeamController {
     @Autowired
     private Encryption encryption;
 
+    /**
+     * Endpoint to find teams by user ID.
+     * Returns a list of teams associated with the provided user ID.
+     *
+     * @param eUserId The encrypted user ID to search for.
+     * @param iv      The initialization vector for decryption.
+     * @return ResponseEntity with the list of teams or an error message.
+     */
     @GetMapping("/all")
     @Operation(summary = "Find teams by user id", description = "Return list of teams for a user id")
     public ResponseEntity<?> getUserTeams(@RequestParam(value = "user") String eUserId, @RequestHeader("encryption-iv") String iv) {

@@ -2,7 +2,7 @@
 
 # Paths to the .env files
 UI_ENV="../../front-end/template-tool-ui/.env.development"
-DB_ENV="../db/.env.dev"
+DB_ENV="../db/.env.dev" # Fetched from DB directory (used for docker)
 COMBINED_ENV_FILE="./.combined.env"
 
 # Combine the .env files

@@ -29,6 +29,14 @@ public class EmployeeController {
     @Autowired
     private KeycloakService keycloakService;
 
+    /**
+     * Endpoint to find an employee by their Keycloak ID.
+     * If the employee does not exist, it will create a new employee using the Keycloak user information.
+     *
+     * @param kcid The Keycloak ID of the user.
+     * @param iv   The initialization vector for decryption.
+     * @return ResponseEntity with the employee information or an error message.
+     */
     @GetMapping()
     @Operation(summary = "Find employee by keycloak id", description = "Return employee for keycloak id")
     public ResponseEntity<?> getUserByKeycloakId(@RequestParam(value = "kcid") String kcid, @RequestHeader("encryption-iv") String iv) {
