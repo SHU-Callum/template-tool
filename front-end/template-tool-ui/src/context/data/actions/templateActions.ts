@@ -85,7 +85,7 @@ export const updateTemplate = async (newTemplate: TempTemplate, dispatch: Dispat
   dispatchTemplateAction(dispatch, { type: ActionType.LOADING });
   try {
     const templateId = newTemplate.id.toString();
-    const { encryptedParameter, iv } = encryptParameter(JSON.stringify(newTemplate)); // Need to encrypt twice due to API handling in Springboot
+    const { encryptedParameter, iv } = encryptParameter(JSON.stringify(newTemplate));
     const response: AxiosResponse = await authorisedAxios.put(API_ROUTES.UPDATE_TEMPLATE(templateId), encryptedParameter, {
       headers: {
         'encryption-iv': iv // each api call has a different encryption pattern
@@ -109,6 +109,35 @@ export const updateTemplate = async (newTemplate: TempTemplate, dispatch: Dispat
         else {
           dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: `${error.response?.data.error}: Error Code ${error.response?.status}` });
         }
+    } else {
+      dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: 'An unknown error occurred' });
+    }
+  }
+}
+
+export const createTemplate = async (newTemplate: TempTemplate, dispatch: Dispatch<ActionPayload>) => {
+  dispatchTemplateAction(dispatch, { type: ActionType.LOADING });
+  try {
+    const { encryptedParameter, iv } = encryptParameter(JSON.stringify(newTemplate));
+    const response: AxiosResponse = await authorisedAxios.post(API_ROUTES.CREATE_TEMPLATE, encryptedParameter, {
+      headers: {
+      'Content-Type': 'text/plain',
+      'encryption-iv': iv // each api call has a different encryption pattern
+      },
+      timeout: 3000
+    });
+    if (response.status === 201) {
+      dispatchTemplateAction(dispatch, { type: ActionType.SUCCESS, apiName: ActionType.CREATE_TEMPLATE, payload: response.data });
+    } else if (response.status === 400) {
+      dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: response.data });
+    } else {
+      throw new Error(`Failed to save template`);
+    }
+  } catch (error) {
+    if (axios.isCancel(error)) {
+      dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: 'Timeout Error' });
+    } else if (axios.isAxiosError(error)) {
+          dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: `${error.response?.data.error}: Error Code ${error.response?.status}` });
     } else {
       dispatchTemplateAction(dispatch, { type: ActionType.ERROR, payload: 'An unknown error occurred' });
     }

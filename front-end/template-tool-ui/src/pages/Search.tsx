@@ -184,7 +184,7 @@ function Search() {
     <div className="p-1 sm:p-4 w-full sm:w-6/7 mx-auto self-start h-full">
       <div className="flex gap-4 justify-between">
         <div className="w-full sm:w-6/7 md:w-5/6 lg:w-2/3 mx-auto">
-          <div className="flex justify-between mb-2 items-center space-x-8 sm:w-11/12 md:w-10/12 lg:space-x-0 lg:w-4/5 mx-auto">
+          <div className="flex justify-between mb-2 items-center sm:w-11/12 md:w-10/12 lg:space-x-0 lg:w-4/5 mx-auto gap-2">
             <SelectInput 
               value={searchTeamFilter.length == 1 ? searchTeamFilter[0].teamName : 'All Teams'}
               onChange={selectTeamFilterChanged}
@@ -193,11 +193,11 @@ function Search() {
             />      
             <div className="flex items-center">
               <div className="mb-1 text-right pr-3">
-              <label htmlFor="check">Include View-only templates</label>
+                <label htmlFor="check">Include View-only templates</label>
               </div>
               <input type="checkbox" id="check" className="w-4 h-4" 
-              onChange={checkboxViewOnlyClicked}
-              checked={searchIncludeViewOnly}
+                onChange={checkboxViewOnlyClicked}
+                checked={searchIncludeViewOnly}
               />
             </div>
           </div>
