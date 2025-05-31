@@ -2,6 +2,7 @@ import { Node } from '@tiptap/core'
 import { ReactNodeViewRenderer } from '@tiptap/react'
 import TextInput from './TextInput'
 
+// Custom Tiptap Node for text input fields
 export const TextInputNode = Node.create({
     name: 'textInput',
     group: 'inline',
@@ -66,6 +67,7 @@ export const TextInputNode = Node.create({
             },
         }
     },
+    // Rendered as a TextInput React component
     addNodeView() {
         return ReactNodeViewRenderer(TextInput)
     }

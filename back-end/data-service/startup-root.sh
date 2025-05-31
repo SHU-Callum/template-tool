@@ -2,7 +2,7 @@
 
 # Paths to the .env files
 UI_ENV="../../front-end/template-tool-ui/.env.development"
-DB_ENV="../../.env"
+DB_ENV="../../.env" # Fetched from root (used for docker-compose)
 COMBINED_ENV_FILE="./.combined.env"
 
 # Combine the .env files
@@ -24,6 +24,7 @@ if ! command -v java &> /dev/null; then
   exit 1
 fi
 
+# Check if Java version is 21 or higher
 if ! java -version 2>&1 | awk -F '"' '/version/ {if ($2 >= "21") exit 0; else exit 1}'; then
   echo "Error: Java version is less than 21!"
   exit 1

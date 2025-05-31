@@ -28,6 +28,12 @@ public class TemplateController {
     @Autowired
     private Encryption encryption;
 
+    /**
+     * Endpoint to find templates by search parameters.
+     * @param encryptedSearch The encrypted search parameters to filter templates.
+     * @param iv The initialization vector for decryption.
+     * @return ResponseEntity with the list of templates or an error message
+     */
     @GetMapping
     @Operation(summary = "Find templates by params", description = "Return list of templates containing the search criteria")
     public ResponseEntity<?> searchTemplatesByParams(@RequestParam(value = "search", required = true) String encryptedSearch, @RequestHeader("encryption-iv") String iv) {
@@ -52,6 +58,12 @@ public class TemplateController {
         }
     }
 
+    /**
+     * Endpoint to find templates by team IDs.
+     * @param eTeamIds The encrypted team IDs to search for templates.
+     * @param iv The initialization vector for decryption.
+     * @return ResponseEntity with the list of templates or an error message
+     */
     @GetMapping(value = "all")
     @Operation(summary = "Find all templates by user teams", description = "Return list of templates for a user id")
     public ResponseEntity<?> getTemplatesByTeams(@RequestParam(value = "teams") String eTeamIds, @RequestHeader("encryption-iv") String iv) {
@@ -78,6 +90,12 @@ public class TemplateController {
         }
     }
 
+    /**
+     * Endpoint to create a new template.
+     * @param iv The initialization vector for decryption.
+     * @param encryptedTemplate The encrypted template data to create.
+     * @return ResponseEntity with the created template or an error message
+     */
     @PostMapping(value = "create")
     @Operation(summary = "Create template", description = "Creates an new template. **Note:** When inspecting this request in Chrome DevTools, use **'View source'** in the Network tab to see the raw payload.")
     public ResponseEntity<?> createTemplate(@RequestHeader("encryption-iv") String iv, @RequestBody String encryptedTemplate) {
@@ -103,6 +121,13 @@ public class TemplateController {
         }
     }
 
+    /**
+     * Endpoint to update an existing template.
+     * @param id The ID of the template to update.
+     * @param iv The initialization vector for decryption.
+     * @param encryptedTemplate The encrypted template data to update.
+     * @return ResponseEntity with the updated template or an error message
+     */
     @PutMapping(value = "{id}/update")
     @Operation(summary = "Update template", description = "Saves an existing template. **Note:** When inspecting this request in Chrome DevTools, use **'View source'** in the Network tab to see the raw payload.")
     public ResponseEntity<?> updateTemplate(@PathVariable("id") Long id, @RequestHeader("encryption-iv") String iv, @RequestBody String encryptedTemplate) {
@@ -132,6 +157,11 @@ public class TemplateController {
         }
     }
 
+    /**
+     * Endpoint to delete a template by its ID.
+     * @param id The ID of the template to delete.
+     * @return ResponseEntity with the ID of the deleted template or an error message
+     */
     @DeleteMapping(value = "{id}/delete")
     @Operation(summary = "Delete template", description = "Delete an existing template")
     public ResponseEntity<?> deleteTemplate(@PathVariable("id") Long id) {

@@ -14,6 +14,7 @@ const DataProvider = ({children}: { children: ReactNode }) => {
   const [teamState, teamDispatch] = useReducer(teamReducer, INITIAL_TEAM_STATE);
   const [userState, userDispatch] = useReducer(userReducer, INITIAL_USER_STATE);
 
+  // Used for resetting states after handling response
   const resetCreateTemplate = () => {
     templateDispatch({ type: ActionType.RESET_CREATE_TEMPLATE, dispatchType: DispatchType.TEMPLATE });
   }
