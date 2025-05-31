@@ -25,7 +25,7 @@ CREATE TABLE team_member (
 );
 
 CREATE TABLE template (
-  id INT PRIMARY KEY,
+  id INT AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(255) NOT NULL,
   detail VARCHAR(255),
   content TEXT,

@@ -55,16 +55,6 @@ public class TemplateService {
     }
 
     /**
-     * Update an existing template.
-     *
-     * @param template The template to update.
-     * @return The updated template.
-     */
-    public Template updateTemplate(Template template) {
-        return templateRepository.save(template);
-    }
-
-    /**
      * Delete a template by its ID.
      *
      * @param templateId The ID of the template to delete.
