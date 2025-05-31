@@ -8,11 +8,23 @@ export enum ActionType {
   LOADING,
   SUCCESS,
   ERROR,
-  GET_TEMPLATES_BY_ID,
   GET_TEMPLATES_BY_TEAMS,
   GET_TEMPLATES_BY_PARAMS,
   GET_TEAMS_BY_USER,
   GET_USER_DETAILS,
+  UPDATE_TEMPLATE,
+  RESET_UPDATE_TEMPLATE,
+  DELETE_TEMPLATE,
+  RESET_DELETE_TEMPLATE,
+  CREATE_TEMPLATE,
+  RESET_CREATE_TEMPLATE,
+}
+
+export enum ApiStates {
+  IDLE,
+  PENDING,
+  SUCCESS,
+  ERROR
 }
 
 export interface ActionPayload {
@@ -32,7 +44,9 @@ export enum DispatchType
 export type PayloadType =
     Template
   | Template[]
+  | TempTemplate
   | TempTemplate[]
   | Team[]
   | User
-  | string;
+  | string
+  | number;

@@ -5,10 +5,11 @@ interface SelectInputProps {
   label: string;
 }
 
+// Dropdown component for selecting a value from a list of options
 function SelectInput({ value, onChange, options, label }: SelectInputProps) {
   return (
     <div className="flex items-center">
-      <label className="mr-3 min-w-16 sm:mr-2 sm:min-w-20">{label}</label>
+      <label className="mr-2 sm:mr-3 min-w-12 sm:min-w-16">{label}</label>
       <select
         className="border rounded p-1 sm:p-2"
         value={value}

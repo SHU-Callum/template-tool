@@ -15,6 +15,12 @@ public class TeamService {
     @Autowired
     private TeamMemberRepository teamMemberRepository;
 
+    /**
+     * Find teams by user ID.
+     *
+     * @param userId The ID of the user to find teams for.
+     * @return List of TeamDTO objects containing team information and owner IDs.
+     */
     public List<TeamDTO> findTeamsByUserId(long userId) {
         List<TeamMember> teamMembers = teamMemberRepository.findByUserId_Id(userId);
         return teamMembers.stream()

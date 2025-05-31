@@ -70,6 +70,10 @@ body {
     font-size: clamp(0.8rem, 0.7vw + 0.7rem, 1.1rem);
   }
 
+  p.caption {
+    font-size: clamp(0.7rem, 0.65vw + 0.6rem, 1rem);
+  }
+
   label {
     font-size: clamp(0.8rem, 0.7vw + 0.7rem, 1.1rem);
     font-weight: 500;
@@ -112,6 +116,16 @@ button {
   transition: border-color 0.25s;
 }
 
+button.icon {
+  padding: 0.5rem 0.5rem;
+  min-width: 2.4rem;
+  height: 2.4rem;
+  border: #666666 0.1rem solid;
+  margin: 0.05rem;
+  vertical-align: text-top;
+  font-size: clamp(0.8rem, 0.65vw + 0.65rem, 0.9rem);
+}
+
 button:hover {
   border-color: #646cff;
 }
@@ -128,8 +142,48 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-.remirror-theme p {
-  font-size: clamp(0.7rem, 0.7vw + 0.7rem, 1rem);
+.ProseMirror {
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  background: white;
+  border: gray 0.1rem solid;
+  border-radius: 0.5rem;
+  height: 100%;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.is-active {
+  background-color: #e0e7ff; 
+  color: #3d35b1;            
+  border-color: #6366f1;     
+  font-weight: 600;
+}
+
+.ProseMirror ul {
+  padding-left: 2rem;
+  margin: 0.5rem 0;
+  list-style-type: disc;
+}
+
+.ProseMirror ol {
+  padding-left: 2rem;
+  margin: 0.5rem 0;
+  list-style-type: decimal;
+}
+
+.ProseMirror ul li {
+  margin: 0.25rem 0;
+  list-style-type: disc;
+}
+
+.ProseMirror ol li {
+  margin: 0.25rem 0;
+  list-style-type: decimal;
+}
+
+.ProseMirror span {
+  font-size: clamp(0.8rem, 0.7vw + 0.7rem, 1.1rem);
 }
 
 @media (prefers-color-scheme: light) {

@@ -11,6 +11,15 @@ public class TemplateRepositoryImpl implements TemplateRepositoryCustom {
     @PersistenceContext
     private EntityManager entityManager;
 
+    /**
+     * Custom implementation of the findByCriteria method to search templates based on various criteria.
+     *
+     * @param searchText The text to search for in the title or detail of the templates.
+     * @param teamIds An array of team IDs to filter the templates by.
+     * @param includeViewOnly If true, includes templates that are view-only.
+     * @param userId The ID of the user making the request, used for permission checks.
+     * @return A list of templates matching the criteria.
+     */
     @Override
     public List<Template> findByCriteria(String searchText, int[] teamIds, boolean includeViewOnly, long userId) {
         // Implement the custom query logic here

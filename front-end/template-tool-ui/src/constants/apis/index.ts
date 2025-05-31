@@ -7,12 +7,11 @@ export const API_BASE_URL = `${apiUrl}/api`;
 
 export const API_ROUTES = {
   GET_TEMPLATE_URL: (templateId: number) => `${API_BASE_URL}/template/${templateId}`,
-  GET_TEMPLATES_BY_USER_URL: (userId: string) => `${API_BASE_URL}/templates/${userId}`,
   GET_TEMPLATES_BY_TEAMS: (eTeamIds: string) => `${API_BASE_URL}/templates/all?teams=${eTeamIds}`,
   GET_TEMPLATES_BY_PARAMS: (params: string) => `${API_BASE_URL}/templates?search=${params}`,
-  DELETE_TEMPLATE_URL: (templateId: string) => `${API_BASE_URL}/template/${templateId}/delete`,
-  UPDATE_TEMPLATE_URL: (templateId: string) => `${API_BASE_URL}/template/${templateId}/update`,
-  CREATE_TEMPLATE_URL: `${API_BASE_URL}/template/create`,
+  DELETE_TEMPLATE: (templateId: string) => `${API_BASE_URL}/templates/${templateId}/delete`,
+  UPDATE_TEMPLATE: (templateId: string) => `${API_BASE_URL}/templates/${templateId}/update`,
+  CREATE_TEMPLATE: `${API_BASE_URL}/templates/create`,
 
   GET_TEAM_URL: (teamId: string) => `${API_BASE_URL}/team/${teamId}`,
   GET_TEAMS_BY_USER: (eUserId: string) => `${API_BASE_URL}/teams/all?user=${eUserId}`,

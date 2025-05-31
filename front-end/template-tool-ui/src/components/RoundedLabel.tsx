@@ -10,10 +10,10 @@ interface RoundedLabelProps {
 function RoundedLabel({ text, borderColour="border-blue-500", textBold=false, clickAction}: RoundedLabelProps) {
   return (
     <div className={`
-    border-4 
+    border-2 
     rounded-3xl 
     ${borderColour}
-    p-3 
+    p-2 
     mb-0.5
     ml-auto
     text-center

@@ -2,7 +2,7 @@
 
 # Paths to the .env files
 UI_ENV="../../front-end/template-tool-ui/.env.development"
-DB_ENV="../db/.env.dev" # Fetched from DB directory (used for docker)
+DB_ENV="../../.env" # Fetched from root (used for docker-compose)
 COMBINED_ENV_FILE="./.combined.env"
 
 # Combine the .env files
@@ -18,16 +18,31 @@ else
   exit 1
 fi
 
+# Check if JAVA is installed
+if ! command -v java &> /dev/null; then
+  echo "Error: Java is not installed!"
+  exit 1
+fi
+
+# Check if Java version is 21 or higher
+if ! java -version 2>&1 | awk -F '"' '/version/ {if ($2 >= "21") exit 0; else exit 1}'; then
+  echo "Error: Java version is less than 21!"
+  exit 1
+fi
+
+# Run Maven clean build in the data-service directory
+mvn clean package
+# Exit if build is not successful
+if [ $? -ne 0 ]; then
+  echo "Error: Maven build failed. Exiting."
+  exit 1
+fi
+
 # Load variables from .env file
 if ! [ -f target/templateTool-data-service-0.0.1-SNAPSHOT.jar ]; then
   echo "jar file not found! \
   Please ensure you have run mvn clean package to generate it."
   exit 1
-fi
-
-# Check if JAVA is installed
-if ! java -version >/dev/null 2>&1; then
-    echo "Error: Java is not NOT installed!"
 fi
 
 # Run the JAR file with the arguments

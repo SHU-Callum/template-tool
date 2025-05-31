@@ -22,3 +22,18 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
   // You can expose other APTs you need here.
   // ...
 })
+
+contextBridge.exposeInMainWorld('electronClipboard', {
+  write(htmlText: string, plainText: string) {
+    ipcRenderer.invoke('clipboard:writeText', htmlText, plainText)
+  }
+});
+
+interface ElectronDialogAPI {
+  showMessageBox: (options: Electron.MessageBoxOptions) => Promise<Electron.MessageBoxReturnValue>;
+}
+
+contextBridge.exposeInMainWorld('electronDialog', {
+  showMessageBox: (options: Electron.MessageBoxOptions): Promise<Electron.MessageBoxReturnValue> =>
+    ipcRenderer.invoke('dialog:showMessageBox', options),
+} as ElectronDialogAPI);
