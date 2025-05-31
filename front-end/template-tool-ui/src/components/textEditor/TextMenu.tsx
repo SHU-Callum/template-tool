@@ -33,7 +33,7 @@ const TextMenu = (props: TextMenuProps) => {
   if (props.mode === TemplateViewMode.Edit) {
     return (
       <div className="flex justify-between gap-2 items-center">
-        <div className="mb-2">
+        <div>
           <button
             onClick={() => editor.chain().focus().toggleBold().run()}
             disabled={
