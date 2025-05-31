@@ -78,6 +78,31 @@ public class TemplateController {
         }
     }
 
+    @PostMapping(value = "create")
+    @Operation(summary = "Create template", description = "Creates an new template. **Note:** When inspecting this request in Chrome DevTools, use **'View source'** in the Network tab to see the raw payload.")
+    public ResponseEntity<?> createTemplate(@RequestHeader("encryption-iv") String iv, @RequestBody String encryptedTemplate) {
+        if (encryptedTemplate != null && !encryptedTemplate.isEmpty()) {
+            try {
+                String decodedTemplate = URLDecoder.decode(encryptedTemplate, StandardCharsets.UTF_8);
+                String decryptedTemplate = encryption.decrypt(decodedTemplate, iv);
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.registerModule(new JavaTimeModule());
+                // Convert to JSON array
+                Template templateToCreate = mapper.readValue(decryptedTemplate, Template.class);
+                templateToCreate.setId(0); // This gets replaced by the database incrementing ID
+                // Save the template
+                Template savedTemplate = templateService.saveTemplate(templateToCreate);
+                return ResponseEntity.status(HttpStatus.CREATED).body(savedTemplate);
+            } catch (IllegalArgumentException iae) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid template - Error: " + iae.getMessage());
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Template to create is required");
+        }
+    }
+
     @PutMapping(value = "{id}/update")
     @Operation(summary = "Update template", description = "Saves an existing template. **Note:** When inspecting this request in Chrome DevTools, use **'View source'** in the Network tab to see the raw payload.")
     public ResponseEntity<?> updateTemplate(@PathVariable("id") Long id, @RequestHeader("encryption-iv") String iv, @RequestBody String encryptedTemplate) {
@@ -95,7 +120,7 @@ public class TemplateController {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Template not found");
                 }
                 // Update the existing template
-                Template savedTemplate = templateService.updateTemplate(templateToUpdate);
+                Template savedTemplate = templateService.saveTemplate(templateToUpdate);
                 return ResponseEntity.status(HttpStatus.OK).body(savedTemplate);
             } catch (IllegalArgumentException iae) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid template - Error: " + iae.getMessage());

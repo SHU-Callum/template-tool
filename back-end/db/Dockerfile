@@ -1,5 +1,5 @@
 # Official MySQL image from the Docker Hub
-FROM mysql:latest
+FROM mysql:9.3
 
 # Set build arguments
 ARG MYSQL_ROOT_PASSWORD

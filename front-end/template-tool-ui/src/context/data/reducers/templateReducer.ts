@@ -8,8 +8,10 @@ import { mysqlDatetimeToDate } from "../../../utils/dateFormatter";
 export interface TemplateState {
   templatesByTeams: Template[] | null;
   templatesByParams: Template[] | null;
+  createTemplate: Template | null;
   updateTemplate: Template | null;
   deleteTemplate: number | null;
+  resetCreateTemplate: () => void;
   resetUpdateTemplate: () => void;
   resetDeleteTemplate: () => void;
   loading: boolean;
@@ -64,6 +66,20 @@ const templateReducer = (state: TemplateState, action: ActionPayload): TemplateS
               error: "Invalid format received from server - Not an array of templates",
             };
           }
+        case ActionType.CREATE_TEMPLATE:
+          const createdTemplate = {
+              ...(action.payload as TempTemplate),
+              lastAmendDate: mysqlDatetimeToDate((action.payload as TempTemplate).lastAmendDate), // convert to Date object
+            }
+            return {
+            ...state,
+            loading: false,
+            error: null,
+            createTemplate: createdTemplate,
+            templatesByTeams: state.templatesByTeams
+              ? [...state.templatesByTeams, createdTemplate]
+              : [createdTemplate],
+            };
         case ActionType.UPDATE_TEMPLATE:
           const updatedTemplate = {
               ...(action.payload as TempTemplate),
@@ -106,6 +122,11 @@ const templateReducer = (state: TemplateState, action: ActionPayload): TemplateS
         default:
           return state;
       }
+    case ActionType.RESET_CREATE_TEMPLATE:
+      return {
+        ...state,
+        createTemplate: null,
+      };
     case ActionType.RESET_UPDATE_TEMPLATE:
       return {
         ...state,

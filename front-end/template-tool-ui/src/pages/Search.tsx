@@ -8,6 +8,7 @@ import { useDispatchContext, useStateContext } from "../context/data/useData";
 import { getTemplatesByTeams, getTemplatesByParams } from "../context/data/actions/templateActions";
 import { Team } from "../models/team";
 import { addTeamNameToTemplates, filterTemplatesByEditable } from "../utils/idToName";
+import { Link } from "react-router";
 
 function Search() {
   const initialResults: Template[] = [];
@@ -26,6 +27,7 @@ function Search() {
   const [activeSearchResults, setActiveSearchResults] = useState(initialResults);
   const [loading, setLoading] = useState(false);
   const [lastSearchParams, setLastSearchParams] = useState({ teams: 'All Teams', text: '', includeViewOnly: 'True' });
+  const [canCreateTemplate, setCanCreateTemplate] = useState(false); // to enable/disable create template button
   const errorNotifiedRef = useRef(false); // used to prevent error notification loop
   const prevTeamsRef = useRef(state.teamState.teamsByUser); // used to prevent unnecessary rerendering
 
@@ -73,6 +75,7 @@ function Search() {
         const availableTeams = ['All Teams', ...state.teamState.teamsByUser.map(team => team.teamName)];
         setSearchTeamFilter(state.teamState.teamsByUser);
         setDropdownTeams(availableTeams);
+        setCanCreateTemplate(state.teamState.teamsByUser.flat().some(team => team.ownerIds?.includes(state.userState.userDetails?.id ?? -1)));
         if(state.teamState.teamsByUser !== prevTeamsRef.current) {
           // Map over state.teamState.teamsByUser to extract teamId values
           const teamIds = state.teamState.teamsByUser.map(team => team.id);
@@ -178,36 +181,59 @@ function Search() {
   , [searchText, searchResults, state.teamState.teamsByUser, state.userState.userDetails?.id, searchIncludeViewOnly, searchTeamFilter, state.userState.userDetails]);
 
   return (
-    <div className="p-4 w-full sm:w-6/7 mx-auto self-start h-full">
-      <div className="w-full sm:w-6/7 md:w-5/6 lg:w-2/3 mx-auto">
-        <div className="flex justify-between mb-2 items-center space-x-8 sm:w-11/12 md:w-10/12 lg:space-x-0 lg:w-4/5 mx-auto">
-          <SelectInput 
-            value={searchTeamFilter.length == 1 ? searchTeamFilter[0].teamName : 'All Teams'}
-            onChange={selectTeamFilterChanged}
-            options={dropdownTeams}
-            label="Filter by Team:"
-          />      
-          <div className="flex items-center">
-            <div className="mb-1 text-right pr-3">
-            <label htmlFor="check">Include View-only templates</label>
+    <div className="p-1 sm:p-4 w-full sm:w-6/7 mx-auto self-start h-full">
+      <div className="flex gap-4 justify-between">
+        <div className="w-full sm:w-6/7 md:w-5/6 lg:w-2/3 mx-auto">
+          <div className="flex justify-between mb-2 items-center sm:w-11/12 md:w-10/12 lg:space-x-0 lg:w-4/5 mx-auto gap-2">
+            <SelectInput 
+              value={searchTeamFilter.length == 1 ? searchTeamFilter[0].teamName : 'All Teams'}
+              onChange={selectTeamFilterChanged}
+              options={dropdownTeams}
+              label="Filter by Team:"
+            />      
+            <div className="flex items-center">
+              <div className="mb-1 text-right pr-3">
+                <label htmlFor="check">Include View-only templates</label>
+              </div>
+              <input type="checkbox" id="check" className="w-4 h-4" 
+                onChange={checkboxViewOnlyClicked}
+                checked={searchIncludeViewOnly}
+              />
             </div>
-            <input type="checkbox" id="check" className="w-4 h-4" 
-            onChange={checkboxViewOnlyClicked}
-            checked={searchIncludeViewOnly}
+          </div>
+          <div className="flex mb-4 sm:w-5/6 lg:w-2/3 mx-auto">
+            <input
+              type="text"
+              placeholder="Search..."
+              className="border rounded p-1.5 mr-2 w-4/5"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
             />
+            <button className="bg-blue-500 text-white p-1.5 rounded w-2/5 sm:w-1/5" onClick={searchClicked}>Search</button>
           </div>
         </div>
-        <div className="flex mb-4 sm:w-5/6 lg:w-2/3 mx-auto">
-          <input
-            type="text"
-            placeholder="Search..."
-            className="border rounded p-1.5 mr-2 w-4/5"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-          />
-          <button className="bg-blue-500 text-white p-1.5 rounded w-2/5 sm:w-1/5" onClick={searchClicked}>Search</button>
+        <div className="flex flex-col justify-center items-center gap-1">
+          <Link to="/create-template">
+            <div className="relative group w-full flex justify-center">
+              <button
+              className="bg-green-500 text-white pl-2 pr-2 p-1.5 rounded whitespace-nowrap w-24 sm:w-28"
+              disabled={!canCreateTemplate}
+              >
+              + Template
+              </button>
+              {!canCreateTemplate && (
+              <div className="absolute bottom-full left-2/3 -translate-x-2/3 mb-2 px-2 py-1 bg-gray-800 text-white text-sm rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10 w-40">
+                Must be a team owner to create a template.
+              </div>
+              )}
+            </div>
+          </Link>
+          <button className="bg-green-500 text-white pl-2 pr-2 p-1.5 rounded whitespace-nowrap w-24 sm:w-28">
+            + Team
+          </button>
         </div>
       </div>
+      
       <hr />
       <div className="pt-3">
       {loading ? <div>Loading...</div> : <TemplateSearchResults results={activeSearchResults} criteria={lastSearchParams}/>}

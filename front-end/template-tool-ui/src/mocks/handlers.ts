@@ -37,7 +37,18 @@ export const handlers = [
     return HttpResponse.json(GET_TEMPLATES_BY_TEAMS_DATA) // Successful response
   }),
 
-  // Intercept "PUT localhost/api/template/*/update requests...
+  // Intercept "POST localhost/api/templates/create requests...
+  http.post(`${API_BASE_URL}/templates/create`, async ({ request }) => {
+    const body = await request.text();
+    const headers = request.headers;
+    const decryptedBody = JSON.parse(decryptParameter((body), headers.get('encryption-iv') || ''));
+    if (!decryptedBody || Object.keys(decryptedBody).length === 0) {
+      return HttpResponse.json({ error: 'Request body cannot be empty' }, { status: 400 });
+    }
+    return HttpResponse.json(decryptedBody, { status: 201 }); // Successful response
+  }),
+
+  // Intercept "PUT localhost/api/templates/*/update requests...
   http.put(`${API_BASE_URL}/templates/:id/update`, async ({ request }) => {
     const url = new URL(request.url);
     const pathParts = url.pathname.split('/');
@@ -54,7 +65,7 @@ export const handlers = [
     return HttpResponse.json(decryptedBody); // Successful response
   }),
 
-  // Intercept "DELETE localhost/api/template/*/delete requests...
+  // Intercept "DELETE localhost/api/templates/*/delete requests...
   http.delete(`${API_BASE_URL}/templates/:id/delete`, async ({ request }) => {
     const url = new URL(request.url);
     const pathParts = url.pathname.split('/');

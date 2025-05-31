@@ -133,7 +133,7 @@ function ViewTemplate() {
   }, [state.templateState.deleteTemplate, addNotification]);
 
   return (
-    <div className="p-4 pl-2 pr-2 w-full sm:w-6/7 mx-auto self-start h-full">
+    <div className="p-2 pl-1 pr-1 w-full sm:w-6/7 mx-auto self-start h-full">
       {!activeTemplate || activeTemplate === undefined ? (
         <div className="flex justify-center items-center h-full w-full text-gray-500 dark:text-gray-400">
           <p>No template selected. Please select a template to view.</p>
@@ -168,16 +168,16 @@ function ViewTemplate() {
                   <div>
                     {mode == TemplateViewMode.Edit && (
                       <div className="flex flex-col gap-1">
-                        <button className="bg-green-600 text-white p-2 pl-4 pr-4 rounded w-full" onClick={handleSave}>
+                        <button className="bg-green-500 text-white p-2 pl-4 pr-4 rounded w-full" onClick={handleSave}>
                           Save
                         </button>
-                        <button className="bg-red-600 text-white p-2 pl-4 pr-4 rounded w-full" onClick={handleDelete}>
+                        <button className="bg-red-500 text-white p-2 pl-4 pr-4 rounded w-full" onClick={handleDelete}>
                           Delete
                         </button>
                       </div>
                     )}
                     {mode == TemplateViewMode.Render && (
-                      <button className="bg-green-600 text-white p-2 pl-4 pr-4 rounded w-full" onClick={handleCopy}>
+                      <button className="bg-green-500 text-white p-2 pl-4 pr-4 rounded w-full" onClick={handleCopy}>
                         Copy
                       </button>
                     )}
