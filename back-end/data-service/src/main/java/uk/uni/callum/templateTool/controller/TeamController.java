@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.*;
 import uk.uni.callum.templateTool.dto.TeamDTO;
+import uk.uni.callum.templateTool.dto.TeamMemberDTO;
+import uk.uni.callum.templateTool.model.Team;
 import uk.uni.callum.templateTool.service.TeamService;
 import uk.uni.callum.templateTool.utils.Encryption;
 
@@ -56,6 +58,44 @@ public class TeamController {
             }
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No user ID was sent");
+        }
+    }
+
+    /**
+     * Endpoint to find team members by team ID.
+     * Returns a list of employees with permissions for the specified team ID.
+     *
+     * @param eTeamId The encrypted team ID to search for.
+     * @param iv      The initialization vector for decryption.
+     * @return ResponseEntity with the list of team members or an error message.
+     */
+    @GetMapping("/users")
+    @Operation(summary = "Find teams by user id", description = "Return list of employees with permissions for a team id")
+    public ResponseEntity<?> getMembersByTeam(@RequestParam("team") String eTeamId, @RequestHeader("encryption-iv") String iv) {
+        if (eTeamId != null) {
+            try {
+                String decodedTeamId = URLDecoder.decode(eTeamId, StandardCharsets.UTF_8);
+                String decryptedTeamId = encryption.decrypt(decodedTeamId, iv);
+                Long formattedDecryptedTeamId = null;
+                formattedDecryptedTeamId = Long.parseLong(decryptedTeamId);
+
+                Team team = teamService.findTeamById(formattedDecryptedTeamId);
+                if(team == null) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Team not found");
+                }
+                // Search for team members by team id
+                List<TeamMemberDTO> teamMembers = teamService.findTeamMembersByTeamId(formattedDecryptedTeamId);
+                if (teamMembers.isEmpty()) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found");
+                }
+                return ResponseEntity.status(HttpStatus.OK).body(teamMembers);
+            } catch (IllegalArgumentException iae) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid user id - Error: " + iae.getMessage());
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No Team ID was sent");
         }
     }
 }
