@@ -3,9 +3,11 @@
 
 import { ActionPayload, ActionType } from "../actionTypes";
 import { Team } from "../../../models/team";
+import { TeamMember } from "../../../models/teamMember";
 
 export interface TeamState {
   teamsByUser: Team[] | null;
+  membersByTeam: TeamMember[] | null;
   loading: boolean;
   error: string | null;
 }
@@ -26,6 +28,13 @@ const teamReducer = (state: TeamState, action: ActionPayload): TeamState => {
             loading: false,
             error: null,
             teamsByUser: action.payload as Team[],
+          };
+        case ActionType.GET_NAMES_BY_TEAM:
+          return {
+            ...state,
+            loading: false,
+            error: null,
+            membersByTeam: action.payload as TeamMember[],
           };
         default:
           return state;

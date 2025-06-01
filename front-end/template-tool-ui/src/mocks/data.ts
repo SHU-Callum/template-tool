@@ -90,6 +90,40 @@ export const GET_TEMPLATES_BY_TEAMS_DATA = [
   },
 ]
 
+export const TEAM_MEMBERS_DATA = [
+  {
+    id: 1,
+    email: 'user1@example.com',
+    displayName: 'User One',
+    isOwner: true
+  },
+  {
+    id: 2,
+    email: 'bob@example.com',
+    displayName: 'Bob Johnson',
+    isOwner: false
+  },
+  {
+    id: 3,
+    email: 'carol@example.com',
+    displayName: 'Carol Williams',
+    isOwner: false
+  },
+  {
+    id: 4,
+    email: 'dave@example.com',
+    displayName: 'Dave Brown',
+    isOwner: false
+  },
+  {
+    id: 5,
+    email: 'eve@example.com',
+    displayName: 'Eve Davis',
+    isOwner: false
+  }
+];
+
+
 export const GET_USER_DETAILS_DATA = 
 {
   id: 1,

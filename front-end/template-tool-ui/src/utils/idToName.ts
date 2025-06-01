@@ -1,4 +1,4 @@
-import { Team } from "../models/team";
+import { Team, TeamAffiliations } from "../models/team";
 import { Template, TemplateWithTeamName } from "../models/template";
 import { User } from "../models/user";
 
@@ -31,4 +31,12 @@ export function templateIsEditable(template: Template, user: User | null, teams:
   return (template.editable === true // where the template is editable
     || template.ownerId === user.id // where user is owner of the template
     || (teams.find(team => team.id === template.teamId)?.ownerIds?.includes(user.id) ?? false)) // where user is owner of the team of the template
+}
+
+export function addAffiliationToTeam(team: Team, userId: number): TeamAffiliations {
+  const teamAffiliation: TeamAffiliations = {
+    ...team,
+    isOwner: team.ownerIds.includes(userId),
+  };
+  return teamAffiliation;
 }

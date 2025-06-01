@@ -15,6 +15,7 @@ export const API_ROUTES = {
 
   GET_TEAM_URL: (teamId: string) => `${API_BASE_URL}/team/${teamId}`,
   GET_TEAMS_BY_USER: (eUserId: string) => `${API_BASE_URL}/teams/all?user=${eUserId}`,
+  GET_MEMBERS_BY_TEAM: (eTeamId: string) => `${API_BASE_URL}/teams/users?team=${eTeamId}`,
   GET_TEAMS_BY_SEARCH: `${API_BASE_URL}/teams/search`,
   DELETE_TEAM_URL: (teamId: string) => `${API_BASE_URL}/team/${teamId}/delete`,
   UPDATE_TEAM_URL: (teamId: string) => `${API_BASE_URL}/team/${teamId}/update`,

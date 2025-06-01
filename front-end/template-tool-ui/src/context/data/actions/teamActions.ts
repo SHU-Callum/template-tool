@@ -44,3 +44,35 @@ export const getTeamsByUserId = async (userId: number, dispatch: Dispatch<Action
     }
   }
 };
+
+// Called at Manage Team page
+export const getMemberNamesByTeam = async (teamId: number, dispatch: Dispatch<ActionPayload>) => {
+  dispatchTeamAction(dispatch, { type: ActionType.LOADING });
+  try {
+    const { encryptedParameter, iv } = encryptParameter(teamId.toString()); // Need to encrypt twice due to API handling in Springboot
+    const response: AxiosResponse = await authorisedAxios.get(API_ROUTES.GET_MEMBERS_BY_TEAM(encodeURIComponent(encryptedParameter)), {
+      headers: {
+        'encryption-iv': iv // each api call has a different encryption pattern
+      },
+      timeout: 3000
+    });
+    if (response.status === 200) {
+      dispatchTeamAction(dispatch, { type: ActionType.SUCCESS, apiName: ActionType.GET_NAMES_BY_TEAM, payload: response.data });
+    } else {
+      throw new Error(`Failed to get template with id: ${teamId}`);
+    }
+  } catch (error) {
+    if (axios.isCancel(error)) {
+      dispatchTeamAction(dispatch, { type: ActionType.ERROR, payload: 'Timeout Error' });
+    } else if (axios.isAxiosError(error)) {
+      if (error.status === 404) {
+        dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.GET_NAMES_BY_TEAM, payload: `No users found for team` });
+      }
+      else {
+        dispatchTeamAction(dispatch, { type: ActionType.ERROR, payload: `Something went wrong: ${error.message}` });
+      }
+    } else {
+      dispatchTeamAction(dispatch, { type: ActionType.ERROR, payload: 'An unknown error occurred' });
+    }
+  }
+};
