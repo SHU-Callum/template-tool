@@ -3,7 +3,7 @@
 
 import { http, HttpResponse } from 'msw'
 import { API_BASE_URL } from '../constants/apis'
-import { GET_TEAMS_BY_USER_DATA, GET_TEMPLATES_BY_PARAMS_DATA, GET_TEMPLATES_BY_PARAMS_DATA_2, GET_TEMPLATES_BY_TEAMS_DATA, GET_USER_DETAILS_DATA } from './data'
+import { GET_TEAMS_BY_USER_DATA, GET_TEMPLATES_BY_PARAMS_DATA, GET_TEMPLATES_BY_PARAMS_DATA_2, GET_TEMPLATES_BY_TEAMS_DATA, GET_USER_DETAILS_DATA, TEAM_MEMBERS_DATA } from './data'
 import { decryptParameter } from '../utils/encryption'
  
 export const handlers = [
@@ -84,6 +84,16 @@ export const handlers = [
       return HttpResponse.json({ error: 'User ID cannot be empty' }, { status: 400 });
     }
     return HttpResponse.json(GET_TEAMS_BY_USER_DATA); // Successful response
+  }),
+
+  // Intercept "GET localhost/api/teams/users?team=*" requests...
+  http.get(`${API_BASE_URL}/teams/users`, async ({ request }) => {
+    const url = new URL(request.url);
+    const teamId = url.searchParams.get('team')
+    if (!teamId || teamId.length < 1) {
+      return HttpResponse.json({ error: 'Team ID cannot be empty' }, { status: 400 });
+    }
+    return HttpResponse.json(TEAM_MEMBERS_DATA); // Successful response, returning an empty array for simplicity
   }),
 
   // Intercept "GET localhost/api/user?kcid=*" requests...

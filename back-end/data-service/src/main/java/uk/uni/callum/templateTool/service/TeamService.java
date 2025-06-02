@@ -3,9 +3,12 @@ package uk.uni.callum.templateTool.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.uni.callum.templateTool.dto.TeamDTO;
+import uk.uni.callum.templateTool.dto.TeamMemberDTO;
 import uk.uni.callum.templateTool.model.Team;
 import uk.uni.callum.templateTool.model.TeamMember;
 import uk.uni.callum.templateTool.repository.TeamMemberRepository;
+import uk.uni.callum.templateTool.repository.TeamRepository;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,6 +17,9 @@ public class TeamService {
 
     @Autowired
     private TeamMemberRepository teamMemberRepository;
+
+    @Autowired
+    private TeamRepository teamRepository;
 
     /**
      * Find teams by user ID.
@@ -38,5 +44,13 @@ public class TeamService {
 
             return teamDTO;
         }).collect(Collectors.toList());
+    }
+
+    public Team findTeamById(long teamId) {
+        return teamRepository.findById(teamId);
+    }
+
+    public List<TeamMemberDTO> findTeamMembersByTeamId(long teamId) {
+        return teamMemberRepository.findTeamMembersByTeamId(teamId);
     }
 }

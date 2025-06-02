@@ -1,18 +1,25 @@
-import { useNotification } from '../context/notification/useNotification';
+import { useNavigate } from 'react-router';
 import { TeamAffiliations } from '../models/team';
-import { NotificationType } from '../types/notificationTypes';
 import RoundedLabel from './RoundedLabel';
 
 interface TeamsListProps {
   loading: boolean
-  teams: TeamAffiliations[];
+  teams: TeamAffiliations[]
+  closeSideout?: () => void;
 }
 
-function TeamsList ({ loading, teams }: TeamsListProps) {
-  const { addNotification } = useNotification();
+function TeamsList ({ loading, teams, closeSideout }: TeamsListProps) {
+  const navigate = useNavigate();
   // split teams into owners and members groupings
   const members = teams.filter(team => !team.isOwner);
   const owners = teams.filter(team => team.isOwner);
+
+  const openTeamClicked = (team: TeamAffiliations) => {
+    closeSideout && closeSideout(); // close sideout if it exists
+    navigate('/manage-team', {
+      state: { selectedTeam: team }
+    });
+  }
 
   return (
     <div className="flex">
@@ -53,7 +60,7 @@ function TeamsList ({ loading, teams }: TeamsListProps) {
             owners.map((team, index) => (
               <li key={index} className="p-2 w-5/6 mx-auto">
                 <div className='flex gap-2 items-center justify-center'>
-                  <RoundedLabel text={team.teamName} borderColour='border-green-500' clickAction={() => addNotification(`${team.teamName} clicked`, NotificationType.INFO)} />
+                  <RoundedLabel text={team.teamName} borderColour='border-green-500' clickAction={() => openTeamClicked(team)} />
                 </div>
               </li>
             ))

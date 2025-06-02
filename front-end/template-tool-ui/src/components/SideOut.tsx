@@ -98,7 +98,7 @@ function SideOut({ isOpen, onClose }: SideOutProps) {
           </button>
         </div>
       </div>
-      <TeamsList loading={loading} teams={filteredTeams}></TeamsList>
+      <TeamsList loading={loading} teams={filteredTeams} closeSideout={onClose}></TeamsList>
     </div>
   );
 }
