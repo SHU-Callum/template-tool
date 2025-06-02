@@ -13,7 +13,7 @@ import { NotificationType } from "../types/notificationTypes";
 import { dateToMysqlDatetime } from "../utils/dateFormatter";
 import { deleteTemplate, updateTemplate } from "../context/data/actions/templateActions";
 import { useDispatchContext, useStateContext } from "../context/data/useData";
-import { addAffiliationToTeam, addTeamNameToTemplate } from "../utils/idToName";
+import { addAffiliationToTeam, addTeamNameToTemplate, templateTeamisOwner } from "../utils/idToName";
 import { TeamAffiliations } from "../models/team";
 
 function ViewTemplate() {
@@ -161,7 +161,7 @@ function ViewTemplate() {
               <h3 className="text-left">{activeTemplate.title}</h3>
               <p className="text-left italic caption">Last update: {new Date(activeTemplate.lastAmendDate).toLocaleDateString()}</p>
             </div>
-            {activeTemplate.editable ? 
+            {templateTeamisOwner(activeTemplate, state.userState.userDetails, state.teamState.teamsByUser || []) ? 
               <RoundedLabel text={activeTemplate.teamName} borderColour="border-green-500" textBold clickAction={openTeamClicked} />
               :
               <RoundedLabel text={activeTemplate.teamName} textBold />

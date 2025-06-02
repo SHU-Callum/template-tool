@@ -83,7 +83,7 @@ export const GET_TEMPLATES_BY_TEAMS_DATA = [
     title: 'Account Activation',
     detail: 'Template for account activation',
     content: '{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Dear "},{"type":"textInput","attrs":{"placeholder":"Enter text here...","id":"1748222973732-dfvtg2j","value":"name"}},{"type":"text","text":","}]},{"type":"paragraph"},{"type":"paragraph","content":[{"type":"text","text":"Please activate your account by clicking the link below:"}]},{"type":"paragraph","content":[{"type":"textInput","attrs":{"placeholder":"Enter text here...","id":"1748222978666-wv6z2u1","value":"activation link"}}]},{"type":"paragraph"},{"type":"paragraph","content":[{"type":"text","text":"Best regards,"}]},{"type":"paragraph","content":[{"type":"text","text":"The Team"}]}]}',
-    ownerId: 2,
+    ownerId: 1,
     teamId: 3,
     editable: false,
     lastAmendDate: '2025-02-16T10:00:00Z'

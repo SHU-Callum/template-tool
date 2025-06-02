@@ -33,6 +33,11 @@ export function templateIsEditable(template: Template, user: User | null, teams:
     || (teams.find(team => team.id === template.teamId)?.ownerIds?.includes(user.id) ?? false)) // where user is owner of the team of the template
 }
 
+export function templateTeamisOwner(template: Template, user: User | null, teams: Team[]): boolean {
+  if (!user) return false; // if user is null, return false
+  return (template.teamId && teams.find(team => team.id === template.teamId)?.ownerIds?.includes(user.id)) || false;
+}
+
 export function addAffiliationToTeam(team: Team, userId: number): TeamAffiliations {
   const teamAffiliation: TeamAffiliations = {
     ...team,

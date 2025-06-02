@@ -76,7 +76,7 @@ function ManageTeam() {
         </div>
         <hr />
         {teamMembers ? (
-          <div className="text-gray-500 p-4">
+          <div className="p-4">
             <div className="p-2 py-1">
               <h4 className="text-left">Add New Member:</h4>
               <div className="flex p-2 pl-0 sm:p-4">
