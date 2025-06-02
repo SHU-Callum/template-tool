@@ -1,13 +1,13 @@
-import OpenButton from "./OpenButton";
+import { ReactNode } from "react";
 
 interface RoundedLabelProps {
   text: string;
   borderColour?: string;
   textBold?: boolean;
-  clickAction?: () => void;
+  iconButton?: ReactNode;
 }
 
-function RoundedLabel({ text, borderColour="border-blue-500", textBold=false, clickAction}: RoundedLabelProps) {
+function RoundedLabel({ text, borderColour="border-blue-500", textBold=false, iconButton}: RoundedLabelProps) {
   return (
     <div className={`
     border-2 
@@ -28,9 +28,7 @@ function RoundedLabel({ text, borderColour="border-blue-500", textBold=false, cl
       :
       <span>{text}</span>
       }
-      {clickAction && (
-        <OpenButton clickAction={clickAction} />
-      )}
+      {iconButton}
     </div>
   )
 }

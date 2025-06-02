@@ -4,7 +4,7 @@ import { TeamAffiliations } from "../models/team";
 import TeamsList from "./TeamsList";
 import { NotificationType } from "../types/notificationTypes";
 import { useStateContext } from "../context/data/useData";
-import BackButton from "./BackButton";
+import BackButton from "./buttons/BackButton";
 import { useAuth } from "../context/auth/useAuth";
 
 interface SideOutProps {

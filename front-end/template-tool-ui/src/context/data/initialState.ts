@@ -21,6 +21,8 @@ export const INITIAL_TEMPLATE_STATE: TemplateState = {
 export const INITIAL_TEAM_STATE: TeamState = {
   teamsByUser: null as Team[] | null,
   membersByTeam: null as TeamMember[] | null,
+  promotion: false,
+  resetPromotion: () => ({}), // will be replaced in DataProvider
   loading: false,
   error: null,
 };

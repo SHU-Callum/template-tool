@@ -59,7 +59,7 @@ export const getMemberNamesByTeam = async (teamId: number, dispatch: Dispatch<Ac
     if (response.status === 200) {
       dispatchTeamAction(dispatch, { type: ActionType.SUCCESS, apiName: ActionType.GET_NAMES_BY_TEAM, payload: response.data });
     } else {
-      throw new Error(`Failed to get template with id: ${teamId}`);
+      throw new Error(`Failed to get team members with team id: ${teamId}`);
     }
   } catch (error) {
     if (axios.isCancel(error)) {
@@ -67,6 +67,42 @@ export const getMemberNamesByTeam = async (teamId: number, dispatch: Dispatch<Ac
     } else if (axios.isAxiosError(error)) {
       if (error.status === 404) {
         dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.GET_NAMES_BY_TEAM, payload: `No users found for team` });
+      }
+      else {
+        dispatchTeamAction(dispatch, { type: ActionType.ERROR, payload: `Something went wrong: ${error.message}` });
+      }
+    } else {
+      dispatchTeamAction(dispatch, { type: ActionType.ERROR, payload: 'An unknown error occurred' });
+    }
+  }
+};
+
+// Called at Manage Team page
+export const promoteTeamMember = async (memberId: number, teamId: number, dispatch: Dispatch<ActionPayload>) => {
+  dispatchTeamAction(dispatch, { type: ActionType.LOADING });
+  try {
+    const promotion = {
+      memberId: memberId,
+      teamId: teamId
+    };
+    const { encryptedParameter, iv } = encryptParameter(JSON.stringify(promotion)); 
+    const response: AxiosResponse = await authorisedAxios.put(API_ROUTES.UPDATE_MEMBER_PERMISSION, encryptedParameter, {
+      headers: {
+        'encryption-iv': iv // each api call has a different encryption pattern
+      },
+      timeout: 3000
+    });
+    if (response.status === 200) {
+      dispatchTeamAction(dispatch, { type: ActionType.SUCCESS, apiName: ActionType.UPDATE_MEMBER_PERMISSION, payload: response.data });
+    } else {
+      throw new Error(`Failed to update member id: ${memberId} for team id: ${teamId}`);
+    }
+  } catch (error) {
+    if (axios.isCancel(error)) {
+      dispatchTeamAction(dispatch, { type: ActionType.ERROR, payload: 'Timeout Error' });
+    } else if (axios.isAxiosError(error)) {
+      if (error.status === 404) {
+        dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.UPDATE_MEMBER_PERMISSION, payload: `User not found for team` });
       }
       else {
         dispatchTeamAction(dispatch, { type: ActionType.ERROR, payload: `Something went wrong: ${error.message}` });

@@ -8,6 +8,8 @@ import { TeamMember } from "../../../models/teamMember";
 export interface TeamState {
   teamsByUser: Team[] | null;
   membersByTeam: TeamMember[] | null;
+  promotion: boolean;
+  resetPromotion: () => void; // will be replaced in DataProvider
   loading: boolean;
   error: string | null;
 }
@@ -35,10 +37,24 @@ const teamReducer = (state: TeamState, action: ActionPayload): TeamState => {
             loading: false,
             error: null,
             membersByTeam: action.payload as TeamMember[],
+            promotion: false
+          };
+        case ActionType.UPDATE_MEMBER_PERMISSION:
+          return {
+            ...state,
+            loading: false,
+            error: null,
+            membersByTeam: action.payload as TeamMember[],
+            promotion: true
           };
         default:
           return state;
         }
+    case ActionType.RESET_PROMOTION:
+      return {
+        ...state,
+        promotion: false,
+      };
     case ActionType.ERROR:
       switch (action.apiName) {
         case ActionType.GET_TEAMS_BY_USER:

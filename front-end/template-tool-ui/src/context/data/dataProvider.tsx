@@ -27,15 +27,22 @@ const DataProvider = ({children}: { children: ReactNode }) => {
     templateDispatch({ type: ActionType.RESET_DELETE_TEMPLATE, dispatchType: DispatchType.TEMPLATE });
   }
 
+  const resetPromotion = () => {
+    teamDispatch({ type: ActionType.RESET_PROMOTION, dispatchType: DispatchType.TEAM });
+  }
+
   const combinedState = useMemo(
     () => ({
       templateState: {
         ...templateState, // Spread the existing template state
         resetCreateTemplate,
-        resetUpdateTemplate, // Add the reset function
-        resetDeleteTemplate // Add the reset function
+        resetUpdateTemplate, 
+        resetDeleteTemplate
       },
-      teamState,
+      teamState: {
+        ...teamState,
+        resetPromotion 
+      },
       userState
     }),
     [ // Dependencies

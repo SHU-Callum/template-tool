@@ -19,6 +19,8 @@ export enum ActionType {
   RESET_CREATE_TEMPLATE,
   GET_TEAMS_BY_USER,
   GET_NAMES_BY_TEAM,
+  UPDATE_MEMBER_PERMISSION,
+  RESET_PROMOTION,
   GET_USER_DETAILS,
 }
 
@@ -42,7 +44,7 @@ export type PayloadType =
   | TempTemplate
   | TempTemplate[]
   | Team[]
-  | User
   | TeamMember[]
+  | User
   | string
   | number;

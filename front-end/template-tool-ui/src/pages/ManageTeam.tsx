@@ -3,11 +3,12 @@ import { useNotification } from "../context/notification/useNotification";
 import { useDispatchContext, useStateContext } from "../context/data/useData";
 import { Team } from "../models/team";
 import { useLocation, useNavigate } from "react-router";
-import BackButton from "../components/BackButton";
+import BackButton from "../components/buttons/BackButton";
 import RoundedLabel from "../components/RoundedLabel";
 import { NotificationType } from "../types/notificationTypes";
-import { getMemberNamesByTeam } from "../context/data/actions/teamActions";
+import { getMemberNamesByTeam, promoteTeamMember } from "../context/data/actions/teamActions";
 import { TeamMember } from "../models/teamMember";
+import MoveRightButton from "../components/buttons/MoveRightButton";
 
 function ManageTeam() {
   // from context providers
@@ -28,6 +29,15 @@ function ManageTeam() {
     addNotification(`Adding Employee: ${addEmployeeText}`, NotificationType.INFO);
   }
 
+  const promoteMember = (memberId: number) => {
+    if(selectedTeam) {
+      promoteTeamMember(memberId, selectedTeam?.id, dispatch)
+    } else {
+      addNotification(`Failed to promote member: No team selected`, NotificationType.ERROR);
+    }
+  }
+
+  // When the component mounts, GET team members for the selected team
   useEffect(() => {
     if (selectedTeam  && !hasFetchedMembers.current) {
       hasFetchedMembers.current = true; // prevent multiple fetches for the same team
@@ -49,11 +59,26 @@ function ManageTeam() {
     }
   }, [selectedTeam, dispatch, state.teamState.error, addNotification]);
 
+  // When GET team members API call is successful, update the teamMembers state
   useEffect(() => {
     if(state.teamState.membersByTeam) {
       setTeamMembers(state.teamState.membersByTeam);
     }
   }, [state.teamState.membersByTeam]);
+
+  // When PUT promote member API call is successful, update the teamMembers state
+  useEffect(() => {
+    if (state.teamState.membersByTeam && state.teamState.promotion) {
+      setTeamMembers(state.teamState.membersByTeam);
+      state.teamState.resetPromotion(); // reset promotion state
+      errorNotifiedRef.current = false; // reset error notification flag
+      addNotification(`Member promoted successfully`, NotificationType.SUCCESS);
+    }
+    else if (state.teamState.error && !errorNotifiedRef.current) {
+      addNotification(`Failed to promote member: ${state.teamState.error}`, NotificationType.ERROR);
+      errorNotifiedRef.current = true; // prevent further notifications
+    }
+  }, [state.teamState.membersByTeam, state.teamState.error, addNotification]);
 
   // reset error notification flag when an API call is loading
   useEffect(() => {
@@ -101,7 +126,7 @@ function ManageTeam() {
                 <ul className="space-y-2 pt-2">
                   {teamMembers.filter((member) => !member.isOwner).map((member, index) => (
                     <li key={index} className="w-5/6 mx-auto">
-                      <RoundedLabel text={member.displayName} />
+                      <RoundedLabel text={member.displayName} iconButton={<MoveRightButton clickAction={() => {promoteMember(member.id)}}/>}/>
                     </li>
                   ))}
                 </ul>
