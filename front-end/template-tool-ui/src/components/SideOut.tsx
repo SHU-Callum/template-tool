@@ -6,6 +6,7 @@ import { NotificationType } from "../types/notificationTypes";
 import { useStateContext } from "../context/data/useData";
 import BackButton from "./buttons/BackButton";
 import { useAuth } from "../context/auth/useAuth";
+import { useSideOut } from "../context/sideOut/useSideOut";
 
 interface SideOutProps {
   isOpen: boolean;
@@ -16,7 +17,7 @@ function SideOut({ isOpen, onClose }: SideOutProps) {
   const { addNotification, } = useNotification();
   const { logout } = useAuth();
   const state = useStateContext();
-  
+  const {setFocusTeamCreate, focusTeamCreate} = useSideOut();
   const [teams, setTeams] = useState<TeamAffiliations[]>([]);
   const [filteredTeams, setFilteredTeams] = useState<TeamAffiliations[]>([]);
   const [createTeamText, setCreateTeamText] = useState('');
@@ -30,6 +31,9 @@ function SideOut({ isOpen, onClose }: SideOutProps) {
 
   // Fetch teams by user locally. Splits teams into owner and regular member roles
   useEffect(() => {
+    if (focusTeamCreate) {
+      setFocusTeamCreate(false);
+    }
     if (state.teamState.teamsByUser) {
       const formattedTeams = state.teamState.teamsByUser.map((team) => ({
         ...team,
@@ -37,8 +41,8 @@ function SideOut({ isOpen, onClose }: SideOutProps) {
       }));
       setTeams(formattedTeams);
     }
-    if (state.teamState.error && !errorNotifiedRef.current && state.teamState.teamsByUser === null) {
-      addNotification(state.teamState.error, NotificationType.ERROR);
+    if (state.teamState.error?.teamsByUserError && !errorNotifiedRef.current && state.teamState.teamsByUser === null) {
+      addNotification(state.teamState.error.teamsByUserError, NotificationType.ERROR);
       errorNotifiedRef.current = true;
     }
     setLoading(state.teamState.loading);
@@ -90,6 +94,7 @@ function SideOut({ isOpen, onClose }: SideOutProps) {
             className="border rounded p-2 flex-grow mr-2"
             value={createTeamText}
             onChange={(e) => setCreateTeamText(e.target.value)}
+            autoFocus={focusTeamCreate}
           />
           <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded" 
             onClick={createTeamClicked}
