@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router';
 import { TeamAffiliations } from '../models/team';
 import RoundedLabel from './RoundedLabel';
+import OpenButton from './buttons/OpenButton';
 
 interface TeamsListProps {
   loading: boolean
@@ -60,7 +61,7 @@ function TeamsList ({ loading, teams, closeSideout }: TeamsListProps) {
             owners.map((team, index) => (
               <li key={index} className="p-2 w-5/6 mx-auto">
                 <div className='flex gap-2 items-center justify-center'>
-                  <RoundedLabel text={team.teamName} borderColour='border-green-500' clickAction={() => openTeamClicked(team)} />
+                  <RoundedLabel text={team.teamName} borderColour='border-green-500' iconButton={<OpenButton clickAction={() => openTeamClicked(team)} />} />
                 </div>
               </li>
             ))

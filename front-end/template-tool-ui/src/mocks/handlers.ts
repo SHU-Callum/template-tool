@@ -93,7 +93,25 @@ export const handlers = [
     if (!teamId || teamId.length < 1) {
       return HttpResponse.json({ error: 'Team ID cannot be empty' }, { status: 400 });
     }
-    return HttpResponse.json(TEAM_MEMBERS_DATA); // Successful response, returning an empty array for simplicity
+    return HttpResponse.json(TEAM_MEMBERS_DATA); // Successful response
+  }),
+
+  // Intercept "PUT localhost/api/team/promote requests...
+  http.put(`${API_BASE_URL}/teams/promote`, async ({ request }) => {
+    const body = await request.text();
+    const headers = request.headers;
+    const decryptedBody = JSON.parse(decryptParameter((body), headers.get('encryption-iv') || ''));
+    if (!decryptedBody || Object.keys(decryptedBody).length === 0) {
+      return HttpResponse.json({ error: 'Request body cannot be empty' }, { status: 400 });
+    }
+    const { userId, teamId } = decryptedBody;
+    if (!userId || userId.length < 1 || !teamId || teamId.length < 1) {
+      return HttpResponse.json({ error: 'Member ID and Team ID cannot be empty' }, { status: 400 });
+    }
+    const updatedMembers = TEAM_MEMBERS_DATA.map(member => {
+      return { ...member, isOwner: userId === member.id ? true : member.isOwner}; // Simulate promoting the member to owner
+    })
+    return HttpResponse.json(updatedMembers); // Successful response
   }),
 
   // Intercept "GET localhost/api/user?kcid=*" requests...

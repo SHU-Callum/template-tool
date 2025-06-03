@@ -1,5 +1,6 @@
 package uk.uni.callum.templateTool.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,12 +10,15 @@ import org.springframework.web.bind.annotation.*;
 import uk.uni.callum.templateTool.dto.TeamDTO;
 import uk.uni.callum.templateTool.dto.TeamMemberDTO;
 import uk.uni.callum.templateTool.model.Team;
+import uk.uni.callum.templateTool.model.TeamMember;
+import uk.uni.callum.templateTool.model.requestParams.UpdateMemberPermsParams;
 import uk.uni.callum.templateTool.service.TeamService;
 import uk.uni.callum.templateTool.utils.Encryption;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Optional;
 
 @EnableMethodSecurity
 @RestController
@@ -96,6 +100,47 @@ public class TeamController {
             }
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No Team ID was sent");
+        }
+    }
+
+    /**
+     * Endpoint to update team member permission to OWNER.
+     * Returns an updated list of employees with permissions for the specified team ID.
+     * @param iv The initialization vector for decryption.
+     * @param encryptedMember The encrypted team member ID to update.
+     * @return ResponseEntity with the updated list of team members or an error message.
+     */
+    @PutMapping("/promote")
+    @Operation(summary = "Update a team member to OWNER", description = "Update a team member permission and return an updated list of employee permissions for a team id")
+    public ResponseEntity<?> updateTeamMemberPermission(@RequestHeader("encryption-iv") String iv, @RequestBody String encryptedMember) {
+        if (encryptedMember != null) {
+            try {
+                String decodedMemberPerms = URLDecoder.decode(encryptedMember, StandardCharsets.UTF_8);
+                String decryptedMemberPerms = encryption.decrypt(decodedMemberPerms, iv);
+                // Convert the decrypted JSON string to UpdateMemberPermsParams object
+                UpdateMemberPermsParams memberToUpdate = new ObjectMapper().readValue(decryptedMemberPerms, UpdateMemberPermsParams.class);
+                long formattedUserId = Long.parseLong(memberToUpdate.getUserId());
+                long formattedTeamId = Long.parseLong(memberToUpdate.getTeamId());
+
+                Optional<TeamMember> teamMember = teamService.findTeamMemberByUserIdAndTeamId(formattedUserId, formattedTeamId);
+                if(teamMember.isEmpty()) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Team member not found");
+                }
+                // Update the team member's permission to OWNER
+                List<TeamMemberDTO> teamMembers = teamService.setTeamMemberPermission(teamMember.get());
+                if (teamMembers.isEmpty()) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found");
+                } else if (teamMembers.stream().anyMatch(tm -> tm.getId() == formattedUserId && !tm.isOwner())) {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to promote to OWNER");
+                }
+                return ResponseEntity.status(HttpStatus.OK).body(teamMembers);
+            } catch (IllegalArgumentException iae) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid team member params - Error: " + iae.getMessage());
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No Team member was sent");
         }
     }
 }

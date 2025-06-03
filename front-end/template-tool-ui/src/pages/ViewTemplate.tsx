@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router";
 import { TemplateWithTeamName, TempTemplate } from "../models/template";
-import BackButton from "../components/BackButton";
+import BackButton from "../components/buttons/BackButton";
 import RoundedLabel from "../components/RoundedLabel";
 import TextEditor from "../components/textEditor/TextEditor";
 import { TemplateViewMode } from "../types/templateViewTypes";
@@ -15,6 +15,7 @@ import { deleteTemplate, updateTemplate } from "../context/data/actions/template
 import { useDispatchContext, useStateContext } from "../context/data/useData";
 import { addAffiliationToTeam, addTeamNameToTemplate, templateTeamisOwner } from "../utils/idToName";
 import { TeamAffiliations } from "../models/team";
+import OpenButton from "../components/buttons/OpenButton";
 
 function ViewTemplate() {
   const location = useLocation(); // contains template state passed from Search page
@@ -162,7 +163,7 @@ function ViewTemplate() {
               <p className="text-left italic caption">Last update: {new Date(activeTemplate.lastAmendDate).toLocaleDateString()}</p>
             </div>
             {templateTeamisOwner(activeTemplate, state.userState.userDetails, state.teamState.teamsByUser || []) ? 
-              <RoundedLabel text={activeTemplate.teamName} borderColour="border-green-500" textBold clickAction={openTeamClicked} />
+              <RoundedLabel text={activeTemplate.teamName} borderColour="border-green-500" textBold iconButton={<OpenButton clickAction={openTeamClicked} />} />
               :
               <RoundedLabel text={activeTemplate.teamName} textBold />
             }

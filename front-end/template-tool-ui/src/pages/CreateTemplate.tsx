@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router";
-import BackButton from "../components/BackButton";
+import BackButton from "../components/buttons/BackButton";
 import TextEditor from "../components/textEditor/TextEditor";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Editor } from "@tiptap/react";
