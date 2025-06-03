@@ -4,9 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.uni.callum.templateTool.dto.TeamDTO;
 import uk.uni.callum.templateTool.dto.TeamMemberDTO;
+import uk.uni.callum.templateTool.model.Employee;
 import uk.uni.callum.templateTool.model.MemberRole;
 import uk.uni.callum.templateTool.model.Team;
 import uk.uni.callum.templateTool.model.TeamMember;
+import uk.uni.callum.templateTool.model.TeamMemberId;
 import uk.uni.callum.templateTool.repository.TeamMemberRepository;
 import uk.uni.callum.templateTool.repository.TeamRepository;
 
@@ -52,6 +54,10 @@ public class TeamService {
         return teamRepository.findById(teamId);
     }
 
+    public Optional<TeamMember> findTeamMemberByEmail(String email) {
+        return teamMemberRepository.findByUserId_Email(email);
+    }
+
     public List<TeamMemberDTO> findTeamMembersByTeamId(long teamId) {
         return teamMemberRepository.findTeamMembersByTeamId(teamId);
     }
@@ -67,5 +73,26 @@ public class TeamService {
         teamMemberRepository.save(teamMember);
         // Return updated list of team members
         return teamMemberRepository.findTeamMembersByTeamId(teamMember.getTeamId().getId());
+    }
+
+    public TeamMemberDTO addTeamMember(Employee employee, long teamId) {
+        TeamMemberId teamMemberId = new TeamMemberId();
+        teamMemberId.setUserId(employee.getId());
+        teamMemberId.setTeamId(teamId);
+
+        TeamMember teamMember = new TeamMember();
+        teamMember.setId(teamMemberId);
+        teamMember.setUserId(employee);
+        teamMember.setTeamId(teamRepository.findById(teamId));
+        MemberRole memberRole = new MemberRole();
+        memberRole.setId(1L); // 1 is the ID for "MEMBER"
+        teamMember.setPermissionRole(memberRole);
+
+        TeamMember savedMember =  teamMemberRepository.save(teamMember);
+        return new TeamMemberDTO(
+            savedMember.getUserId().getId(),
+            savedMember.getUserId().getEmail(),
+            savedMember.getUserId().getDisplayName(),
+            savedMember.getPermissionRole().getPermission());
     }
 }

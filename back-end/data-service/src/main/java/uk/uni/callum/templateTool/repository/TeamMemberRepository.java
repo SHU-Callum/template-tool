@@ -12,6 +12,8 @@ public interface TeamMemberRepository extends JpaRepository<TeamMember, String> 
 
     List<TeamMember> findByUserId_Id(long userId);
 
+    Optional<TeamMember> findByUserId_Email(String email);
+
     Optional<TeamMember> findByUserId_IdAndTeamId_Id (long userId, long teamId);
 
     @Query("SELECT new uk.uni.callum.templateTool.dto.TeamMemberDTO(e.id, e.email, e.displayName, t.permissionRole.permission) " +
