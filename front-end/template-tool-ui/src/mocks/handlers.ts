@@ -104,12 +104,12 @@ export const handlers = [
     if (!decryptedBody || Object.keys(decryptedBody).length === 0) {
       return HttpResponse.json({ error: 'Request body cannot be empty' }, { status: 400 });
     }
-    const { memberId, teamId } = decryptedBody;
-    if (!memberId || memberId.length < 1 || !teamId || teamId.length < 1) {
+    const { userId, teamId } = decryptedBody;
+    if (!userId || userId.length < 1 || !teamId || teamId.length < 1) {
       return HttpResponse.json({ error: 'Member ID and Team ID cannot be empty' }, { status: 400 });
     }
     const updatedMembers = TEAM_MEMBERS_DATA.map(member => {
-      return { ...member, isOwner: memberId === member.id ? true : member.isOwner}; // Simulate promoting the member to owner
+      return { ...member, isOwner: userId === member.id ? true : member.isOwner}; // Simulate promoting the member to owner
     })
     return HttpResponse.json(updatedMembers); // Successful response
   }),
