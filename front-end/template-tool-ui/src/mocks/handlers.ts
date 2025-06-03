@@ -97,7 +97,7 @@ export const handlers = [
   }),
 
   // Intercept "PUT localhost/api/team/promote requests...
-  http.put(`${API_BASE_URL}/team/promote`, async ({ request }) => {
+  http.put(`${API_BASE_URL}/teams/promote`, async ({ request }) => {
     const body = await request.text();
     const headers = request.headers;
     const decryptedBody = JSON.parse(decryptParameter((body), headers.get('encryption-iv') || ''));

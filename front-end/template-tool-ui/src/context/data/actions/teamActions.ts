@@ -82,7 +82,7 @@ export const promoteTeamMember = async (memberId: number, teamId: number, dispat
   dispatchTeamAction(dispatch, { type: ActionType.LOADING });
   try {
     const promotion = {
-      memberId: memberId,
+      userId: memberId,
       teamId: teamId
     };
     const { encryptedParameter, iv } = encryptParameter(JSON.stringify(promotion)); 
