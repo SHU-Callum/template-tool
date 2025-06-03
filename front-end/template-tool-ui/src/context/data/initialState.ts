@@ -22,7 +22,9 @@ export const INITIAL_TEAM_STATE: TeamState = {
   teamsByUser: null as Team[] | null,
   membersByTeam: null as TeamMember[] | null,
   promotion: false,
+  addMember: null as TeamMember | null,
   resetPromotion: () => ({}), // will be replaced in DataProvider
+  resetAddMember: () => ({}), // will be replaced in DataProvider
   loading: false,
   error: null,
 };

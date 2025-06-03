@@ -9,9 +9,12 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.web.bind.annotation.*;
 import uk.uni.callum.templateTool.dto.TeamDTO;
 import uk.uni.callum.templateTool.dto.TeamMemberDTO;
+import uk.uni.callum.templateTool.model.Employee;
 import uk.uni.callum.templateTool.model.Team;
 import uk.uni.callum.templateTool.model.TeamMember;
+import uk.uni.callum.templateTool.model.requestParams.AddMemberParams;
 import uk.uni.callum.templateTool.model.requestParams.UpdateMemberPermsParams;
+import uk.uni.callum.templateTool.service.EmployeeService;
 import uk.uni.callum.templateTool.service.TeamService;
 import uk.uni.callum.templateTool.utils.Encryption;
 
@@ -27,6 +30,9 @@ public class TeamController {
 
     @Autowired
     private TeamService teamService;
+
+    @Autowired
+    private EmployeeService employeeService;
 
     @Autowired
     private Encryption encryption;
@@ -100,6 +106,52 @@ public class TeamController {
             }
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No Team ID was sent");
+        }
+    }
+
+    /**
+     * Endpoint to add a new member to a team.
+     * Returns the added user if successful, or an error message if the user does not exist or is already a member.
+     *
+     * @param iv The initialization vector for decryption.
+     * @param encryptedMember The encrypted member details to add.
+     * @return ResponseEntity with the added team member or an error message.
+     */
+    @PostMapping("/add")
+    @Operation(summary = "Add a new member to team", description = "Add a new member to a team if found and return the added user")
+    public ResponseEntity<?> addTeamMember(@RequestHeader("encryption-iv") String iv, @RequestBody String encryptedMember) {
+        if (encryptedMember != null) {
+            try {
+                String decodedMember = URLDecoder.decode(encryptedMember, StandardCharsets.UTF_8);
+                String decryptedMember = encryption.decrypt(decodedMember, iv);
+                // Convert the decrypted JSON string to UpdateMemberPermsParams object
+                AddMemberParams memberToAdd = new ObjectMapper().readValue(decryptedMember, AddMemberParams.class);
+                long formattedTeamId = Long.parseLong(memberToAdd.getTeamId());
+
+                Optional<Employee> existingUser = employeeService.findEmployeeByEmail(memberToAdd.getEmail());
+                if(existingUser.isEmpty()) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not exist");
+                }
+
+                // Check if the user is already a member of the team
+                Optional<TeamMember> existingMember = teamService.findTeamMemberByUserIdAndTeamId(existingUser.get().getId(), formattedTeamId);
+                if (existingMember.isPresent()) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User is already a member of the team");
+                }
+
+                // Add the new team member
+                TeamMemberDTO teamMember = teamService.addTeamMember(existingUser.get(), formattedTeamId);
+                if (teamMember == null) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User was not added to the team");
+                }
+                return ResponseEntity.status(HttpStatus.OK).body(teamMember);
+            } catch (IllegalArgumentException iae) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid team member params - Error: " + iae.getMessage());
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No Team member was sent");
         }
     }
 

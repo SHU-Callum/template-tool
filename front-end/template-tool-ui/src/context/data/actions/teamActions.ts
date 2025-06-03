@@ -31,16 +31,16 @@ export const getTeamsByUserId = async (userId: number, dispatch: Dispatch<Action
     }
   } catch (error) {
     if (axios.isCancel(error)) {
-      dispatchTeamAction(dispatch, { type: ActionType.ERROR, payload: 'Timeout Error' });
+      dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.GET_TEAMS_BY_USER, payload: 'Timeout Error' });
     } else if (axios.isAxiosError(error)) {
       if (error.status === 404) {
         dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.GET_TEAMS_BY_USER, payload: `No teams found for user` });
       }
       else {
-        dispatchTeamAction(dispatch, { type: ActionType.ERROR, payload: `Something went wrong: ${error.message}` });
+        dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.GET_TEAMS_BY_USER, payload: `Something went wrong: ${error.message}` });
       }
     } else {
-      dispatchTeamAction(dispatch, { type: ActionType.ERROR, payload: 'An unknown error occurred' });
+      dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.GET_TEAMS_BY_USER, payload: 'An unknown error occurred' });
     }
   }
 };
@@ -63,16 +63,16 @@ export const getMemberNamesByTeam = async (teamId: number, dispatch: Dispatch<Ac
     }
   } catch (error) {
     if (axios.isCancel(error)) {
-      dispatchTeamAction(dispatch, { type: ActionType.ERROR, payload: 'Timeout Error' });
+      dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.GET_NAMES_BY_TEAM, payload: 'Timeout Error' });
     } else if (axios.isAxiosError(error)) {
       if (error.status === 404) {
         dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.GET_NAMES_BY_TEAM, payload: `No users found for team` });
       }
       else {
-        dispatchTeamAction(dispatch, { type: ActionType.ERROR, payload: `Something went wrong: ${error.message}` });
+        dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.GET_NAMES_BY_TEAM, payload: `Something went wrong: ${error.message}` });
       }
     } else {
-      dispatchTeamAction(dispatch, { type: ActionType.ERROR, payload: 'An unknown error occurred' });
+      dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.GET_NAMES_BY_TEAM, payload: 'An unknown error occurred' });
     }
   }
 };
@@ -99,16 +99,53 @@ export const promoteTeamMember = async (memberId: number, teamId: number, dispat
     }
   } catch (error) {
     if (axios.isCancel(error)) {
-      dispatchTeamAction(dispatch, { type: ActionType.ERROR, payload: 'Timeout Error' });
+      dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.UPDATE_MEMBER_PERMISSION, payload: 'Timeout Error' });
     } else if (axios.isAxiosError(error)) {
       if (error.status === 404) {
         dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.UPDATE_MEMBER_PERMISSION, payload: `User not found for team` });
       }
       else {
-        dispatchTeamAction(dispatch, { type: ActionType.ERROR, payload: `Something went wrong: ${error.message}` });
+        dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.UPDATE_MEMBER_PERMISSION, payload: `Something went wrong: ${error.message}` });
       }
     } else {
-      dispatchTeamAction(dispatch, { type: ActionType.ERROR, payload: 'An unknown error occurred' });
+      dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.UPDATE_MEMBER_PERMISSION, payload: 'An unknown error occurred' });
+    }
+  }
+};
+
+// Called at Manage Team page
+export const addTeamMember = async (email: string, teamId: number, dispatch: Dispatch<ActionPayload>) => {
+  dispatchTeamAction(dispatch, { type: ActionType.LOADING });
+  try {
+    const newUser = {
+      email: email,
+      teamId: teamId
+    };
+    const { encryptedParameter, iv } = encryptParameter(JSON.stringify(newUser)); 
+    const response: AxiosResponse = await authorisedAxios.post(API_ROUTES.ADD_TEAM_MEMBER, encryptedParameter, {
+      headers: {
+        'Content-Type': 'text/plain',
+        'encryption-iv': iv // each api call has a different encryption pattern
+      },
+      timeout: 3000
+    });
+    if (response.status === 200) {
+      dispatchTeamAction(dispatch, { type: ActionType.SUCCESS, apiName: ActionType.ADD_TEAM_MEMBER, payload: response.data });
+    } else {
+      throw new Error(`Failed to add new team member: ${email}`);
+    }
+  } catch (error) {
+    if (axios.isCancel(error)) {
+      dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.ADD_TEAM_MEMBER, payload: 'Timeout Error' });
+    } else if (axios.isAxiosError(error)) {
+      if (error.status === 404) {
+        dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.ADD_TEAM_MEMBER, payload: `User does not exist` });
+      }
+      else {
+        dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.ADD_TEAM_MEMBER, payload: error.response?.data ?? `Something went wrong: ${error.message}` });
+      }
+    } else {
+      dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.ADD_TEAM_MEMBER, payload: 'An unknown error occurred' });
     }
   }
 };
