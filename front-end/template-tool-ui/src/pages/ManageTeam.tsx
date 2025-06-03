@@ -6,7 +6,7 @@ import { useLocation, useNavigate } from "react-router";
 import BackButton from "../components/buttons/BackButton";
 import RoundedLabel from "../components/RoundedLabel";
 import { NotificationType } from "../types/notificationTypes";
-import { getMemberNamesByTeam, promoteTeamMember } from "../context/data/actions/teamActions";
+import { addTeamMember, getMemberNamesByTeam, promoteTeamMember } from "../context/data/actions/teamActions";
 import { TeamMember } from "../models/teamMember";
 import MoveRightButton from "../components/buttons/MoveRightButton";
 
@@ -26,6 +26,21 @@ function ManageTeam() {
   const hasFetchedMembers = useRef(false);
 
   const addEmployeeClicked = () => {
+    if (!selectedTeam) {
+      addNotification(`Failed to add employee: No team selected`, NotificationType.ERROR);
+      return;
+    }
+    // Simple email validation regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(addEmployeeText.trim())) {
+      addNotification(`Please enter a valid email address.`, NotificationType.ERROR);
+      return;
+    }
+    // search and add employee
+    addTeamMember(addEmployeeText.trim(), selectedTeam.id, dispatch)
+      .then(() => {
+        setCreateTeamText(''); // clear input field after successful addition
+      })
     addNotification(`Adding Employee: ${addEmployeeText}`, NotificationType.INFO);
   }
 
@@ -80,6 +95,20 @@ function ManageTeam() {
     }
   }, [state.teamState.membersByTeam, state.teamState.error, addNotification]);
 
+  // When POST add member API call is successful, update the teamMembers state
+  useEffect(() => {
+    if (state.teamState.addMember) {
+      setTeamMembers((prevMembers) => [...prevMembers, state.teamState.addMember as TeamMember]);
+      state.teamState.resetAddMember(); // reset add member state
+      errorNotifiedRef.current = false; // reset error notification flag
+      addNotification(`Member added successfully: ${state.teamState.addMember.displayName}`, NotificationType.SUCCESS);
+    }
+    else if (state.teamState.error && !errorNotifiedRef.current) {
+      addNotification(`Failed to add member: ${state.teamState.error}`, NotificationType.ERROR);
+      errorNotifiedRef.current = true; // prevent further notifications
+    }
+  }, [state.teamState.addMember, state.teamState.error, addNotification]);
+
   // reset error notification flag when an API call is loading
   useEffect(() => {
     if (state.templateState.loading || state.teamState.loading) {
@@ -107,14 +136,14 @@ function ManageTeam() {
               <div className="flex p-2 pl-0 sm:p-4">
                 <input
                   type="text"
-                  placeholder="Email Address..."
+                  placeholder="Enter Email Address..."
                   className="border rounded p-2 flex-grow mr-2"
                   value={addEmployeeText}
                   onChange={(e) => setCreateTeamText(e.target.value)}
                 />
                 <button className="bg-blue-500 text-white p-2 pl-4 pr-4 rounded min-w-20" 
                   onClick={addEmployeeClicked}
-                  disabled={addEmployeeText.length < 1}>
+                  disabled={addEmployeeText.trim().length < 1}>
                   Add
                 </button>
               </div>

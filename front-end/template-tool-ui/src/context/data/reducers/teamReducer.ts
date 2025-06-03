@@ -10,6 +10,8 @@ export interface TeamState {
   membersByTeam: TeamMember[] | null;
   promotion: boolean;
   resetPromotion: () => void; // will be replaced in DataProvider
+  resetAddMember: () => void; // will be replaced in DataProvider
+  addMember: TeamMember | null;
   loading: boolean;
   error: string | null;
 }
@@ -47,6 +49,13 @@ const teamReducer = (state: TeamState, action: ActionPayload): TeamState => {
             membersByTeam: action.payload as TeamMember[],
             promotion: true
           };
+        case ActionType.ADD_TEAM_MEMBER:
+          return {
+            ...state,
+            loading: false,
+            error: null,
+            addMember: action.payload as TeamMember,
+          };
         default:
           return state;
         }
@@ -54,6 +63,11 @@ const teamReducer = (state: TeamState, action: ActionPayload): TeamState => {
       return {
         ...state,
         promotion: false,
+      };
+    case ActionType.RESET_ADD_MEMBER:
+      return {
+        ...state,
+        addMember: null,
       };
     case ActionType.ERROR:
       switch (action.apiName) {

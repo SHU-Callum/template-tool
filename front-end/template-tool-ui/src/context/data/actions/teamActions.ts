@@ -112,3 +112,39 @@ export const promoteTeamMember = async (memberId: number, teamId: number, dispat
     }
   }
 };
+
+// Called at Manage Team page
+export const addTeamMember = async (email: string, teamId: number, dispatch: Dispatch<ActionPayload>) => {
+  dispatchTeamAction(dispatch, { type: ActionType.LOADING });
+  try {
+    const newUser = {
+      email: email,
+      teamId: teamId
+    };
+    const { encryptedParameter, iv } = encryptParameter(JSON.stringify(newUser)); 
+    const response: AxiosResponse = await authorisedAxios.post(API_ROUTES.ADD_TEAM_MEMBER, encryptedParameter, {
+      headers: {
+        'encryption-iv': iv // each api call has a different encryption pattern
+      },
+      timeout: 3000
+    });
+    if (response.status === 200) {
+      dispatchTeamAction(dispatch, { type: ActionType.SUCCESS, apiName: ActionType.ADD_TEAM_MEMBER, payload: response.data });
+    } else {
+      throw new Error(`Failed to add new team member: ${email}`);
+    }
+  } catch (error) {
+    if (axios.isCancel(error)) {
+      dispatchTeamAction(dispatch, { type: ActionType.ERROR, payload: 'Timeout Error' });
+    } else if (axios.isAxiosError(error)) {
+      if (error.status === 404) {
+        dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.ADD_TEAM_MEMBER, payload: `User does not exist` });
+      }
+      else {
+        dispatchTeamAction(dispatch, { type: ActionType.ERROR, payload: `Something went wrong: ${error.message}` });
+      }
+    } else {
+      dispatchTeamAction(dispatch, { type: ActionType.ERROR, payload: 'An unknown error occurred' });
+    }
+  }
+};
