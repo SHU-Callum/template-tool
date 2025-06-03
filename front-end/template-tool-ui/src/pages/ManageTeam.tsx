@@ -37,11 +37,7 @@ function ManageTeam() {
       return;
     }
     // search and add employee
-    addTeamMember(addEmployeeText.trim(), selectedTeam.id, dispatch)
-      .then(() => {
-        setCreateTeamText(''); // clear input field after successful addition
-      })
-    addNotification(`Adding Employee: ${addEmployeeText}`, NotificationType.INFO);
+    addTeamMember(addEmployeeText.trim(), selectedTeam.id, dispatch);
   }
 
   const promoteMember = (memberId: number) => {
@@ -58,28 +54,20 @@ function ManageTeam() {
       hasFetchedMembers.current = true; // prevent multiple fetches for the same team
       // Fetch member names for the selected team
       getMemberNamesByTeam(selectedTeam.id, dispatch)
-        .then(() => {
-          if (state.teamState.error && !errorNotifiedRef.current) {
-            addNotification(`Failed to load team members: ${state.teamState.error}`, NotificationType.ERROR);
-            errorNotifiedRef.current = true; // prevent further notifications
-          }
-        })
-        .catch((error) => {
-          if (!errorNotifiedRef.current) {
-            addNotification(`Error fetching team members: ${error.message}`, NotificationType.ERROR);
-            errorNotifiedRef.current = true; // prevent further notifications
-          }
-          handleNetworkError(error);
-      });
     }
-  }, [selectedTeam, dispatch, state.teamState.error, addNotification]);
+  }, [selectedTeam, dispatch, state.teamState.error?.membersByTeamError, addNotification]);
 
   // When GET team members API call is successful, update the teamMembers state
   useEffect(() => {
     if(state.teamState.membersByTeam) {
       setTeamMembers(state.teamState.membersByTeam);
     }
-  }, [state.teamState.membersByTeam]);
+    else if (state.teamState.error && !errorNotifiedRef.current && state.teamState.error.membersByTeamError) {
+      addNotification(`Failed to load team members: ${state.teamState.error.membersByTeamError}`, NotificationType.ERROR);
+      errorNotifiedRef.current = true; // prevent further notifications
+    }
+    handleNetworkError(state.teamState.error?.membersByTeamError != null);
+  }, [state.teamState.membersByTeam, state.teamState.error?.membersByTeamError, addNotification]);
 
   // When PUT promote member API call is successful, update the teamMembers state
   useEffect(() => {
@@ -89,11 +77,12 @@ function ManageTeam() {
       errorNotifiedRef.current = false; // reset error notification flag
       addNotification(`Member promoted successfully`, NotificationType.SUCCESS);
     }
-    else if (state.teamState.error && !errorNotifiedRef.current) {
-      addNotification(`Failed to promote member: ${state.teamState.error}`, NotificationType.ERROR);
+    else if (state.teamState.error && !errorNotifiedRef.current && state.teamState.error.promotionError) {
+      addNotification(`Failed to promote member: ${state.teamState.error.promotionError}`, NotificationType.ERROR);
       errorNotifiedRef.current = true; // prevent further notifications
     }
-  }, [state.teamState.membersByTeam, state.teamState.error, addNotification]);
+    handleNetworkError(state.teamState.error?.promotionError != null);
+  }, [state.teamState.membersByTeam, state.teamState.error?.promotionError, addNotification]);
 
   // When POST add member API call is successful, update the teamMembers state
   useEffect(() => {
@@ -101,20 +90,22 @@ function ManageTeam() {
       setTeamMembers((prevMembers) => [...prevMembers, state.teamState.addMember as TeamMember]);
       state.teamState.resetAddMember(); // reset add member state
       errorNotifiedRef.current = false; // reset error notification flag
+      setCreateTeamText(''); // clear input field after successful addition
       addNotification(`Member added successfully: ${state.teamState.addMember.displayName}`, NotificationType.SUCCESS);
     }
-    else if (state.teamState.error && !errorNotifiedRef.current) {
-      addNotification(`Failed to add member: ${state.teamState.error}`, NotificationType.ERROR);
+    else if (state.teamState.error && !errorNotifiedRef.current && state.teamState.error.addMemberError) {
+      addNotification(`Failed to add member: ${state.teamState.error.addMemberError}`, NotificationType.ERROR);
       errorNotifiedRef.current = true; // prevent further notifications
     }
-  }, [state.teamState.addMember, state.teamState.error, addNotification]);
+    handleNetworkError(state.teamState.error?.addMemberError != null);
+  }, [state.teamState.addMember, state.teamState.error?.addMemberError, addNotification]);
 
   // reset error notification flag when an API call is loading
   useEffect(() => {
-    if (state.templateState.loading || state.teamState.loading) {
+    if (state.teamState.loading) {
       errorNotifiedRef.current = false;
     }
-  }, [state.teamState.loading, state.templateState.loading]);
+  }, [state.teamState.loading]);
 
   return (
     <div className="p-2 pl-1 pr-1 w-full sm:w-6/7 mx-auto self-start h-full">

@@ -13,7 +13,12 @@ export interface TeamState {
   resetAddMember: () => void; // will be replaced in DataProvider
   addMember: TeamMember | null;
   loading: boolean;
-  error: string | null;
+  error: {
+    teamsByUserError: string;
+    membersByTeamError: string;
+    promotionError: string;
+    addMemberError: string
+  } | null;
 }
 
 const teamReducer = (state: TeamState, action: ActionPayload): TeamState => {
@@ -75,16 +80,52 @@ const teamReducer = (state: TeamState, action: ActionPayload): TeamState => {
           return {
             ...state,
             loading: false,
-            error: action.payload as string,
+            error: {
+              membersByTeamError: "",
+              promotionError: "",
+              addMemberError: "",
+              teamsByUserError: action.payload as string,
+            },
             teamsByUser: [],
           };
-        default:
+        case ActionType.GET_NAMES_BY_TEAM:
           return {
             ...state,
             loading: false,
-            error: action.payload as string,
+            error: {
+              teamsByUserError: "",
+              promotionError: "",
+              addMemberError: "",
+              membersByTeamError: action.payload as string,
+            },
+            membersByTeam: [],
           };
-        }
+        case ActionType.UPDATE_MEMBER_PERMISSION:
+          return {
+            ...state,
+            loading: false,
+            error: {
+              teamsByUserError: "",
+              membersByTeamError: "",
+              addMemberError: "",
+              promotionError: action.payload as string,
+            },
+          };
+        case ActionType.ADD_TEAM_MEMBER:
+          return {
+            ...state,
+            loading: false,
+            error: {
+              teamsByUserError: "",
+              membersByTeamError: "",
+              promotionError: "",
+              addMemberError: action.payload as string,
+            },
+            addMember: null,
+          };
+        default:
+          return state;
+      }
     default:
       return state;
   }
