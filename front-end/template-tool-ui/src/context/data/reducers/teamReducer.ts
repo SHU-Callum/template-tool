@@ -18,6 +18,7 @@ export interface TeamState {
     membersByTeamError: string;
     promotionError: string;
     addMemberError: string
+    createTeam: string;
   } | null;
 }
 
@@ -61,6 +62,13 @@ const teamReducer = (state: TeamState, action: ActionPayload): TeamState => {
             error: null,
             addMember: action.payload as TeamMember,
           };
+        case ActionType.CREATE_TEAM:
+          return {
+            ...state,
+            loading: false,
+            error: null,
+            teamsByUser: [...(state.teamsByUser || []), action.payload as Team],
+          };
         default:
           return state;
         }
@@ -84,6 +92,7 @@ const teamReducer = (state: TeamState, action: ActionPayload): TeamState => {
               membersByTeamError: "",
               promotionError: "",
               addMemberError: "",
+              createTeam: "",
               teamsByUserError: action.payload as string,
             },
             teamsByUser: [],
@@ -96,6 +105,7 @@ const teamReducer = (state: TeamState, action: ActionPayload): TeamState => {
               teamsByUserError: "",
               promotionError: "",
               addMemberError: "",
+              createTeam: "",
               membersByTeamError: action.payload as string,
             },
             membersByTeam: [],
@@ -108,6 +118,7 @@ const teamReducer = (state: TeamState, action: ActionPayload): TeamState => {
               teamsByUserError: "",
               membersByTeamError: "",
               addMemberError: "",
+              createTeam: "",
               promotionError: action.payload as string,
             },
           };
@@ -119,9 +130,22 @@ const teamReducer = (state: TeamState, action: ActionPayload): TeamState => {
               teamsByUserError: "",
               membersByTeamError: "",
               promotionError: "",
+              createTeam: "",
               addMemberError: action.payload as string,
             },
             addMember: null,
+          };
+        case ActionType.CREATE_TEAM:
+          return {
+            ...state,
+            loading: false,
+            error: {
+              teamsByUserError: "",
+              membersByTeamError: "",
+              promotionError: "",
+              addMemberError: "",
+              createTeam: action.payload as string,
+            },
           };
         default:
           return state;

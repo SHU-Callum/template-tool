@@ -135,6 +135,26 @@ export const handlers = [
     return HttpResponse.json(newMember); // Successful response
   }),
 
+  // Intercept "POST localhost/api/teams/create requests...
+  http.post(`${API_BASE_URL}/teams/create`, async ({ request }) => {
+    const body = await request.text();
+    const headers = request.headers;
+    const decryptedBody = JSON.parse(decryptParameter((body), headers.get('encryption-iv') || ''));
+    if (!decryptedBody || Object.keys(decryptedBody).length === 0) {
+      return HttpResponse.json({ error: 'Request body cannot be empty' }, { status: 400 });
+    }
+    const { teamName, ownerId } = decryptedBody;
+    if (!teamName || teamName.length < 1 || !ownerId || ownerId.length < 1) {
+      return HttpResponse.json({ error: 'Team Name and Owner ID cannot be empty' }, { status: 400 });
+    }
+    const newTeam = {
+      id: Math.floor(Math.random() * 1000), // Simulate new team ID
+      teamName: teamName,
+      ownerIds: [ownerId], // Simulate team owner
+    };
+    return HttpResponse.json(newTeam, { status: 201 }); // Successful response
+  }),
+
   // Intercept "GET localhost/api/user?kcid=*" requests...
   http.get(`${API_BASE_URL}/user`, async ({ request }) => {
     const url = new URL(request.url);

@@ -5,9 +5,10 @@ interface RoundedLabelProps {
   borderColour?: string;
   textBold?: boolean;
   iconButton?: ReactNode;
+  fullWidth?: boolean;
 }
 
-function RoundedLabel({ text, borderColour="border-blue-500", textBold=false, iconButton}: RoundedLabelProps) {
+function RoundedLabel({ text, borderColour="border-blue-500", textBold=false, iconButton, fullWidth}: RoundedLabelProps) {
   return (
     <div className={`
     border-2 
@@ -22,12 +23,15 @@ function RoundedLabel({ text, borderColour="border-blue-500", textBold=false, ic
     items-center
     justify-center
     leading-none
-    gap-2`}>
+    gap-2
+    ${fullWidth ? 'w-full' : ''}`}>
+      <div className="flex-1 text-center">
       {textBold ? 
       <span className="font-bold text-base">{text}</span>
       :
-      <span>{text}</span>
+      <span>{text.length > 14 ? `${text.substring(0, 14)}...` : text}</span>
       }
+      </div>
       {iconButton}
     </div>
   )
