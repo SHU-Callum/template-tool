@@ -2,6 +2,7 @@ package uk.uni.callum.templateTool.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import uk.uni.callum.templateTool.model.Employee;
 import uk.uni.callum.templateTool.model.Team;
 import uk.uni.callum.templateTool.model.TeamMember;
 import uk.uni.callum.templateTool.model.requestParams.AddMemberParams;
+import uk.uni.callum.templateTool.model.requestParams.CreateTeamParams;
 import uk.uni.callum.templateTool.model.requestParams.UpdateMemberPermsParams;
 import uk.uni.callum.templateTool.service.EmployeeService;
 import uk.uni.callum.templateTool.service.TeamService;
@@ -152,6 +154,64 @@ public class TeamController {
             }
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No Team member was sent");
+        }
+    }
+
+    /**
+     * Endpoint to create a new team.
+     * Returns the newly created team if successful, or an error message if the user does not exist or the team already exists.
+     *
+     * @param iv The initialization vector for decryption.
+     * @param encryptedMember The encrypted team creation details.
+     * @return ResponseEntity with the new team or an error message.
+     */
+    @PostMapping("/create")
+    @Operation(summary = "Create a new team", description = "Create a new team with user as the default owner and return the new team")
+    public ResponseEntity<?> createTeam(@RequestHeader("encryption-iv") String iv, @RequestBody String encryptedMember) {
+        if (encryptedMember != null) {
+            try {
+                String decodedTeamCreate = URLDecoder.decode(encryptedMember, StandardCharsets.UTF_8);
+                String decryptedTeamCreate = encryption.decrypt(decodedTeamCreate, iv);
+                // Convert the decrypted JSON string to UpdateMemberPermsParams object
+                CreateTeamParams teamToCreate = new ObjectMapper().readValue(decryptedTeamCreate, CreateTeamParams.class);
+                long formattedOwnerId = Long.parseLong(teamToCreate.getOwnerId());
+
+                Optional<Employee> existingUser = employeeService.findEmployeeByUserId(formattedOwnerId);
+                if(existingUser.isEmpty()) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not exist");
+                }
+
+                // Check if the user is already a member of the team
+                Optional<Team> existingTeam = teamService.findTeamByName(teamToCreate.getTeamName());
+                if (existingTeam.isPresent()) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Team already exists");
+                }
+
+                // Create the new team
+                Team newTeam = teamService.createTeam(teamToCreate.getTeamName());
+                if (newTeam == null) {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to create team");
+                }
+
+                TeamMember teamMember = teamService.setDefaultTeamOwner(newTeam, existingUser.get());
+                if (teamMember == null) {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to set team owner");
+                }
+
+                // Return the new team
+                TeamDTO teamDTO = new TeamDTO();
+                teamDTO.setId(newTeam.getId());
+                teamDTO.setTeamName(newTeam.getTeamName());
+                teamDTO.setOwnerIds(new long[]{(formattedOwnerId)});
+
+                return ResponseEntity.status(HttpStatus.CREATED).body(teamDTO);
+            } catch (IllegalArgumentException iae) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid Create Team params - Error: " + iae.getMessage());
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Team Creation data was sent");
         }
     }
 
