@@ -24,7 +24,7 @@ function TeamsList ({ loading, teams, closeSideout }: TeamsListProps) {
 
   return (
     <div className="flex">
-      <div className="flex-1 pl-2">
+      <div className="flex-1">
         <h5>Member</h5>
         <ul className="space-y-2 pt-2">
             {loading ? (
@@ -38,14 +38,14 @@ function TeamsList ({ loading, teams, closeSideout }: TeamsListProps) {
               </li>
             ) : (
               members.map((team, index) => (
-                <li key={index} className="p-2 w-5/6 mx-auto">
-                  <RoundedLabel text={team.teamName}/>
+                <li key={index} className="py-1 w-11/12 mx-auto">
+                  <RoundedLabel text={team.teamName} fullWidth={true}/>
                 </li>
               ))
             )}
         </ul>
       </div>
-      <div className="flex-1 pr-2">
+      <div className="flex-1">
         <h5>Owner</h5>
         <ul className="space-y-2 pt-2">
           {loading ? (
@@ -59,10 +59,8 @@ function TeamsList ({ loading, teams, closeSideout }: TeamsListProps) {
             </li>
           ) : (
             owners.map((team, index) => (
-              <li key={index} className="p-2 w-5/6 mx-auto">
-                <div className='flex gap-2 items-center justify-center'>
-                  <RoundedLabel text={team.teamName} borderColour='border-green-500' iconButton={<OpenButton clickAction={() => openTeamClicked(team)} />} />
-                </div>
+              <li key={index} className="py-1 w-11/12 mx-auto">
+                <RoundedLabel text={team.teamName} borderColour='border-green-500' iconButton={<OpenButton clickAction={() => openTeamClicked(team)} />} fullWidth={true} />
               </li>
             ))
           )}

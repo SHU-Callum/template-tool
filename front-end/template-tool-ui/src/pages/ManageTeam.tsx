@@ -24,6 +24,7 @@ function ManageTeam() {
   const [addEmployeeText, setCreateTeamText] = useState('');
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const hasFetchedMembers = useRef(false);
+  const prevTeam = useRef(selectedTeam); // used to prevent unnecessary rerendering
 
   const addEmployeeClicked = () => {
     if (!selectedTeam) {
@@ -50,10 +51,12 @@ function ManageTeam() {
 
   // When the component mounts, GET team members for the selected team
   useEffect(() => {
-    if (selectedTeam  && !hasFetchedMembers.current) {
-      hasFetchedMembers.current = true; // prevent multiple fetches for the same team
-      // Fetch member names for the selected team
-      getMemberNamesByTeam(selectedTeam.id, dispatch)
+    if (selectedTeam) {
+      if ((!hasFetchedMembers.current) || prevTeam.current?.id !== selectedTeam.id) {
+        hasFetchedMembers.current = true; // prevent multiple fetches for the same team
+        // Fetch member names for the selected team
+        getMemberNamesByTeam(selectedTeam.id, dispatch)
+      }
     }
   }, [selectedTeam, dispatch, state.teamState.error?.membersByTeamError, addNotification]);
 

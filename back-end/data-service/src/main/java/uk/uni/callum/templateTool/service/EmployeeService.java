@@ -13,6 +13,16 @@ public class EmployeeService {
     private EmployeeRepository employeeRepository;
 
     /**
+     * Find employee by User ID.
+     *
+     * @param userId The ID of the user to find.
+     * @return An Optional containing the Employee if found, or empty if not found.
+     */
+    public Optional<Employee> findEmployeeByUserId(long userId) {
+        return employeeRepository.findById(String.valueOf(userId));
+    }
+
+    /**
      * Find employee by email.
      *
      * @param email The email of the employee to find.

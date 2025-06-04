@@ -149,3 +149,40 @@ export const addTeamMember = async (email: string, teamId: number, dispatch: Dis
     }
   }
 };
+
+// Called at Side Out
+export const createTeam = async (teamName: string, userId: number, dispatch: Dispatch<ActionPayload>) => {
+  dispatchTeamAction(dispatch, { type: ActionType.LOADING });
+  try {
+    const newTeam = {
+      teamName: teamName,
+      ownerId: userId
+    };
+    const { encryptedParameter, iv } = encryptParameter(JSON.stringify(newTeam)); 
+    const response: AxiosResponse = await authorisedAxios.post(API_ROUTES.CREATE_TEAM, encryptedParameter, {
+      headers: {
+        'Content-Type': 'text/plain',
+        'encryption-iv': iv // each api call has a different encryption pattern
+      },
+      timeout: 3000
+    });
+    if (response.status === 201) {
+      dispatchTeamAction(dispatch, { type: ActionType.SUCCESS, apiName: ActionType.CREATE_TEAM, payload: response.data });
+    } else {
+      throw new Error(`Failed to create new team: ${teamName}`);
+    }
+  } catch (error) {
+    if (axios.isCancel(error)) {
+      dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.CREATE_TEAM, payload: 'Timeout Error' });
+    } else if (axios.isAxiosError(error)) {
+        if (error.status === 404) {
+          dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.CREATE_TEAM, payload: `User does not exist` });
+        }
+        else {
+          dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.CREATE_TEAM, payload: error.response?.data ?? `Something went wrong: ${error.message}` });
+        }
+    } else {
+      dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.CREATE_TEAM, payload: 'An unknown error occurred' });
+    }
+  }
+};
