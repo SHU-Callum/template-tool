@@ -175,12 +175,12 @@ export const createTeam = async (teamName: string, userId: number, dispatch: Dis
     if (axios.isCancel(error)) {
       dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.CREATE_TEAM, payload: 'Timeout Error' });
     } else if (axios.isAxiosError(error)) {
-      if (error.status === 404) {
-        dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.CREATE_TEAM, payload: `User does not exist` });
-      }
-      else {
-        dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.CREATE_TEAM, payload: error.response?.data ?? `Something went wrong: ${error.message}` });
-      }
+        if (error.status === 404) {
+          dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.CREATE_TEAM, payload: `User does not exist` });
+        }
+        else {
+          dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.CREATE_TEAM, payload: error.response?.data ?? `Something went wrong: ${error.message}` });
+        }
     } else {
       dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.CREATE_TEAM, payload: 'An unknown error occurred' });
     }

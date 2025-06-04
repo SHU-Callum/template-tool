@@ -90,7 +90,7 @@ function SideOut({ isOpen, onClose }: SideOutProps) {
   }, [createTeamText, teams]);
 
   return (
-    <div className={`border-l-2 border-gray-200 p-4 w-3/4 sm:w-3/5 lg:w-1/3 h-full bg-white fixed top-0 right-0 z-40 transition-transform duration-300 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+    <div className={`border-l-2 border-gray-200 p-4 w-3/4 sm:w-3/5 lg:w-1/3 h-full bg-white fixed top-0 right-0 z-40 overflow-y-auto transition-transform duration-300 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
       <div className='flex w-full pb-4'>
         <div className='flex w-full justify-start gap-4'>
           <BackButton clickAction={onClose} />

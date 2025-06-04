@@ -38,7 +38,7 @@ function TeamsList ({ loading, teams, closeSideout }: TeamsListProps) {
               </li>
             ) : (
               members.map((team, index) => (
-                <li key={index} className="py-2 w-11/12 mx-auto">
+                <li key={index} className="py-1 w-11/12 mx-auto">
                   <RoundedLabel text={team.teamName} fullWidth={true}/>
                 </li>
               ))
@@ -59,10 +59,8 @@ function TeamsList ({ loading, teams, closeSideout }: TeamsListProps) {
             </li>
           ) : (
             owners.map((team, index) => (
-              <li key={index} className="p-2 w-11/12 mx-auto">
-                <div className='flex gap-2 items-center justify-center'>
-                  <RoundedLabel text={team.teamName} borderColour='border-green-500' iconButton={<OpenButton clickAction={() => openTeamClicked(team)} />} fullWidth={true} />
-                </div>
+              <li key={index} className="py-1 w-11/12 mx-auto">
+                <RoundedLabel text={team.teamName} borderColour='border-green-500' iconButton={<OpenButton clickAction={() => openTeamClicked(team)} />} fullWidth={true} />
               </li>
             ))
           )}
