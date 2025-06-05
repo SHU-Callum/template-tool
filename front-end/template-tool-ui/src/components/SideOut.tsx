@@ -25,6 +25,7 @@ function SideOut({ isOpen, onClose }: SideOutProps) {
   const [createTeamText, setCreateTeamText] = useState('');
   const [loading, setLoading] = useState(false);
   const errorNotifiedRef = useRef(false); // used to prevent error notification loop
+  const [addingTeam, setAddingTeam] = useState(false); // used to know if AddTeam API is pending
   const prevTeamsRef = useRef(state.teamState.teamsByUser); // used to prevent unnecessary rerendering
 
   const createTeamClicked = () => {
@@ -32,6 +33,7 @@ function SideOut({ isOpen, onClose }: SideOutProps) {
       addNotification('Please enter a team name', NotificationType.WARNING);
       return;
     }
+    setAddingTeam(true);
     createTeam(createTeamText, state.userState.userDetails!.id, dispatch);
   };
 
@@ -56,22 +58,23 @@ function SideOut({ isOpen, onClose }: SideOutProps) {
 
   // When Create Team API call is successful, update the teams list
   useEffect(() => {
-    if (state.teamState.teamsByUser && state.teamState.teamsByUser !== prevTeamsRef.current) {
+    if (state.teamState.teamsByUser && state.teamState.teamsByUser !== prevTeamsRef.current && addingTeam) {
       const formattedTeams = state.teamState.teamsByUser.map((team) => ({
         ...team,
         isOwner: team.ownerIds.includes(state.userState.userDetails!.id),
       }));
+      setAddingTeam(false);
       setTeams(formattedTeams);
       setFilteredTeams(formattedTeams);
       prevTeamsRef.current = state.teamState.teamsByUser;
       addNotification(`Team created successfully: ${createTeamText}`, NotificationType.SUCCESS);
       setCreateTeamText('');
     }
-    if (state.teamState.error?.createTeam && !errorNotifiedRef.current) {
-      addNotification(state.teamState.error.createTeam, NotificationType.ERROR);
+    if (state.teamState.error?.createTeamError && !errorNotifiedRef.current) {
+      addNotification(state.teamState.error.createTeamError, NotificationType.ERROR);
       errorNotifiedRef.current = true;
     }
-  }, [addNotification, state.teamState.teamsByUser, state.teamState.error?.createTeam, state.userState.userDetails]);
+  }, [addNotification, state.teamState.teamsByUser, state.teamState.error?.createTeamError, state.userState.userDetails]);
 
   // Prevents error notification loop
   useEffect(() => {

@@ -6,7 +6,7 @@ import { useLocation, useNavigate } from "react-router";
 import BackButton from "../components/buttons/BackButton";
 import RoundedLabel from "../components/RoundedLabel";
 import { NotificationType } from "../types/notificationTypes";
-import { addTeamMember, getMemberNamesByTeam, promoteTeamMember } from "../context/data/actions/teamActions";
+import { addTeamMember, deleteTeam, getMemberNamesByTeam, promoteTeamMember } from "../context/data/actions/teamActions";
 import { TeamMember } from "../models/teamMember";
 import MoveRightButton from "../components/buttons/MoveRightButton";
 
@@ -25,6 +25,7 @@ function ManageTeam() {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const hasFetchedMembers = useRef(false);
   const prevTeam = useRef(selectedTeam); // used to prevent unnecessary rerendering
+  const [deletingTeam, setDeletingTeam] = useState(false); // used to know if Delete Team API is pending
 
   const addEmployeeClicked = () => {
     if (!selectedTeam) {
@@ -46,6 +47,25 @@ function ManageTeam() {
       promoteTeamMember(memberId, selectedTeam?.id, dispatch)
     } else {
       addNotification(`Failed to promote member: No team selected`, NotificationType.ERROR);
+    }
+  }
+
+  const deleteTeamClicked = async () => {
+    if (!selectedTeam) {
+      addNotification(`Failed to delete team: No team loaded`, NotificationType.ERROR);
+      return;
+    }
+    const result = await window.electronDialog.showMessageBox({
+      type: 'warning',
+      buttons: ['Cancel', 'Delete'],
+      defaultId: 0,
+      cancelId: 0,
+      title: 'Delete Team',
+      message: 'Are you sure you want to delete this team? This action cannot be undone.',
+    });
+    if (result.response === 1) {
+      setDeletingTeam(true); // set deleting state to true
+      deleteTeam(selectedTeam.id, dispatch)
     }
   }
 
@@ -96,12 +116,26 @@ function ManageTeam() {
       setCreateTeamText(''); // clear input field after successful addition
       addNotification(`Member added successfully: ${state.teamState.addMember.displayName}`, NotificationType.SUCCESS);
     }
-    else if (state.teamState.error && !errorNotifiedRef.current && state.teamState.error.addMemberError) {
+    else if (state.teamState.error?.addMemberError && !errorNotifiedRef.current && state.teamState.error.addMemberError) {
       addNotification(`Failed to add member: ${state.teamState.error.addMemberError}`, NotificationType.ERROR);
       errorNotifiedRef.current = true; // prevent further notifications
     }
     handleNetworkError(state.teamState.error?.addMemberError != null);
   }, [state.teamState.addMember, state.teamState.error?.addMemberError, addNotification]);
+
+  // When DELETE team API call is successful, return to Search page
+  useEffect(() => {
+    if (state.teamState.teamsByUser && state.teamState.teamsByUser.find(team => team.id === selectedTeam?.id) === undefined && deletingTeam) {
+      setDeletingTeam(false); // reset deleting state
+      addNotification(`Team deleted successfully: ${selectedTeam?.teamName}`, NotificationType.SUCCESS);
+      navigate('/'); // navigate back to Search page
+    }
+    else if (state.teamState.error?.deleteTeamError && !errorNotifiedRef.current && state.teamState.error.deleteTeamError) {
+      addNotification(`Failed to add member: ${state.teamState.error.deleteTeamError}`, NotificationType.ERROR);
+      errorNotifiedRef.current = true; // prevent further notifications
+    }
+    handleNetworkError(state.teamState.error?.addMemberError != null);
+  }, [state.teamState.teamsByUser, state.teamState.error?.deleteTeamError, addNotification]);
 
   // reset error notification flag when an API call is loading
   useEffect(() => {
@@ -118,8 +152,14 @@ function ManageTeam() {
           <div className="mb-0.5">
             <h3 className="text-left">Manage Team</h3>
           </div>
-          <div className="ml-auto mb-0.5">
+          <div className="ml-auto mb-0.5 flex gap-4">
             {selectedTeam && <RoundedLabel text={selectedTeam.teamName} borderColour="border-green-500" textBold />}
+            <div className="flex items-center">
+              <button className="bg-red-500 text-white py-2 px-2 sm:px-4 rounded min-w-20"
+                onClick={deleteTeamClicked}>
+                  Delete
+              </button>
+            </div>
           </div>
         </div>
         <hr />

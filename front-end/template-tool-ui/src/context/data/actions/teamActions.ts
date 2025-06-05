@@ -186,3 +186,31 @@ export const createTeam = async (teamName: string, userId: number, dispatch: Dis
     }
   }
 };
+
+// Called at Manage Team page
+export const deleteTeam = async (teamId: number, dispatch: Dispatch<ActionPayload>) => {
+  dispatchTeamAction(dispatch, { type: ActionType.LOADING });
+  try {
+    const response: AxiosResponse = await authorisedAxios.delete(API_ROUTES.DELETE_TEAM(teamId.toString()), {
+      timeout: 3000
+    });
+    if (response.status === 200) {
+      dispatchTeamAction(dispatch, { type: ActionType.SUCCESS, apiName: ActionType.DELETE_TEAM, payload: response.data });
+    } else {
+      throw new Error(`Failed to delete team: ${teamId}`);
+    }
+  } catch (error) {
+    if (axios.isCancel(error)) {
+      dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.DELETE_TEAM, payload: 'Timeout Error' });
+    } else if (axios.isAxiosError(error)) {
+        if (error.status === 404) {
+          dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.DELETE_TEAM, payload: `Team does not exist` });
+        }
+        else {
+          dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.DELETE_TEAM, payload: error.response?.data ?? `Something went wrong: ${error.message}` });
+        }
+    } else {
+      dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.DELETE_TEAM, payload: 'An unknown error occurred' });
+    }
+  }
+};

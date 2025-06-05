@@ -14,11 +14,12 @@ export interface TeamState {
   addMember: TeamMember | null;
   loading: boolean;
   error: {
-    teamsByUserError: string;
-    membersByTeamError: string;
-    promotionError: string;
-    addMemberError: string
-    createTeam: string;
+    teamsByUserError?: string;
+    membersByTeamError?: string;
+    promotionError?: string;
+    addMemberError?: string
+    createTeamError?: string;
+    deleteTeamError?: string;
   } | null;
 }
 
@@ -69,6 +70,13 @@ const teamReducer = (state: TeamState, action: ActionPayload): TeamState => {
             error: null,
             teamsByUser: [...(state.teamsByUser || []), action.payload as Team],
           };
+        case ActionType.DELETE_TEAM:
+            return {
+            ...state,
+            loading: false,
+            error: null,
+            teamsByUser: (state.teamsByUser || []).filter(team => team.id !== (action.payload as number)),
+            };
         default:
           return state;
         }
@@ -89,10 +97,6 @@ const teamReducer = (state: TeamState, action: ActionPayload): TeamState => {
             ...state,
             loading: false,
             error: {
-              membersByTeamError: "",
-              promotionError: "",
-              addMemberError: "",
-              createTeam: "",
               teamsByUserError: action.payload as string,
             },
             teamsByUser: [],
@@ -102,10 +106,6 @@ const teamReducer = (state: TeamState, action: ActionPayload): TeamState => {
             ...state,
             loading: false,
             error: {
-              teamsByUserError: "",
-              promotionError: "",
-              addMemberError: "",
-              createTeam: "",
               membersByTeamError: action.payload as string,
             },
             membersByTeam: [],
@@ -115,10 +115,6 @@ const teamReducer = (state: TeamState, action: ActionPayload): TeamState => {
             ...state,
             loading: false,
             error: {
-              teamsByUserError: "",
-              membersByTeamError: "",
-              addMemberError: "",
-              createTeam: "",
               promotionError: action.payload as string,
             },
           };
@@ -127,10 +123,6 @@ const teamReducer = (state: TeamState, action: ActionPayload): TeamState => {
             ...state,
             loading: false,
             error: {
-              teamsByUserError: "",
-              membersByTeamError: "",
-              promotionError: "",
-              createTeam: "",
               addMemberError: action.payload as string,
             },
             addMember: null,
@@ -140,11 +132,15 @@ const teamReducer = (state: TeamState, action: ActionPayload): TeamState => {
             ...state,
             loading: false,
             error: {
-              teamsByUserError: "",
-              membersByTeamError: "",
-              promotionError: "",
-              addMemberError: "",
-              createTeam: action.payload as string,
+              createTeamError: action.payload as string,
+            },
+          };
+        case ActionType.DELETE_TEAM:
+          return {
+            ...state,
+            loading: false,
+            error: {
+              deleteTeamError: action.payload as string
             },
           };
         default:

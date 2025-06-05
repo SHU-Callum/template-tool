@@ -18,7 +18,7 @@ export const API_ROUTES = {
   ADD_TEAM_MEMBER: `${API_BASE_URL}/teams/add`,
   GET_TEAMS_BY_SEARCH: `${API_BASE_URL}/teams/search`,
   UPDATE_MEMBER_PERMISSION: `${API_BASE_URL}/teams/promote`,
-  DELETE_TEAM_URL: (teamId: string) => `${API_BASE_URL}/team/${teamId}/delete`,
+  DELETE_TEAM: (teamId: string) => `${API_BASE_URL}/teams/${teamId}/delete`,
   CREATE_TEAM: `${API_BASE_URL}/teams/create`,
 
   GET_USER_DETAILS: (keycloakId: string) => `${API_BASE_URL}/user?kcid=${keycloakId}`

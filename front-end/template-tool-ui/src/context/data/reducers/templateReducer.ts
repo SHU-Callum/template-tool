@@ -68,10 +68,10 @@ const templateReducer = (state: TemplateState, action: ActionPayload): TemplateS
           }
         case ActionType.CREATE_TEMPLATE:
           const createdTemplate = {
-              ...(action.payload as TempTemplate),
-              lastAmendDate: mysqlDatetimeToDate((action.payload as TempTemplate).lastAmendDate), // convert to Date object
-            }
-            return {
+            ...(action.payload as TempTemplate),
+            lastAmendDate: mysqlDatetimeToDate((action.payload as TempTemplate).lastAmendDate), // convert to Date object
+          }
+          return {
             ...state,
             loading: false,
             error: null,
@@ -79,7 +79,7 @@ const templateReducer = (state: TemplateState, action: ActionPayload): TemplateS
             templatesByTeams: state.templatesByTeams
               ? [...state.templatesByTeams, createdTemplate]
               : [createdTemplate],
-            };
+          };
         case ActionType.UPDATE_TEMPLATE:
           const updatedTemplate = {
               ...(action.payload as TempTemplate),
@@ -113,10 +113,10 @@ const templateReducer = (state: TemplateState, action: ActionPayload): TemplateS
             error: null,
             deleteTemplate: deletedTemplateId,
             templatesByTeams: state.templatesByTeams
-              ? state.templatesByTeams.filter(template => template.id !== deletedTemplateId)
+              ? state.templatesByTeams.filter(template => template.id != deletedTemplateId)
               : null,
             templatesByParams: state.templatesByParams
-              ? state.templatesByParams.filter(template => template.id !== deletedTemplateId)
+              ? state.templatesByParams.filter(template => template.id != deletedTemplateId)
               : null,
           };
         default:

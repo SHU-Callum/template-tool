@@ -99,7 +99,7 @@ function Search() {
         handleNetworkError(false);
       }
       // Show error notification if there is an error
-      if(state.teamState.error && !errorNotifiedRef.current) {
+      if(state.teamState.error?.teamsByUserError && !errorNotifiedRef.current) {
         addNotification(state.teamState.error.teamsByUserError, NotificationType.ERROR);
         errorNotifiedRef.current = true;
         if(state.teamState.error.teamsByUserError.includes('Network Error') && !networkError) {
