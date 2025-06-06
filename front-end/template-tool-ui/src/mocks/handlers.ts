@@ -96,7 +96,7 @@ export const handlers = [
     return HttpResponse.json(TEAM_MEMBERS_DATA); // Successful response
   }),
 
-  // Intercept "PUT localhost/api/team/promote requests...
+  // Intercept "PUT localhost/api/teams/promote requests...
   http.put(`${API_BASE_URL}/teams/promote`, async ({ request }) => {
     const body = await request.text();
     const headers = request.headers;
@@ -159,14 +159,13 @@ export const handlers = [
   http.delete(`${API_BASE_URL}/teams/:id/delete`, async ({ request }) => {
     const url = new URL(request.url);
     const pathParts = url.pathname.split('/');
-    const headers = request.headers;
     const teamId = pathParts[pathParts.indexOf('teams') + 1];
-    const decryptedTeamId = decryptParameter((teamId), headers.get('encryption-iv') || '');
-    if (!decryptedTeamId || decryptedTeamId.length < 1) {
+
+    if (!teamId || teamId.length < 1) {
       return HttpResponse.json({ error: 'Team ID cannot be empty' }, { status: 400 });
     }
     // Simulate successful deletion by returning the team ID
-    return HttpResponse.text(decryptedTeamId, { status: 200 });
+    return HttpResponse.text(teamId, { status: 200 });
   }),
 
   // Intercept "GET localhost/api/user?kcid=*" requests...

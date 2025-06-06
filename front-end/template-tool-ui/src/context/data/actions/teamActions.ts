@@ -207,7 +207,7 @@ export const deleteTeam = async (teamId: number, dispatch: Dispatch<ActionPayloa
           dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.DELETE_TEAM, payload: `Team does not exist` });
         }
         else {
-          dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.DELETE_TEAM, payload: error.response?.data ?? `Something went wrong: ${error.message}` });
+          dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.DELETE_TEAM, payload: error.response?.data.error ?? `Something went wrong: ${error.message}` });
         }
     } else {
       dispatchTeamAction(dispatch, { type: ActionType.ERROR, apiName: ActionType.DELETE_TEAM, payload: 'An unknown error occurred' });

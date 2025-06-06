@@ -131,7 +131,7 @@ function ManageTeam() {
       navigate('/'); // navigate back to Search page
     }
     else if (state.teamState.error?.deleteTeamError && !errorNotifiedRef.current && state.teamState.error.deleteTeamError) {
-      addNotification(`Failed to add member: ${state.teamState.error.deleteTeamError}`, NotificationType.ERROR);
+      addNotification(`Failed to delete team: ${state.teamState.error.deleteTeamError}`, NotificationType.ERROR);
       errorNotifiedRef.current = true; // prevent further notifications
     }
     handleNetworkError(state.teamState.error?.addMemberError != null);
