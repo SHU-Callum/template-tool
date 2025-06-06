@@ -12,7 +12,7 @@ public interface TeamMemberRepository extends JpaRepository<TeamMember, String> 
 
     List<TeamMember> findByUserId_Id(long userId);
 
-    Optional<TeamMember> findByUserId_Email(String email);
+    void deleteByTeamId_Id(long teamId);
 
     Optional<TeamMember> findByUserId_IdAndTeamId_Id (long userId, long teamId);
 
