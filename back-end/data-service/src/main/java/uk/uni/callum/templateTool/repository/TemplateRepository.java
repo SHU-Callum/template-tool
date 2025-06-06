@@ -9,4 +9,6 @@ import java.util.List;
 
 public interface TemplateRepository extends JpaRepository<Template, Long>, TemplateRepositoryCustom {
     List<Template> findByTeamIdIn(String[] teamId);
+
+    void deleteByTeamId(long teamId);
 }

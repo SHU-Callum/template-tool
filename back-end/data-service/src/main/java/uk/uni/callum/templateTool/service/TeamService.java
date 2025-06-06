@@ -12,6 +12,7 @@ import uk.uni.callum.templateTool.model.TeamMember;
 import uk.uni.callum.templateTool.model.TeamMemberId;
 import uk.uni.callum.templateTool.repository.TeamMemberRepository;
 import uk.uni.callum.templateTool.repository.TeamRepository;
+import uk.uni.callum.templateTool.repository.TemplateRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +26,9 @@ public class TeamService {
 
     @Autowired
     private TeamRepository teamRepository;
+
+    @Autowired
+    private TemplateRepository templateRepository;
 
     /**
      * Find teams by user ID.
@@ -105,8 +109,11 @@ public class TeamService {
 
     @Transactional
     public boolean deleteTeam(Team team) {
+        // delete all templates associated with the team
+        templateRepository.deleteByTeamId(team.getId());
         // delete all team members associated with the team
         teamMemberRepository.deleteByTeamId_Id(team.getId());
+        // delete the team itself
         teamRepository.delete(team);
         return true;
     }
