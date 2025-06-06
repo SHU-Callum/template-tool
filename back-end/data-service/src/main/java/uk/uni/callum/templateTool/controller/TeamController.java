@@ -2,7 +2,6 @@ package uk.uni.callum.templateTool.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -212,6 +211,41 @@ public class TeamController {
             }
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Team Creation data was sent");
+        }
+    }
+
+    /**
+     * Endpoint to delete a team by its ID.
+     * Returns the deleted team ID if successful, or an error message if the team does not exist.
+     *
+     * @param teamId The ID of the team to delete.
+     * @return ResponseEntity with the deleted team ID or an error message.
+     */
+    @DeleteMapping("/{teamId}/delete")
+    @Operation(summary = "Delete a team", description = "Delete a team and return the deleted team id")
+    public ResponseEntity<?> deleteTeam(@PathVariable("teamId") String teamId) {
+        if (teamId != null) {
+            try {
+                long formattedTeamId = Long.parseLong(teamId);
+
+                Team existingTeam = teamService.findTeamById(formattedTeamId);
+                if(existingTeam == null) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Team does not exist");
+                }
+
+                // Delete the team
+                boolean deleted = teamService.deleteTeam(existingTeam);
+                if (!deleted) {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete team");
+                }
+                return ResponseEntity.status(HttpStatus.OK).body(formattedTeamId);
+            } catch (IllegalArgumentException iae) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid Delete Team ID - Error: " + iae.getMessage());
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Team ID data was sent");
         }
     }
 
