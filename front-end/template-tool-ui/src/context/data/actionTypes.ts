@@ -28,6 +28,13 @@ export enum ActionType {
   GET_USER_DETAILS,
 }
 
+export enum ApiStates {
+  IDLE,
+  PENDING,
+  SUCCESS,
+  ERROR
+}
+
 export interface ActionPayload {
   type: ActionType,
   dispatchType: DispatchType,
