@@ -4,7 +4,6 @@ import jakarta.ws.rs.NotFoundException;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
-import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -36,12 +35,6 @@ public class KeycloakService {
             .username(username)
             .password(password)
             .build();
-    }
-
-    public boolean userExists(String userId) {
-        Keycloak keycloak = getKeycloakInstance();
-        UserResource userResource = keycloak.realm(realm).users().get(userId);
-        return userResource != null;
     }
 
     public UserRepresentation getUser(String userId) {
