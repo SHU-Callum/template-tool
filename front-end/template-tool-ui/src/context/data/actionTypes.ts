@@ -26,6 +26,19 @@ export enum ActionType {
   CREATE_TEAM,
   DELETE_TEAM,
   GET_USER_DETAILS,
+  UPDATE_TEMPLATE,
+  RESET_UPDATE_TEMPLATE,
+  DELETE_TEMPLATE,
+  RESET_DELETE_TEMPLATE,
+  CREATE_TEMPLATE,
+  RESET_CREATE_TEMPLATE,
+}
+
+export enum ApiStates {
+  IDLE,
+  PENDING,
+  SUCCESS,
+  ERROR
 }
 
 export interface ActionPayload {
