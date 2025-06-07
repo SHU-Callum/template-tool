@@ -3,6 +3,7 @@ import { TemplateState } from "./reducers/templateReducer";
 import { Team } from "../../models/team";
 import { TeamState } from "./reducers/teamReducer";
 import { User } from "../../models/user";
+import { TeamMember } from "../../models/teamMember";
 
 export const INITIAL_TEMPLATE_STATE: TemplateState = {
   templatesByTeams: null as Template[] | null,
@@ -19,6 +20,11 @@ export const INITIAL_TEMPLATE_STATE: TemplateState = {
 
 export const INITIAL_TEAM_STATE: TeamState = {
   teamsByUser: null as Team[] | null,
+  membersByTeam: null as TeamMember[] | null,
+  promotion: false,
+  addMember: null as TeamMember | null,
+  resetPromotion: () => ({}), // will be replaced in DataProvider
+  resetAddMember: () => ({}), // will be replaced in DataProvider
   loading: false,
   error: null,
 };

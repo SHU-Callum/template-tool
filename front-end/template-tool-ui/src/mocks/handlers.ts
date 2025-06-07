@@ -3,7 +3,7 @@
 
 import { http, HttpResponse } from 'msw'
 import { API_BASE_URL } from '../constants/apis'
-import { GET_TEAMS_BY_USER_DATA, GET_TEMPLATES_BY_PARAMS_DATA, GET_TEMPLATES_BY_PARAMS_DATA_2, GET_TEMPLATES_BY_TEAMS_DATA, GET_USER_DETAILS_DATA } from './data'
+import { GET_TEAMS_BY_USER_DATA, GET_TEMPLATES_BY_PARAMS_DATA, GET_TEMPLATES_BY_PARAMS_DATA_2, GET_TEMPLATES_BY_TEAMS_DATA, GET_USER_DETAILS_DATA, TEAM_MEMBERS_DATA } from './data'
 import { decryptParameter } from '../utils/encryption'
  
 export const handlers = [
@@ -84,6 +84,88 @@ export const handlers = [
       return HttpResponse.json({ error: 'User ID cannot be empty' }, { status: 400 });
     }
     return HttpResponse.json(GET_TEAMS_BY_USER_DATA); // Successful response
+  }),
+
+  // Intercept "GET localhost/api/teams/users?team=*" requests...
+  http.get(`${API_BASE_URL}/teams/users`, async ({ request }) => {
+    const url = new URL(request.url);
+    const teamId = url.searchParams.get('team')
+    if (!teamId || teamId.length < 1) {
+      return HttpResponse.json({ error: 'Team ID cannot be empty' }, { status: 400 });
+    }
+    return HttpResponse.json(TEAM_MEMBERS_DATA); // Successful response
+  }),
+
+  // Intercept "PUT localhost/api/teams/promote requests...
+  http.put(`${API_BASE_URL}/teams/promote`, async ({ request }) => {
+    const body = await request.text();
+    const headers = request.headers;
+    const decryptedBody = JSON.parse(decryptParameter((body), headers.get('encryption-iv') || ''));
+    if (!decryptedBody || Object.keys(decryptedBody).length === 0) {
+      return HttpResponse.json({ error: 'Request body cannot be empty' }, { status: 400 });
+    }
+    const { userId, teamId } = decryptedBody;
+    if (!userId || userId.length < 1 || !teamId || teamId.length < 1) {
+      return HttpResponse.json({ error: 'Member ID and Team ID cannot be empty' }, { status: 400 });
+    }
+    const updatedMembers = TEAM_MEMBERS_DATA.map(member => {
+      return { ...member, isOwner: userId === member.id ? true : member.isOwner}; // Simulate promoting the member to owner
+    })
+    return HttpResponse.json(updatedMembers); // Successful response
+  }),
+
+  // Intercept "POST localhost/api/teams/add requests...
+  http.post(`${API_BASE_URL}/teams/add`, async ({ request }) => {
+    const body = await request.text();
+    const headers = request.headers;
+    const decryptedBody = JSON.parse(decryptParameter((body), headers.get('encryption-iv') || ''));
+    if (!decryptedBody || Object.keys(decryptedBody).length === 0) {
+      return HttpResponse.json({ error: 'Request body cannot be empty' }, { status: 400 });
+    }
+    const { email, teamId } = decryptedBody;
+    if (!email || email.length < 1 || !teamId || teamId.length < 1) {
+      return HttpResponse.json({ error: 'Email and Team ID cannot be empty' }, { status: 400 });
+    }
+    const newMember = {
+      id: TEAM_MEMBERS_DATA.length + 1, // Simulate new member ID
+      email: email,
+      displayName: `User ${TEAM_MEMBERS_DATA.length + 1}`, // Simulate new member name
+      isOwner: false // New members are not owners by default
+    };
+    return HttpResponse.json(newMember); // Successful response
+  }),
+
+  // Intercept "POST localhost/api/teams/create requests...
+  http.post(`${API_BASE_URL}/teams/create`, async ({ request }) => {
+    const body = await request.text();
+    const headers = request.headers;
+    const decryptedBody = JSON.parse(decryptParameter((body), headers.get('encryption-iv') || ''));
+    if (!decryptedBody || Object.keys(decryptedBody).length === 0) {
+      return HttpResponse.json({ error: 'Request body cannot be empty' }, { status: 400 });
+    }
+    const { teamName, ownerId } = decryptedBody;
+    if (!teamName || teamName.length < 1 || !ownerId || ownerId.length < 1) {
+      return HttpResponse.json({ error: 'Team Name and Owner ID cannot be empty' }, { status: 400 });
+    }
+    const newTeam = {
+      id: Math.floor(Math.random() * 1000), // Simulate new team ID
+      teamName: teamName,
+      ownerIds: [ownerId], // Simulate team owner
+    };
+    return HttpResponse.json(newTeam, { status: 201 }); // Successful response
+  }),
+
+  // Intercept "DELETE localhost/api/teams/*/delete requests...
+  http.delete(`${API_BASE_URL}/teams/:id/delete`, async ({ request }) => {
+    const url = new URL(request.url);
+    const pathParts = url.pathname.split('/');
+    const teamId = pathParts[pathParts.indexOf('teams') + 1];
+
+    if (!teamId || teamId.length < 1) {
+      return HttpResponse.json({ error: 'Team ID cannot be empty' }, { status: 400 });
+    }
+    // Simulate successful deletion by returning the team ID
+    return HttpResponse.text(teamId, { status: 200 });
   }),
 
   // Intercept "GET localhost/api/user?kcid=*" requests...

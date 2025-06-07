@@ -6,7 +6,7 @@ CREATE TABLE employee (
 );
 
 CREATE TABLE team (
-  id INT PRIMARY KEY,
+  id INT AUTO_INCREMENT PRIMARY KEY,
   team_name VARCHAR(255) NOT NULL
 );
 

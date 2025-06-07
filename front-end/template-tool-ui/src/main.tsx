@@ -7,8 +7,9 @@ import { DataProvider } from './context/data/dataProvider.tsx'
 import Loading from './components/Loading.tsx'
 import { AuthProvider } from './context/auth/AuthProvider.tsx'
 import { DisplayModeProvider } from './context/templateDisplay/DisplayModeProvider.tsx'
+import { SideOutProvider } from './context/sideOut/SideOutProvider.tsx'
 
-  const App = lazy(() => import('./App.tsx'))
+const App = lazy(() => import('./App.tsx'))
 
 async function configureMocking() {
   const mockAPIs: boolean = import.meta.env.VITE_MOCK_API  === 'true'
@@ -27,11 +28,13 @@ configureMocking().then(() => {
       <AuthProvider>
         <DataProvider>
           <NotificationProvider>
-            <DisplayModeProvider>
-              <Suspense fallback={<Loading/>}>
-                <App />
-              </Suspense>
-            </DisplayModeProvider>
+            <SideOutProvider>
+              <DisplayModeProvider>
+                <Suspense fallback={<Loading/>}>
+                  <App />
+                </Suspense>
+              </DisplayModeProvider>
+            </SideOutProvider>
           </NotificationProvider>
         </DataProvider>
       </AuthProvider>

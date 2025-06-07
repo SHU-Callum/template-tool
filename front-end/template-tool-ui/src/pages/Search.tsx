@@ -9,6 +9,7 @@ import { getTemplatesByTeams, getTemplatesByParams } from "../context/data/actio
 import { Team } from "../models/team";
 import { addTeamNameToTemplates, filterTemplatesByEditable } from "../utils/idToName";
 import { Link } from "react-router";
+import { useSideOut } from "../context/sideOut/useSideOut";
 
 function Search() {
   const initialResults: Template[] = [];
@@ -17,6 +18,7 @@ function Search() {
   const { addNotification, handleNetworkError, networkError } = useNotification();
   const state = useStateContext();
   const dispatch = useDispatchContext();
+  const { openSideout } = useSideOut();
 
   // local state
   const [searchText, setSearchText] = useState('');
@@ -49,6 +51,10 @@ function Search() {
     handleGetTemplatesByParams(searchTeamsIds, searchText, searchIncludeViewOnly);
     setLoading(true);
   };
+
+  const createTeamClicked = () => {
+    openSideout(true);  
+  }
 
   // When the user selects a team from the dropdown
   const selectTeamFilterChanged = useCallback((selectedTeam: string) => {
@@ -93,10 +99,10 @@ function Search() {
         handleNetworkError(false);
       }
       // Show error notification if there is an error
-      if(state.teamState.error && !errorNotifiedRef.current) {
-        addNotification(state.teamState.error, NotificationType.ERROR);
+      if(state.teamState.error?.teamsByUserError && !errorNotifiedRef.current) {
+        addNotification(state.teamState.error.teamsByUserError, NotificationType.ERROR);
         errorNotifiedRef.current = true;
-        if(state.teamState.error.includes('Network Error') && !networkError) {
+        if(state.teamState.error.teamsByUserError.includes('Network Error') && !networkError) {
           handleNetworkError(true);
         }
       // Update loading state
@@ -104,7 +110,7 @@ function Search() {
       // remember the previous teams
       prevTeamsRef.current = state.teamState.teamsByUser;
     }
-  }, [addNotification, state.teamState.teamsByUser, state.teamState.error, networkError, handleNetworkError]);
+  }, [addNotification, state.teamState.teamsByUser, state.teamState.error?.teamsByUserError, networkError, handleNetworkError]);
 
   // When the GET Templates By Teams API call returns
   useEffect(() => {
@@ -228,7 +234,8 @@ function Search() {
               )}
             </div>
           </Link>
-          <button className="bg-green-500 text-white pl-2 pr-2 p-1.5 rounded whitespace-nowrap w-24 sm:w-28">
+          <button className="bg-green-500 text-white pl-2 pr-2 p-1.5 rounded whitespace-nowrap w-24 sm:w-28"
+            onClick={createTeamClicked}>
             + Team
           </button>
         </div>

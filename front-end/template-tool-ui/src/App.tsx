@@ -1,10 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import FooterBar from './components/FooterBar';
 import HeaderBar from './components/HeaderBar';
 import { useNotification } from './context/notification/useNotification';
 import Search from './pages/Search';
 import ViewTemplate from './pages/ViewTemplate';
-import SideOut from './components/SideOut';
 import { NotificationType } from './types/notificationTypes';
 import { BrowserRouter, Route, Routes  } from 'react-router';
 import { useAuth } from './context/auth/useAuth';
@@ -15,14 +14,16 @@ import { getTeamsByUserId } from './context/data/actions/teamActions';
 import { setupAxiosInterceptors } from './utils/authTokenPrep';
 import { UserAuthDetails } from './context/auth/authContext';
 import CreateTemplate from './pages/CreateTemplate';
+import ManageTeam from './pages/ManageTeam';
+import { useSideOut } from './context/sideOut/useSideOut';
+import SideOut from './components/SideOut';
 
 function App() {
   const { addNotification, handleNetworkError, networkError} = useNotification();
   const {isLoggedIn, initializeAuth, authMsg, userAuthDetails, refreshAccessToken} = useAuth();
+  const {isSideOutOpen, closeSideout, isSideOutRendered} = useSideOut();
   const state = useStateContext();
   const dispatch = useDispatchContext();
-  const [isSideOutOpen, setIsSideOutOpen] = useState(false);
-  const [isSideOutRendered, setIsSideOutRendered] = useState(false);
   const errorNotifiedRef = useRef(false); // to prevent error notification loop
   const obtainedKcid = useRef(false); // to prevent fetch user data loop on token refresh
 
@@ -36,24 +37,6 @@ function App() {
       getTeamsByUserId(userId, dispatch);
     };/* - is handled by useRef */
   const fetchAllTeamsRef = useRef(handleGetTeamsByUser);
-
-  const openSideout = () => {
-    setIsSideOutRendered(true);
-    setTimeout(() => {
-      setIsSideOutOpen(true);
-    }, 10); // Small delay to ensure the component is rendered before the transition starts
-  };
-
-  const closeSideout = () => {
-    setIsSideOutOpen(false);
-    setTimeout(() => {
-      setIsSideOutRendered(false);
-    }, 300); // Duration of the transition
-  };
-  
-  const profileClicked = () => {
-    openSideout();
-  };
 
   const infoClicked = () => {
     addNotification('Info Clicked', NotificationType.INFO);
@@ -130,15 +113,16 @@ function App() {
   return (
     <BrowserRouter>
       <div className='p-4 pt-2 w-full h-full flex flex-col'>
-        <HeaderBar profileClicked={profileClicked} showProfile={!isSideOutRendered} />
+        <HeaderBar />
         <div className='flex items-center w-full flex-grow'>
           <Routes>
             <Route path="/" element={<Search />} />
             <Route path="/view-template" element={<ViewTemplate />} />
             <Route path="/create-template" element={<CreateTemplate />} />
+            <Route path="/manage-team" element={<ManageTeam />} />
           </Routes>
         </div>
-        <FooterBar infoClicked={infoClicked} />
+        <FooterBar infoClicked={infoClicked} />     
         {isSideOutRendered && <SideOut isOpen={isSideOutOpen} onClose={closeSideout} />}
       </div>
     </BrowserRouter>

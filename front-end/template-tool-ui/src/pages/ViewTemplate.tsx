@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router";
 import { TemplateWithTeamName, TempTemplate } from "../models/template";
-import BackButton from "../components/BackButton";
+import BackButton from "../components/buttons/BackButton";
 import RoundedLabel from "../components/RoundedLabel";
 import TextEditor from "../components/textEditor/TextEditor";
 import { TemplateViewMode } from "../types/templateViewTypes";
@@ -13,7 +13,9 @@ import { NotificationType } from "../types/notificationTypes";
 import { dateToMysqlDatetime } from "../utils/dateFormatter";
 import { deleteTemplate, updateTemplate } from "../context/data/actions/templateActions";
 import { useDispatchContext, useStateContext } from "../context/data/useData";
-import { addTeamNameToTemplate } from "../utils/idToName";
+import { addAffiliationToTeam, addTeamNameToTemplate, templateTeamisOwner } from "../utils/idToName";
+import { TeamAffiliations } from "../models/team";
+import OpenButton from "../components/buttons/OpenButton";
 
 function ViewTemplate() {
   const location = useLocation(); // contains template state passed from Search page
@@ -80,6 +82,18 @@ function ViewTemplate() {
     }
   };
 
+    const openTeamClicked = () => {
+      const team = state.teamState.teamsByUser?.find(team => team.id === activeTemplate?.teamId);
+      if (!team) {
+        addNotification('You are not part of this team. Please join the team to view the template.', NotificationType.ERROR);
+        return;
+      }
+      const teamAffiliation: TeamAffiliations = addAffiliationToTeam(team, state.userState.userDetails!.id)
+      navigate('/manage-team', {
+        state: { selectedTeam: teamAffiliation }
+      });
+    }
+
   // When active template is updated, check if the content is valid JSON
   useEffect(() => {
     if (activeTemplate) {
@@ -140,7 +154,7 @@ function ViewTemplate() {
         </div>
         ) : (
         <div className="border rounded-lg shadow-lg p-3 bg-white dark:bg-gray-800 h-full flex flex-col">
-          <div className="flex justify-start gap-4">
+          <div className="flex justify-start gap-4 pb-1">
             <Link to="/">
               <BackButton />
             </Link>
@@ -148,8 +162,8 @@ function ViewTemplate() {
               <h3 className="text-left">{activeTemplate.title}</h3>
               <p className="text-left italic caption">Last update: {new Date(activeTemplate.lastAmendDate).toLocaleDateString()}</p>
             </div>
-            {activeTemplate.editable ? 
-              <RoundedLabel text={activeTemplate.teamName} borderColour="border-green-500" textBold clickAction={() => {}} />
+            {templateTeamisOwner(activeTemplate, state.userState.userDetails, state.teamState.teamsByUser || []) ? 
+              <RoundedLabel text={activeTemplate.teamName} borderColour="border-green-500" textBold iconButton={<OpenButton clickAction={openTeamClicked} />} />
               :
               <RoundedLabel text={activeTemplate.teamName} textBold />
             }
