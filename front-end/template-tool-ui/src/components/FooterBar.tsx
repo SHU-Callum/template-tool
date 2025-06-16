@@ -1,10 +1,15 @@
 import { useNotification } from "../context/notification/useNotification";
 
-interface FooterProps {
-  infoClicked: () => void;
-}
-
-function FooterBar({infoClicked}: FooterProps) {
+const helpClicked = async () => {
+    await window.electronDialog.showMessageBox({
+      type: 'info',
+      buttons: ['OK'],
+      title: 'Template Tool Help',
+      message: 'This is a template tool to help you create and manage email templates for your teams. You can add, edit, and delete templates as needed.',
+    });
+  }
+  
+function FooterBar() {
   const { networkError } = useNotification();
   return (
     <div className='flex justify-between items-center w-full'>
@@ -18,7 +23,7 @@ function FooterBar({infoClicked}: FooterProps) {
           Connection Status: {networkError ? 'Disconnected' : 'Online'}
         </p>
       </div>
-      <svg onClick={infoClicked} className="w-7 h-7 text-gray-800 dark:text-white hover:text-gray-600 dark:hover:text-gray-400 cursor-pointer transition-transform transform hover:scale-110" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+      <svg onClick={helpClicked} className="w-7 h-7 text-gray-800 dark:text-white hover:text-gray-600 dark:hover:text-gray-400 cursor-pointer transition-transform transform hover:scale-110" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
         <path fillRule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm9.408-5.5a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2h-.01ZM10 10a1 1 0 1 0 0 2h1v3h-1a1 1 0 1 0 0 2h4a1 1 0 1 0 0-2h-1v-4a1 1 0 0 0-1-1h-2Z" clipRule="evenodd"/>
       </svg>
     </div>
