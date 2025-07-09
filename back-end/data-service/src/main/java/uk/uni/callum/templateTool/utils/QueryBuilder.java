@@ -161,7 +161,6 @@ public class QueryBuilder<T> {
      * @return a TypedQuery of type T
      */
     public TypedQuery<T> build() {
-        System.out.println("q: " + query);
         return entityManager.createQuery(query.toString(), entityClass);
     }
 }
