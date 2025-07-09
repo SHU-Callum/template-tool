@@ -1,6 +1,6 @@
 // used for providing the authentication context to the app
 
-import { ReactNode, useRef, useState } from 'react';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 import { AuthContext, UserAuthDetails } from './authContext';
 import Keycloak from 'keycloak-js';
 import { isTokenExpired } from '../../utils/authExpiry';
@@ -16,22 +16,33 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [userAuthDetails, setUserAuthDetails] = useState<UserAuthDetails | null>(null);
   const [authMsg, setAuthMsg] = useState('Authenticating...') // loading message
   const authenticationAttempted = useRef(false); // prevents authentication loop
-  
-  // Mock API for development purposes
-  if (import.meta.env.VITE_MOCK_API === 'true') {
-    setIsLoggedIn(true); // Mock logged in state
-    setUserAuthDetails({
-      kcid: 'mock-kcid',
-      username: 'mockuser',
-      email: 'mock@mock.com',
-      roles: ['user'],
-      accessToken: 'mock-token',
-      refreshToken: 'mock-refresh-token',
-      expiresIn: Date.now() / 1000 + 3600,
-      refreshTokenExpiresIn: Date.now() / 1000 + 7200,
-    });
-    const [authMsg, setAuthMsg] = useState('Authenticated (mock)');
+  const kcClientRef = useRef<Keycloak>(new Keycloak({
+    url: import.meta.env.VITE_KC_URL,
+    realm: import.meta.env.VITE_KC_REALM,
+    clientId: import.meta.env.VITE_KC_CLIENT,
+  }));
 
+  // On first load, if the API is to be mocked, set up state as if logged in
+  useEffect(() => {
+    // Mock API for development purposes
+    if (import.meta.env.VITE_MOCK_API === 'true') {
+      setIsLoggedIn(true); // Mock logged in state
+      setUserAuthDetails({
+        kcid: 'mock-kcid',
+        username: 'mockuser',
+        email: 'mock@mock.com',
+        roles: ['user'],
+        accessToken: 'mock-token',
+        refreshToken: 'mock-refresh-token',
+        expiresIn: Date.now() / 1000 + 3600,
+        refreshTokenExpiresIn: Date.now() / 1000 + 7200,
+      });
+      setAuthMsg('Authenticated (mock)');
+    }
+  }, []);
+
+  // Configure mocked functions
+  if (import.meta.env.VITE_MOCK_API === 'true') {
     const initializeAuth = () => {};
     const refreshAccessToken = async () => {};
     const logout = () => {
@@ -43,7 +54,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }, 2000); // Redirect to home after 2 seconds
     };
 
-    return (
+    return ( // stops the rest of initialization from running
       <AuthContext.Provider value={{ isLoggedIn, userAuthDetails, initializeAuth, refreshAccessToken, authMsg, logout }}>
         {children}
       </AuthContext.Provider>
@@ -51,11 +62,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }
 
   // If not using mock API, use Keycloak for authentication
-  const kcClientRef = useRef<Keycloak>(new Keycloak({
-    url: import.meta.env.VITE_KC_URL,
-    realm: import.meta.env.VITE_KC_REALM,
-    clientId: import.meta.env.VITE_KC_CLIENT,
-  }));
 
   const initializeAuth = (localAuthDetails?: UserAuthDetails) => {
     if (localAuthDetails && localAuthDetails.expiresIn && !isTokenExpired(localAuthDetails.expiresIn)) {
