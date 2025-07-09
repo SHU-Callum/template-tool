@@ -38,10 +38,6 @@ function App() {
     };/* - is handled by useRef */
   const fetchAllTeamsRef = useRef(handleGetTeamsByUser);
 
-  const infoClicked = () => {
-    addNotification('Info Clicked', NotificationType.INFO);
-  };
-
   // On render begin authentication
   useEffect(() => {
     const storedUserAuthDetails = localStorage.getItem('userAuthDetails');
@@ -122,7 +118,7 @@ function App() {
             <Route path="/manage-team" element={<ManageTeam />} />
           </Routes>
         </div>
-        <FooterBar infoClicked={infoClicked} />     
+        <FooterBar />     
         {isSideOutRendered && <SideOut isOpen={isSideOutOpen} onClose={closeSideout} />}
       </div>
     </BrowserRouter>
